@@ -34,10 +34,10 @@ class DijkstraNode extends Node implements Comparable<DijkstraNode> {
 
 	@Override
 	public int compareTo(DijkstraNode o) {
-		if (id > o.id) {
+		if (getId() > o.getId()) {
 			return 1;
 		} else {
-			if (id == o.id) {
+			if (getId() == o.getId()) {
 				return 0;
 			} else {
 				return -1;
@@ -47,7 +47,7 @@ class DijkstraNode extends Node implements Comparable<DijkstraNode> {
 	
 	@Override
 	public int hashCode() {
-		return id;
+		return getId();
 	}
 	
 	@Override
@@ -83,7 +83,7 @@ class DijkstraNode extends Node implements Comparable<DijkstraNode> {
 		this.dist = dist;
 	}
 	public String toString() {
-		return id + ""; 
+		return getId() + ""; 
 	}
 	
 	public void setPredecessor(DijkstraNode predecessor) {

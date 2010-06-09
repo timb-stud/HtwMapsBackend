@@ -1,5 +1,6 @@
 package de.htwmaps.util;
 
+
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,7 +18,14 @@ package de.htwmaps.util;
  * limitations under the License.
  */
 
+
+
+
+
+
 import java.util.HashMap;
+
+import de.htwmaps.algorithm.Node;
 
 /**
  * A Fibonacci Heap, as described in <i>Introduction to Algorithms</i> by
@@ -30,12 +38,20 @@ import java.util.HashMap;
  *
  */
 public class FibonacciHeap {
-  private FibonacciHeapNode min;
-  private HashMap itemsToNodes;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+private FibonacciHeapNode min;
+  private HashMap<Node, FibonacciHeapNode> itemsToNodes;
 
   // private node class
   private static class FibonacciHeapNode {
-    private Object userObject;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Node userObject;
     private double priority;
 
     private FibonacciHeapNode parent;
@@ -45,8 +61,8 @@ public class FibonacciHeap {
     private int degree;
     private boolean mark;
 
-    FibonacciHeapNode(Object userObject, double priority) {
-      this.userObject= userObject;
+    FibonacciHeapNode(Node n, double priority) {
+      this.userObject= n;
       this.priority= priority;
 
       this.parent= null;
@@ -58,7 +74,7 @@ public class FibonacciHeap {
     }
 
     public String toString() {
-      return "["+userObject+", "+degree+"]";
+      return userObject.getId() + "";
     }
   }
 
@@ -67,19 +83,19 @@ public class FibonacciHeap {
    */
   public FibonacciHeap() {
     this.min= null;
-    this.itemsToNodes= new HashMap();
+    this.itemsToNodes= new HashMap<Node, FibonacciHeap.FibonacciHeapNode>();
   }
 
   /**
    *  Adds the Object <code>item</code>, with the supplied
    *  <code>priority</code>.
    */
-  public void add(Object item, double priority) {
-    if (itemsToNodes.containsKey(item))
+  public void add(Node n, double priority) {
+    if (itemsToNodes.containsKey(n))
       throw new IllegalStateException("heap already contains item! (item= "
-                                      + item + ")");
-    FibonacciHeapNode newNode= new FibonacciHeapNode(item, priority);
-    itemsToNodes.put(item, newNode);
+                                      + n + ")");
+    FibonacciHeapNode newNode= new FibonacciHeapNode(n, priority);
+    itemsToNodes.put(n, newNode);
 
     if (min == null) {
       min= newNode;
@@ -121,7 +137,7 @@ public class FibonacciHeap {
    * Returns the same Object that {@link #popMin()} would, without
    * removing it.
    */ 
-  public Object peekMin() {
+  public Node peekMin() {
     if (min == null) 
       return null;
     return min.userObject;
@@ -138,7 +154,7 @@ public class FibonacciHeap {
    * Returns the object which has the <em>lowest</em> priority in the
    * heap.  If the heap is empty, <code>null</code> is returned.
    */
-  public Object popMin() {
+  public Node popMin() {
     if (min == null) 
       return null;
     if (min.child != null) {
@@ -228,13 +244,13 @@ public class FibonacciHeap {
    * in the heap, or if <code>item</code> already has an equal or
    * lower priority than the supplied<code>priority</code>.
    */
-  public void decreaseKey(Object item, double priority) {
+  public void decreaseKey(Node startNode, double priority) {
     FibonacciHeapNode node= 
-      (FibonacciHeapNode) itemsToNodes.get(item);
+      (FibonacciHeapNode) itemsToNodes.get(startNode);
     if (node == null) 
-      throw new IllegalStateException("No such element: " + item);
+      throw new IllegalStateException("No such element: " + startNode);
     if (node.priority < priority) 
-      throw new IllegalStateException("decreaseKey(" + item + ", " 
+      throw new IllegalStateException("decreaseKey(" + startNode + ", " 
                                       + priority + ") called, but priority="
                                       + node.priority);
     node.priority= priority;
@@ -247,7 +263,7 @@ public class FibonacciHeap {
       min= node;
 
   }
-  
+
   // cut node x from below y
   private void cut(FibonacciHeapNode x, FibonacciHeapNode y) {
     // remove x from y's children
@@ -274,11 +290,6 @@ public class FibonacciHeap {
         cascadingCut(z);
       }
     }
-  }
-  
-  
-  public boolean isEmpty(){
-	  return itemsToNodes.isEmpty();
   }
 
 }

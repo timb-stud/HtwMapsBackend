@@ -1,8 +1,8 @@
 package de.htwmaps.algorithm;
 
 public abstract class Node {
-	double x, y;
-	int id;
+	private double x, y;
+	private int id;
 	
 	Node(double x, double y, int id) {
 		this.x = x;
@@ -10,15 +10,15 @@ public abstract class Node {
 		this.id = id;
 	}
 	
-	int getId() {
+	public int getId() {
 		return id;
 	}
 
-	double getX() {
+	public double getX() {
 		return x;
 	}
 
-	double getY() {
+	public double getY() {
 		return y;
 	}
 }

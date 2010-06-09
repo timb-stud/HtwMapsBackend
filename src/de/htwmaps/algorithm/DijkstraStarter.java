@@ -4,6 +4,8 @@ package de.htwmaps.algorithm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import de.htwmaps.util.FibonacciHeap;
+
 
 
 /*

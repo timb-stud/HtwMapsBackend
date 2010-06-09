@@ -2,11 +2,12 @@ package de.htwmaps.algorithm;
 
 import java.util.LinkedList;
 
+import de.htwmaps.util.FibonacciHeap;
+
 
 /*
  * @author Stanislaw Tartakowski
  * @version 1.0
- * 
  * Dies ist eine konkurrierende Implementierung eines Suchalgorithmus basierend auf Dijkstras Suchalgorithmus.
  * Abweichend von der klassischen Implementierung besitzt diese Klasse eine zielorientierte Heuristik, ähnlich
  * der von A* und ist auf schnellstmögliche Laufzeit optimiert. Dabei garantiert diese Klasse nicht die beste
