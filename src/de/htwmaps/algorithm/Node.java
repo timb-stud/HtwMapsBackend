@@ -46,6 +46,6 @@ public abstract class Node {
 	
 	@Override
 	public String toString() {
-		return "(" + id + ")";
+		return id + "";
 	}
 }
