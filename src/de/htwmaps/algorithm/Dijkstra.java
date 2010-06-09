@@ -56,23 +56,23 @@ public class Dijkstra extends Thread {
 	public void dijkstra() {	
 		startNode.setDist(0.0);
 		Q.decreaseKey(startNode, 0.0);
-		while (Q.size() > 0 && !finnished) { 							//while: O(n)
-			DijkstraNode currentNode = (DijkstraNode)Q.popMin();								//O(log2 n)
-			if (currentNode == null 									//wenn null werte in der fib. heap gelagert werden.
-					|| currentNode.getDist() == Double.MAX_VALUE 		//sind alle nachbarn unendlich weit weg ? also gibt es keinen weg nach ziel ? Ziel == Quelle
-					|| currentNode == endNode) {						//schon am ziel ?
-				finnished = true; 										//Der nächste Thread wird beim Eintritt in die Schleife abgebrochen
+		while (Q.size() > 0 && !finnished) { 									//while: O(n)
+			DijkstraNode currentNode = (DijkstraNode)Q.popMin();				//O(log2 n)
+			if (currentNode == null 											//wenn null werte in der fib. heap gelagert werden.
+					|| currentNode.getDist() == Double.MAX_VALUE 				//sind alle nachbarn unendlich weit weg ? also gibt es keinen weg nach ziel ? Ziel == Quelle
+					|| currentNode == endNode) {								//schon am ziel ?
+				finnished = true; 												//Der nächste Thread wird beim Eintritt in die Schleife abgebrochen
 				reactivateCaller();										
 				break;
 			}
-			currentNode.setRemovedFromQ(true);							//removed Flag aufgrund von Effizienz (erspart ein .contains von Q)
+			currentNode.setRemovedFromQ(true);									//removed Flag aufgrund von Effizienz (erspart ein .contains von Q)
 			LinkedList<DijkstraNode> neighborList = currentNode.getNeighbors();	//alle nachbarn des aktuellen knotens als liste
 			for (DijkstraNode neighbor : neighborList) { 						//|Edges|
 				if (!neighbor.isRemovedFromQ()) {
 					updateNeighborDistance(currentNode, neighbor);
-					Q.decreaseKey(neighbor, neighbor.getDist());		//O(1)
+					Q.decreaseKey(neighbor, neighbor.getDist());				//O(1)
 				}
-				if (checkThreads(currentNode, neighbor)) {				//Gemeinsamer Knoten(neighbor) der beiden Threads? Wenn ja, dann Weg gefunden
+				if (checkThreads(currentNode, neighbor)) {						//Gemeinsamer Knoten(neighbor) der beiden Threads? Wenn ja, dann Weg gefunden
 					break;
 				}
 			}

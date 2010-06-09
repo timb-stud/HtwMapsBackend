@@ -1,8 +1,8 @@
 package de.htwmaps.algorithm;
 
 public abstract class Node {
-	private double x, y;
-	private int id;
+	double x, y;
+	int id;
 	
 	Node(double x, double y, int id) {
 		this.x = x;

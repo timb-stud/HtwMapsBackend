@@ -5,7 +5,7 @@ import java.util.LinkedList;
 /*
  * Node representing location on earth
  */
-class DijkstraNode extends Node implements Comparable<DijkstraNode> {
+class DijkstraNode extends Node {
 
 	private double dist;
 
@@ -30,35 +30,6 @@ class DijkstraNode extends Node implements Comparable<DijkstraNode> {
     public boolean addNextNeighbor(DijkstraNode node) {
     	return next.add(node);
     }
-    
-
-	@Override
-	public int compareTo(DijkstraNode o) {
-		if (getId() > o.getId()) {
-			return 1;
-		} else {
-			if (getId() == o.getId()) {
-				return 0;
-			} else {
-				return -1;
-			}
-		}
-	}
-	
-	@Override
-	public int hashCode() {
-		return getId();
-	}
-	
-	@Override
-	public boolean equals(Object other) {
-		if (!(other instanceof DijkstraNode)) 
-			return false;
-		if (((DijkstraNode)other).getId() == this.getId()) {
-			return true;
-		}
-		return false;
-	}
 	
 	
 	//------Getters 'n Setters-------
