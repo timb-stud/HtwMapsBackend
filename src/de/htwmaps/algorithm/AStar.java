@@ -42,7 +42,7 @@ public class AStar implements ShortestPathAlgorithm {
 		start.setG(0);
 		start.setF(start.getH(goal));
 
-		while (!openSet.isEmpty()) {
+		while (!(openSet.size() < 1)) {
 			current = (AStarNode) openSet.popMin();
 			if (current == goal) {
 				return reconstructPath(goal);
@@ -51,8 +51,7 @@ public class AStar implements ShortestPathAlgorithm {
 			int i = 0;
 			for (AStarNode succ : current.getSuccessors()) {
 				boolean useTentativeG;
-				if (closedSet.containsKey(succ.getId())) // TODO contains key or
-															// value !?!??!
+				if (closedSet.containsKey(succ.getId())) // TODO contains key or value !?!??!
 					continue;
 				double tentativeG = current.getG() + current.getDistToSucc(i++);
 
@@ -110,6 +109,8 @@ public class AStar implements ShortestPathAlgorithm {
 	 *            HighwayType of this edge.
 	 * @return a HashTable containing all inserted nodes.
 	 */
+	//TODO oneways!!!
+	//TODO multiplicate highwaytypes with distance
 	public void buildEdges(HashMap<Integer, AStarNode> allNodes,
 			int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances,
 			boolean[] oneways, int[] highwayTypes) {
@@ -127,15 +128,12 @@ public class AStar implements ShortestPathAlgorithm {
 	 * 
 	 */
 	@Override
-	public AStarNode[] findShortestPath(HashMap<Integer, AStarNode> allNodes,
+	public Node[] findShortestPath(HashMap<Integer, Node> allNodes,
 			int startNodeID, int goalNodeID, int[] fromNodeIDs,
 			int[] toNodeIDs, double[] fromToDistances, boolean[] oneways,
 			int[] highwayTypes) throws PathNotFoundException {
-
-		buildEdges(allNodes, fromNodeIDs, toNodeIDs, fromToDistances, oneways,
-				highwayTypes);
-		return (AStarNode[]) (aStar(allNodes, startNodeID, goalNodeID)
-				.toArray());
+		buildEdges(allNodes, fromNodeIDs, toNodeIDs, fromToDistances, oneways,highwayTypes);
+		return (Node[]) (aStar(allNodes, startNodeID, goalNodeID).toArray());
 	}
 
 }

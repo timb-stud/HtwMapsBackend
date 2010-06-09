@@ -1,8 +1,13 @@
 package de.htwmaps.algorithm;
 
+/**
+ * 
+ * @author Stanislaw Tartakowski, Tim Bartsch
+ *
+ */
 public abstract class Node {
-	private double x, y;
-	private int id;
+	double x, y;
+	int id;
 	
 	Node(double x, double y, int id) {
 		this.x = x;
@@ -20,5 +25,22 @@ public abstract class Node {
 
 	public double getY() {
 		return y;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof AStarNode) {
+			AStarNode n = (AStarNode) o;
+			if (this.id == n.id)
+				return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("(").append(id).append(")");
+		return sb.toString();
 	}
 }

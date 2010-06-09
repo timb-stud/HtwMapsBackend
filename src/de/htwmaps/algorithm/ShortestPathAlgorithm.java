@@ -12,5 +12,5 @@ public interface ShortestPathAlgorithm {
 							int[] toNodeIDs,
 							double[] fromToDistances,
 							boolean[] oneways,
-							int[] highwayTypes);
+							int[] highwayTypes) throws PathNotFoundException;
 }
