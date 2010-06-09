@@ -53,9 +53,6 @@ class DijkstraNode extends Node {
 	public void setDist(double dist) {
 		this.dist = dist;
 	}
-	public String toString() {
-		return getId() + ""; 
-	}
 	
 	public void setPredecessor(DijkstraNode predecessor) {
 		this.predecessor = predecessor;
