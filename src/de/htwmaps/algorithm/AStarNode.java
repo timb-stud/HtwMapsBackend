@@ -6,16 +6,11 @@ import java.util.LinkedList;
  * @author Tim Bartsch
  *
  */
-public class AStarNode implements Comparable<AStarNode> {
-	private int id;
-	private LinkedList<AStarNode> successors;
-	private LinkedList<Double> distances;
-	private LinkedList<Boolean> oneways;
-	private LinkedList<Integer> highwaytypes;
+public class AStarNode extends Node{
+	private LinkedList<AStarNode> successors; // TODO LinkedList or ArrayList?
+	private LinkedList<Double> distances;	//TODO move to Node
 	private double f; // h + g
 	private double g; // length from start Node to this node
-	private double x;
-	private double y;
 	private AStarNode predeccessor;
 
 	/**
@@ -25,25 +20,11 @@ public class AStarNode implements Comparable<AStarNode> {
 	 * @param y longitude
 	 */
 	public AStarNode(int id, double x, double y) {
-		this.id = id;
-		this.x = x;
-		this.y = y;
+		super(x, y, id);
 		successors = new LinkedList<AStarNode>();
 		distances = new LinkedList<Double>();
 		this.f = -1;
 		this.g = -1;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public double getX() {
-		return x;
-	}
-
-	public double getY() {
-		return y;
 	}
 
 	public double getF() {
@@ -86,36 +67,5 @@ public class AStarNode implements Comparable<AStarNode> {
 
 	public double getDistToSucc(int pos) {
 		return distances.get(pos);
-	}
-
-	public boolean equals(Object o) {
-		if (o instanceof AStarNode) {
-			AStarNode n = (AStarNode) o;
-			if (this.id == n.id)
-				return true;
-		}
-		return false;
-	}
-
-	@Override
-	public int compareTo(AStarNode n) {
-		if (this.f == n.f)
-			return 0;
-		if (this.f < n.f)
-			return -1;
-		else
-			return 1;
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("(").append(id).append(")");
-		return sb.toString();
 	}
 }
