@@ -1,4 +1,4 @@
-package dijkstra;
+package de.htwmaps.algorithm;
 
 public abstract class Node {
 	double x, y;

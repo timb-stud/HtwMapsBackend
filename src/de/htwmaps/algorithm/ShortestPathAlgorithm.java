@@ -1,4 +1,6 @@
-package dijkstra;
+package de.htwmaps.algorithm;
+
+
 import java.util.HashMap;
 
 
