@@ -39,8 +39,6 @@ public abstract class Node {
 	
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("(").append(id).append(")");
-		return sb.toString();
+		return "(" + id + ")";
 	}
 }

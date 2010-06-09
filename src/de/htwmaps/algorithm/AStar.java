@@ -30,10 +30,10 @@ public class AStar implements ShortestPathAlgorithm {
 	 *             if no way from start to goal is found. This exception will be
 	 *             thrown.
 	 */
-	public ArrayList<AStarNode> aStar(HashMap<Integer, Node> allNodes,
+	public ArrayList<AStarNode> aStar(HashMap<Integer, AStarNode> allNodes,
 			int startID, int goalID) throws PathNotFoundException {
-		AStarNode start = (AStarNode)allNodes.get(startID);
-		AStarNode goal = (AStarNode)allNodes.get(goalID);
+		AStarNode start = allNodes.get(startID);
+		AStarNode goal = allNodes.get(goalID);
 		HashMap<Integer, AStarNode> closedSet = new HashMap<Integer, AStarNode>(
 				allNodes.size());
 		FibonacciHeap openSet = new FibonacciHeap();
@@ -111,13 +111,13 @@ public class AStar implements ShortestPathAlgorithm {
 	 */
 	//TODO oneways!!!
 	//TODO multiplicate highwaytypes with distance
-	public void buildEdges(HashMap<Integer, Node> allNodes,
+	public void buildEdges(HashMap<Integer, AStarNode> allNodes,
 			int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances,
 			boolean[] oneways, int[] highwayTypes) {
 
 		for (int i = 0; i < fromNodeIDs.length; i++) {
-			AStarNode n = (AStarNode)allNodes.get(fromNodeIDs[i]);
-			AStarNode succ = (AStarNode)allNodes.get(toNodeIDs[i]);
+			AStarNode n = allNodes.get(fromNodeIDs[i]);
+			AStarNode succ = allNodes.get(toNodeIDs[i]);
 			n.addSuccessor(succ, fromToDistances[i], oneways[i],
 					highwayTypes[i]);
 		}
