@@ -109,16 +109,18 @@ public class AStar implements ShortestPathAlgorithm {
 	 *            HighwayType of this edge.
 	 * @return a HashTable containing all inserted nodes.
 	 */
-	//TODO oneways!!!
 	//TODO multiplicate highwaytypes with distance
 	public void buildEdges(HashMap<Integer, AStarNode> allNodes,
 			int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances,
 			boolean[] oneways, int[] highwayTypes) {
 
 		for (int i = 0; i < fromNodeIDs.length; i++) {
-			AStarNode n = allNodes.get(fromNodeIDs[i]);
-			AStarNode successor = allNodes.get(toNodeIDs[i]);
-			n.addEdge(new Edge(successor, fromToDistances[i]));//n.addSuccessor(succ, fromToDistances[i], oneways[i],highwayTypes[i]);
+			AStarNode fromNode = allNodes.get(fromNodeIDs[i]);
+			AStarNode toNode = allNodes.get(toNodeIDs[i]);
+			fromNode.addEdge(new Edge(toNode, fromToDistances[i]));
+			if(oneways[i]){
+				toNode.addEdge(new Edge(fromNode, fromToDistances[i]));
+			}
 		}
 	}
 
