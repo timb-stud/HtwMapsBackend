@@ -5,7 +5,7 @@ package de.htwmaps.algorithm;
  * @author Stanislaw Tartakowski, Tim Bartsch
  *
  */
-public abstract class Node {
+public class Node {
 	double x, y;
 	int id;
 	
