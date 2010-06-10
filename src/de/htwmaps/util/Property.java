@@ -11,13 +11,24 @@ import java.util.Properties;
  * Hiermit koennen Eigenschaften aus einer Datei gelesen werden
  * <ul>
  * 	 <li>@author CR</li>
- * 	 <li>@version: 1.0 - 26.05.2010</li>
+ * 	 <li>@version:
+ * 			<ul>
+ * 				<li> 1.0 - 26.05.2010 - Klasse erstellt</li>
+ * 				<li> 1.1 - 10.0.2010 - Kommentare hinzugefuegt</li>
+ * 			</ul>
+ * </li>
  * </ul>
  */
 
 public class Property {
+	
+	//Attribute
 	private Properties properties;
 	
+	/**
+	 * Konstruktor: Oeffnet die Angegeben Datei und ladet sie in einen Stream
+	 * @param filename	Dateiname der einzulesenden Datei
+	 */
 	public Property(String filename){
 		properties = new Properties();
 		FileInputStream stream = null;
@@ -37,6 +48,11 @@ public class Property {
 		
 	}
 	
+	/**
+	 * get-Methode um Parameter auszulesen
+	 * @param name	zugewiesener Name der erwünschten Variable 
+	 * @return Inhalt der Variable
+	 */
 	public String getProp(String name) {
 		return properties.getProperty(name);
 	}
