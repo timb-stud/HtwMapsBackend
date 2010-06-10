@@ -1,11 +1,9 @@
 package de.htwmaps.algorithm;
 
 
-import java.util.HashMap;
-
-
 public interface ShortestPathAlgorithm {
-	Node[] findShortestPath(HashMap<Integer, Node> allNodes,
+	
+	Node[] findShortestPath(int[] nodeIDs,
 							int startNodeID,
 							int goalNodeID,
 							int[] fromNodeIDs,
