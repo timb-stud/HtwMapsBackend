@@ -12,7 +12,7 @@ import de.htwmaps.util.FibonacciHeap;
  * 
  */
 public class AStar implements ShortestPathAlgorithm {
-
+	
 	/**
 	 * Implementation of the A Star algorithm. It uses Nodes connected with
 	 * references.
@@ -30,7 +30,7 @@ public class AStar implements ShortestPathAlgorithm {
 	 *             if no way from start to goal is found. This exception will be
 	 *             thrown.
 	 */
-	public ArrayList<AStarNode> aStar(HashMap<Integer, AStarNode> allNodes,
+	private ArrayList<AStarNode> aStar(HashMap<Integer, AStarNode> allNodes,
 			int startID, int goalID) throws PathNotFoundException {
 		AStarNode start = allNodes.get(startID);
 		AStarNode goal = allNodes.get(goalID);
@@ -110,7 +110,7 @@ public class AStar implements ShortestPathAlgorithm {
 	 * @return a HashTable containing all inserted nodes.
 	 */
 	//TODO multiplicate highwaytypes with distance
-	public void buildEdges(HashMap<Integer, AStarNode> allNodes,
+	private void buildEdges(HashMap<Integer, AStarNode> allNodes,
 			int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances,
 			boolean[] oneways, int[] highwayTypes) {
 		
@@ -124,7 +124,7 @@ public class AStar implements ShortestPathAlgorithm {
 		}
 	}
 	
-	public HashMap<Integer, AStarNode> buildNodes(int[] allNodeIDs, float[] x, float[] y){
+	private HashMap<Integer, AStarNode> buildNodes(int[] allNodeIDs, float[] x, float[] y){
 		HashMap<Integer, AStarNode> allNodes = new HashMap<Integer, AStarNode>(allNodeIDs.length, 1.0f);
 		for (int i = 0; i < allNodeIDs.length; i++) {
 			allNodes.put(allNodeIDs[i], new AStarNode(allNodeIDs[i], x[i], y[i]));
@@ -144,7 +144,7 @@ public class AStar implements ShortestPathAlgorithm {
 		
 		HashMap<Integer, AStarNode> allNodes = buildNodes(allNodeIDs, x, y);
 		buildEdges(allNodes, fromNodeIDs, toNodeIDs, fromToDistances, oneways, highwayTypes);
-		return (Node[]) (aStar(allNodes, startNodeID, goalNodeID).toArray());
+		return aStar(allNodes, startNodeID, goalNodeID).toArray(new Node[0]);
 	}
 
 }

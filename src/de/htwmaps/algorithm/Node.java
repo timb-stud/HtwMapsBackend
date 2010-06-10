@@ -13,6 +13,7 @@ public abstract class Node {
 	LinkedList<Edge> edgeList;
 	
 	Node(double x, double y, int id) {
+		edgeList = new LinkedList<Edge>();
 		this.x = x;
 		this.y = y;
 		this.id = id;
