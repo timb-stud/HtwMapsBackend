@@ -35,11 +35,6 @@ public class AStarNode extends Node{
 		this.f = f;
 	}
 
-	public double getH(AStarNode dest) {
-		return Math.sqrt((this.x - dest.x) * (this.x - dest.x)
-				+ (this.y - dest.y) * (this.y - dest.y));
-	}
-
 	public double getG() {
 		return g;
 	}
