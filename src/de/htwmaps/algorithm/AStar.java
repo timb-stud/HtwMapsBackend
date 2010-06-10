@@ -110,9 +110,10 @@ public class AStar implements ShortestPathAlgorithm {
 	 * @return a HashTable containing all inserted nodes.
 	 */
 	//TODO multiplicate highwaytypes with distance
-	public void buildGraph(int allNodeIDs[],
+	public void buildEdges(HashMap<Integer, AStarNode> allNodes,
 			int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances,
 			boolean[] oneways, int[] highwayTypes) {
+		
 		for (int i = 0; i < fromNodeIDs.length; i++) {
 			AStarNode fromNode = allNodes.get(fromNodeIDs[i]);
 			AStarNode toNode = allNodes.get(toNodeIDs[i]);
@@ -123,7 +124,7 @@ public class AStar implements ShortestPathAlgorithm {
 		}
 	}
 	
-	public HashMap<Integer, AStarNode> buildNodes(int[] allNodeIDs, double[] x, double[] y){
+	public HashMap<Integer, AStarNode> buildNodes(int[] allNodeIDs, float[] x, float[] y){
 		HashMap<Integer, AStarNode> allNodes = new HashMap<Integer, AStarNode>(allNodeIDs.length, 1.0f);
 		for (int i = 0; i < allNodeIDs.length; i++) {
 			allNodes.put(allNodeIDs[i], new AStarNode(allNodeIDs[i], x[i], y[i]));
@@ -136,11 +137,13 @@ public class AStar implements ShortestPathAlgorithm {
 	 * 
 	 */
 	@Override
-	public Node[] findShortestPath(int[] allNodeIDs,
+	public Node[] findShortestPath(int[] allNodeIDs, float[] x, float[] y,
 			int startNodeID, int goalNodeID, int[] fromNodeIDs,
 			int[] toNodeIDs, double[] fromToDistances, boolean[] oneways,
 			int[] highwayTypes) throws PathNotFoundException {
-		buildEdges(allNodes, fromNodeIDs, toNodeIDs, fromToDistances, oneways,highwayTypes);
+		
+		HashMap<Integer, AStarNode> allNodes = buildNodes(allNodeIDs, x, y);
+		buildEdges(allNodes, fromNodeIDs, toNodeIDs, fromToDistances, oneways, highwayTypes);
 		return (Node[]) (aStar(allNodes, startNodeID, goalNodeID).toArray());
 	}
 
