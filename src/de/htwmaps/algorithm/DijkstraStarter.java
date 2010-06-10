@@ -37,9 +37,10 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		return nodesContainer.toArray(new Node[0]);
 	}
 
-
+	//TODO PathNotFoundException
 	@Override
-	public Node[] findShortestPath(HashMap<Integer, Node> allNodes, int startNodeID, int goalNodeID, int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances, boolean[] oneways, int[] highwayTypes) {
+	public Node[] findShortestPath(int[] allNodesIDs, int startNodeID, int goalNodeID, int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances, boolean[] oneways, int[] highwayTypes) {
+		
 
 		generateReferences(allNodes, fromNodeIDs, toNodeIDs, oneways);
 		
