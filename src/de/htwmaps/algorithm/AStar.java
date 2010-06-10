@@ -40,7 +40,7 @@ public class AStar implements ShortestPathAlgorithm {
 		AStarNode current;
 		openSet.add(start, start.getF());
 		start.setG(0);
-		start.setF(start.getH(goal));
+		start.setF(start.getDistanceTo(goal));
 
 		while (!(openSet.size() < 1)) {
 			current = (AStarNode) openSet.popMin();
@@ -48,27 +48,27 @@ public class AStar implements ShortestPathAlgorithm {
 				return reconstructPath(goal);
 			}
 			closedSet.put(current.getId(), current);
-			int i = 0;
-			for (AStarNode succ : current.getSuccessors()) {
+			for (Edge edge : current.getEdgeList()) {
 				boolean useTentativeG;
-				if (closedSet.containsKey(succ.getId())) // TODO contains key or value !?!??!
+				AStarNode successor = (AStarNode)edge.getSuccessor();
+				if (closedSet.containsKey(successor.id)) // TODO contains key or value !?!??!
 					continue;
-				double tentativeG = current.getG() + current.getDistToSucc(i++);
-
-				if (!openSet.contains(succ)) {
-					openSet.add(succ, succ.getF());
+				double tentativeG = current.getG() + edge.getDistance();
+				
+				if (!openSet.contains(successor)) {
+					openSet.add(successor, successor.getF());
 					useTentativeG = true;
 				} else {
-					if (tentativeG < succ.getG()) {
+					if (tentativeG < successor.getG()) {
 						useTentativeG = true;
 					} else {
 						useTentativeG = false;
 					}
 				}
 				if (useTentativeG) {
-					succ.setPredeccessor(current);
-					succ.setG(tentativeG);
-					succ.setF(succ.getG() + succ.getH(goal));
+					successor.setPredeccessor(current);
+					successor.setG(tentativeG);
+					successor.setF(successor.getG() + successor.getDistanceTo(goal));
 				}
 			}
 		}
@@ -117,9 +117,8 @@ public class AStar implements ShortestPathAlgorithm {
 
 		for (int i = 0; i < fromNodeIDs.length; i++) {
 			AStarNode n = allNodes.get(fromNodeIDs[i]);
-			AStarNode succ = allNodes.get(toNodeIDs[i]);
-			n.addSuccessor(succ, fromToDistances[i], oneways[i],
-					highwayTypes[i]);
+			AStarNode successor = allNodes.get(toNodeIDs[i]);
+			n.addEdge(new Edge(successor, fromToDistances[i]));//n.addSuccessor(succ, fromToDistances[i], oneways[i],highwayTypes[i]);
 		}
 	}
 
