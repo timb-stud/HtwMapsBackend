@@ -7,6 +7,11 @@ package de.htwmaps.algorithm;
  */
 public class PathNotFoundException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public PathNotFoundException() {
 	}
 
