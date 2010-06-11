@@ -56,13 +56,13 @@ public class Dijkstra extends Thread {
 	public void dijkstra() {	
 		startNode.setDist(0.0);
 		Q.decreaseKey(startNode, 0.0);
-		while (Q.size() > 0 && !finnished) { 									
+		while (Q.size() > 0 && !finnished) { 
 			DijkstraNode currentNode = (DijkstraNode)Q.popMin();				
 			if (currentNode == null 											
 					|| currentNode.getDist() == Double.MAX_VALUE 				
 					|| (currentNode == endNode && endNode.getPredecessor() != null || endNode.getPredecessor2() != null)) {								
 				finnished = true; 												
-				if (!thread1) {
+				if (!thread1 && currentNode != null && currentNode.getDist() != Double.MAX_VALUE) {
 					DijkstraNode tmp;
 					while ((tmp = currentNode.getPredecessor2()) != null) {
 						currentNode.setPredecessor(tmp);
@@ -74,12 +74,13 @@ public class Dijkstra extends Thread {
 			}
 			currentNode.setRemovedFromQ(true);									
 			LinkedList<Edge> edges = currentNode.getEdgeList();	
-			for (Edge edge : edges) { 						
-				if (!((DijkstraNode)edge.getSuccessor()).isRemovedFromQ()) {
-					updateSuccessorDistance(currentNode, (DijkstraNode)edge.getSuccessor());
-					Q.decreaseKey((DijkstraNode)edge.getSuccessor(), ((DijkstraNode)edge.getSuccessor()).getDist());				
+			for (Edge edge : edges) {
+				DijkstraNode successor = (DijkstraNode)edge.getSuccessor();
+				if (!successor.isRemovedFromQ()) {
+					updateSuccessorDistance(currentNode, successor);
+					Q.decreaseKey(successor, successor.getDist());				
 				}
-				if (checkThreads(currentNode, (DijkstraNode)edge.getSuccessor())) {					
+				if (checkThreads(currentNode, successor)) {					
 					break;
 				}
 			}

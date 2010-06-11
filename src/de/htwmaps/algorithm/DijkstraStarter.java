@@ -24,6 +24,15 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		}
 	}
 	
+	private HashMap<Integer, DijkstraNode> generateNodesQ(int[] allNodesIDs, float[] x,
+			float[] y) {
+		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode> (allNodesIDs.length);
+		for (int i = 0; i < allNodesIDs.length; i++) {
+			Q.put(allNodesIDs[i], new DijkstraNode(x[i], y[i], allNodesIDs[i]));
+		}
+		return Q;
+	}
+	
 	/*
 	 * node list -> Node[] array
 	 */
@@ -84,12 +93,4 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		return result;
 	}
 
-	private HashMap<Integer, DijkstraNode> generateNodesQ(int[] allNodesIDs, float[] x,
-			float[] y) {
-		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode> (allNodesIDs.length);
-		for (int i = 0; i < allNodesIDs.length; i++) {
-			Q.put(allNodesIDs[i], new DijkstraNode(x[i], y[i], allNodesIDs[i]));
-		}
-		return Q;
-	}
 }
