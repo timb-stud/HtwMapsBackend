@@ -35,11 +35,12 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	/*
 	 * node list -> Node[] array
 	 */
-	public Node[] nodeToArray(DijkstraNode endNode) {
+	public Node[] nodeToArray(DijkstraNode startNode, DijkstraNode endNode) {
+		DijkstraNode tmp = startNode.getPredecessor() != null ? startNode : endNode;
 		ArrayList<DijkstraNode> nodesContainer = new ArrayList<DijkstraNode>();
-		while (endNode != null) {
-			nodesContainer.add(endNode);
-			endNode = endNode.getPredecessor();
+		while (tmp != null) {
+			nodesContainer.add(tmp);
+			tmp = tmp.getPredecessor();
 		}
 		return nodesContainer.toArray(new Node[0]);
 	}
@@ -62,14 +63,24 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		
 
 		FibonacciHeap fh = new FibonacciHeap();
+		FibonacciHeap fh2 = new FibonacciHeap();
 		for (DijkstraNode n : Q.values()) {
 			fh.add(n, n.getDist());
+			fh2.add(n, n.getDist());
 		}
 		
 		DijkstraNode startNode = Q.get(startNodeID); 
 		DijkstraNode endNode = Q.get(goalNodeID);
-		new Dijkstra().dijkstra(fh, startNode, endNode);
-		Node[] result = nodeToArray(endNode);
+		Dijkstra d0 = new Dijkstra(fh, startNode, endNode, true, this, "Thread1");
+		Dijkstra d1 = new Dijkstra(fh2, endNode, startNode, false, this, "Thread2");
+		d0.start();
+		d1.start();
+		synchronized(this.getClass()) {
+			try {
+				this.getClass().wait();
+			} catch (InterruptedException e) {}
+		}
+		Node[] result = nodeToArray(startNode, endNode);
 		if (result.length == 1) {
 			throw new PathNotFoundException();
 		}

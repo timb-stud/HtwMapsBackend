@@ -8,7 +8,7 @@ class DijkstraNode extends Node {
 	private double dist;
 
 	private volatile DijkstraNode predecessor; 
-	private volatile boolean removed = false;
+	private volatile boolean removed, touchedByTh1, touchedByTh2;
 
 	/*
 	 * @param id unique node id on earth
@@ -42,5 +42,21 @@ class DijkstraNode extends Node {
 
 	public DijkstraNode getPredecessor() {
 		return predecessor;
+	}
+
+	public void setTouchedByTh1(boolean touchedByTh1) {
+		this.touchedByTh1 = touchedByTh1;
+	}
+
+	public boolean isTouchedByTh1() {
+		return touchedByTh1;
+	}
+
+	public void setTouchedByTh2(boolean touchedByTh2) {
+		this.touchedByTh2 = touchedByTh2;
+	}
+
+	public boolean isTouchedByTh2() {
+		return touchedByTh2;
 	}
 }
