@@ -15,47 +15,54 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	/*
 	 * knotenobjekte miteinander referenzieren
 	 */
-	public void generateReferences(HashMap<Integer, Node> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways) {
+	public void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
 			int fromID = fromNodeIDs[i], toID = toNodeIDs[i];
-			((DijkstraNode)Q.get(fromID)).addNextNeighbor(((DijkstraNode)Q.get(toID)));
+			Q.get(fromID).addEdge(new Edge(Q.get(toID), fromToDistances[i]));
 			if(!oneways[i]) //nicht oneway
-				((DijkstraNode)Q.get(toID)).addNextNeighbor(((DijkstraNode)Q.get(fromID)));
+				Q.get(toID).addEdge(new Edge(Q.get(fromID), fromToDistances[i]));
 		}
 	}
 	
 	/*
 	 * node list -> Node[] array
 	 */
-	public Node[] nodeToArray(Node endNode, Node startNode) {
-		Node tmp = ((DijkstraNode)startNode).getPredecessor() != null ? startNode : endNode;
-		ArrayList<Node> nodesContainer = new ArrayList<Node>();
+	public Node[] nodeToArray(DijkstraNode endNode, DijkstraNode startNode) {
+		DijkstraNode tmp = startNode.getPredecessor() != null ? startNode : endNode;
+		ArrayList<DijkstraNode> nodesContainer = new ArrayList<DijkstraNode>();
 		while (tmp != null) {
 			nodesContainer.add(tmp);
-			tmp = ((DijkstraNode)tmp).getPredecessor();
+			tmp = tmp.getPredecessor();
 		}
 		return nodesContainer.toArray(new Node[0]);
 	}
 
 	//TODO PathNotFoundException
 	@Override
-	public Node[] findShortestPath(int[] allNodesIDs, int startNodeID, int goalNodeID, int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances, boolean[] oneways, int[] highwayTypes) {
+	public Node[] findShortestPath(int[] allNodesIDs,
+			float[] x,
+			float[] y,
+			int startNodeID,
+			int goalNodeID,
+			int[] fromNodeIDs,
+			int[] toNodeIDs,
+			double[] fromToDistances, 
+			boolean[] oneways,
+			int[] highwayTypes) throws PathNotFoundException {
+		
+		HashMap<Integer, DijkstraNode> Q = generateNodesQ(allNodesIDs, x, y);
+		generateReferences(Q, fromNodeIDs, toNodeIDs, oneways, fromToDistances);
 		
 
-		generateReferences(allNodes, fromNodeIDs, toNodeIDs, oneways);
-		
-		/*
-		 * hashmap nach fibonacci heap umwandeln. 360ms
-		 */
 		FibonacciHeap fh = new FibonacciHeap();
 		FibonacciHeap fh2 = new FibonacciHeap();
-		for (Node n : allNodes.values()) {
-			fh.add(n, ((DijkstraNode)n).getDist());
-			fh2.add(n, ((DijkstraNode)n).getDist());
+		for (DijkstraNode n : Q.values()) {
+			fh.add(n, n.getDist());
+			fh2.add(n, n.getDist());
 		}
 		
-		DijkstraNode startNode = (DijkstraNode)allNodes.get(startNodeID); 
-		DijkstraNode endNode = (DijkstraNode)allNodes.get(goalNodeID);
+		DijkstraNode startNode = Q.get(startNodeID); 
+		DijkstraNode endNode = Q.get(goalNodeID);
 
 		
 		Dijkstra d0 = new Dijkstra(fh, startNode, endNode, true, this, "Tread1");
@@ -70,6 +77,19 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 			} catch(InterruptedException iexc) {
 			}
 		}
-		return nodeToArray(endNode, startNode);
+		Node[] result = nodeToArray(endNode, startNode);
+		if (result.length == 1) {
+			throw new PathNotFoundException();
+		}
+		return result;
+	}
+
+	private HashMap<Integer, DijkstraNode> generateNodesQ(int[] allNodesIDs, float[] x,
+			float[] y) {
+		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode> (allNodesIDs.length);
+		for (int i = 0; i < allNodesIDs.length; i++) {
+			Q.put(allNodesIDs[i], new DijkstraNode(x[i], y[i], allNodesIDs[i]));
+		}
+		return Q;
 	}
 }

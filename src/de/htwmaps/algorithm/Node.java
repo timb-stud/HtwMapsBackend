@@ -7,12 +7,12 @@ import java.util.LinkedList;
  * @author Stanislaw Tartakowski, Tim Bartsch
  *
  */
-public class Node {
-	double x, y;
+public abstract class Node {
+	float x, y;
 	int id;
 	LinkedList<Edge> edgeList;
 	
-	Node(double x, double y, int id) {
+	Node(float x, float y, int id) {
 		this.x = x;
 		this.y = y;
 		this.id = id;
@@ -30,11 +30,11 @@ public class Node {
 		return id;
 	}
 
-	public double getX() {
+	public float getX() {
 		return x;
 	}
 
-	public double getY() {
+	public float getY() {
 		return y;
 	}
 	

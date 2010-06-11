@@ -10,7 +10,6 @@ class DijkstraNode extends Node {
 	private double dist;
 
 	private volatile DijkstraNode predecessor, predecessor2;						//gehören den Knoten von Thread1 bzw Thread2
-	private LinkedList<DijkstraNode> next;
     private volatile boolean removed = false;
     
     /*
@@ -18,24 +17,10 @@ class DijkstraNode extends Node {
      * @param key distance relative to start node
      * 
      */
-    public DijkstraNode(double x, double y, int id) {
+    public DijkstraNode(float x, float y, int id) {
     	super(x, y, id);
     	setDist(Double.MAX_VALUE);
-    	next = new LinkedList<DijkstraNode>();
-    }
-    
-    /*
-     * adding new neighbor
-     */
-    public boolean addNextNeighbor(DijkstraNode node) {
-    	return next.add(node);
-    }
-	
-	
-	//------Getters 'n Setters-------
-    
-    public LinkedList<DijkstraNode> getNeighbors() {
-    	return next;
+    	edgeList = new LinkedList<Edge>();
     }
     
     public boolean isRemovedFromQ() {
@@ -58,7 +43,7 @@ class DijkstraNode extends Node {
 		this.predecessor = predecessor;
 	}
 	
-	public Node getPredecessor() {
+	public DijkstraNode getPredecessor() {
 		return predecessor;
 	}
 	

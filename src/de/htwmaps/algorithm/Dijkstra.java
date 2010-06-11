@@ -66,13 +66,13 @@ public class Dijkstra extends Thread {
 				break;
 			}
 			currentNode.setRemovedFromQ(true);									//removed Flag aufgrund von Effizienz (erspart ein .contains von Q)
-			LinkedList<DijkstraNode> neighborList = currentNode.getNeighbors();	//alle nachbarn des aktuellen knotens als liste
-			for (DijkstraNode neighbor : neighborList) { 						//|Edges|
-				if (!neighbor.isRemovedFromQ()) {
-					updateNeighborDistance(currentNode, neighbor);
-					Q.decreaseKey(neighbor, neighbor.getDist());				//O(1)
+			LinkedList<Edge> edges = currentNode.getEdgeList();	//alle nachbarn des aktuellen knotens als liste
+			for (Edge edge : edges) { 						//|Edges|
+				if (!((DijkstraNode)edge.getSuccessor()).isRemovedFromQ()) {
+					updateSuccessorDistance(currentNode, (DijkstraNode)edge.getSuccessor());
+					Q.decreaseKey((DijkstraNode)edge.getSuccessor(), ((DijkstraNode)edge.getSuccessor()).getDist());				//O(1)
 				}
-				if (checkThreads(currentNode, neighbor)) {						//Gemeinsamer Knoten(neighbor) der beiden Threads? Wenn ja, dann Weg gefunden
+				if (checkThreads(currentNode, (DijkstraNode)edge.getSuccessor())) {						//Gemeinsamer Knoten(Successor) der beiden Threads? Wenn ja, dann Weg gefunden
 					break;
 				}
 			}
@@ -89,25 +89,25 @@ public class Dijkstra extends Thread {
 	}
 
 	/*
-	 * Überprüfung des Knotens neighbor, ob dieser von dem anderen Thread analysiert wurde.
+	 * Überprüfung des Knotens Successor, ob dieser von dem anderen Thread analysiert wurde.
 	 * Wenn ja, dann endet die Wegsuche an dieser Stelle.
 	 */
-	private synchronized boolean checkThreads(DijkstraNode currentNode, DijkstraNode neighbor) {
-		if (thread1 && neighbor.getPredecessor2() != null) {
+	private synchronized boolean checkThreads(DijkstraNode currentNode, DijkstraNode successor) {
+		if (thread1 && successor.getPredecessor2() != null) {
 			finnished = true;   							//nächster Thread wird beim Eintritt in die Schleife abgebrochen
-			while (neighbor != null) {						//konkatenieren des ergebnisses von thread1 and das des knotens neighbor
-				neighbor.setPredecessor(currentNode);
-				currentNode = neighbor;
-				neighbor = neighbor.getPredecessor2();
+			while (successor != null) {						//konkatenieren des ergebnisses von thread1 and das des knotens successor
+				successor.setPredecessor(currentNode);
+				currentNode = successor;
+				successor = successor.getPredecessor2();
 			}
 			reactivateCaller();
 			return true;
 		}
-		if (!thread1 && neighbor.getPredecessor() != null) {
+		if (!thread1 && successor.getPredecessor() != null) {
 			finnished = true;								//nächster Thread wird beim Eintritt in die Schleife abgebrochen
 			while (currentNode != null) {					//konkatenieren des ergebnisses von thread2 and das des knotens currentNode
-				currentNode.setPredecessor(neighbor);
-				neighbor = currentNode;
+				currentNode.setPredecessor(successor);
+				successor = currentNode;
 				currentNode = currentNode.getPredecessor2();
 			}
 			reactivateCaller();
@@ -117,17 +117,17 @@ public class Dijkstra extends Thread {
 	}
 
 	/*
-	 * set new distance(priority) to neighbor
+	 * set new distance(priority) to successor
 	 */
-	private void updateNeighborDistance(DijkstraNode currentNode, DijkstraNode neighbor) {
+	private void updateSuccessorDistance(DijkstraNode currentNode, DijkstraNode successor) {
 		//Knoten mit Distanz zur Luftlinie zwischen Start und Endknoten versehen. Dient als Prioritätsschlüßel
-		double alternative = currentNode.getDist() + getDistBetweenNodes(currentNode, neighbor) - getDistBetweenNodes(currentNode, endNode) + getDistBetweenNodes(neighbor, endNode);
-		if (alternative < neighbor.getDist()) {
-			neighbor.setDist(alternative);
+		double alternative = currentNode.getDist() + getDistBetweenNodes(currentNode, successor) - getDistBetweenNodes(currentNode, endNode) + getDistBetweenNodes(successor, endNode);
+		if (alternative < successor.getDist()) {
+			successor.setDist(alternative);
 			if (thread1) {
-				neighbor.setPredecessor(currentNode);
+				successor.setPredecessor(currentNode);
 			} else {
-				neighbor.setPredecessor2(currentNode);
+				successor.setPredecessor2(currentNode);
 			}
 		}
 	}
