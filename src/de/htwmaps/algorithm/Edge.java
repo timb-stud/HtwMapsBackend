@@ -17,5 +17,9 @@ public class Edge {
 		return distance;
 	}
 	
+	@Override
+	public String toString() {
+		return "[" + successor + "; " + distance + "]";
+	}
 	
 }

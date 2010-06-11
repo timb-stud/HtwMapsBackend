@@ -56,23 +56,30 @@ public class Dijkstra extends Thread {
 	public void dijkstra() {	
 		startNode.setDist(0.0);
 		Q.decreaseKey(startNode, 0.0);
-		while (Q.size() > 0 && !finnished) { 									//while: O(n)
-			DijkstraNode currentNode = (DijkstraNode)Q.popMin();				//O(log2 n)
-			if (currentNode == null 											//wenn null werte in der fib. heap gelagert werden.
-					|| currentNode.getDist() == Double.MAX_VALUE 				//sind alle nachbarn unendlich weit weg ? also gibt es keinen weg nach ziel ? Ziel == Quelle
-					|| currentNode == endNode) {								//schon am ziel ?
-				finnished = true; 												//Der nächste Thread wird beim Eintritt in die Schleife abgebrochen
+		while (Q.size() > 0 && !finnished) { 									
+			DijkstraNode currentNode = (DijkstraNode)Q.popMin();				
+			if (currentNode == null 											
+					|| currentNode.getDist() == Double.MAX_VALUE 				
+					|| (currentNode == endNode && endNode.getPredecessor() != null || endNode.getPredecessor2() != null)) {								
+				finnished = true; 												
+				if (!thread1) {
+					DijkstraNode tmp;
+					while ((tmp = currentNode.getPredecessor2()) != null) {
+						currentNode.setPredecessor(tmp);
+						currentNode = tmp;
+					}
+				}
 				reactivateCaller();										
 				break;
 			}
-			currentNode.setRemovedFromQ(true);									//removed Flag aufgrund von Effizienz (erspart ein .contains von Q)
-			LinkedList<Edge> edges = currentNode.getEdgeList();	//alle nachbarn des aktuellen knotens als liste
-			for (Edge edge : edges) { 						//|Edges|
+			currentNode.setRemovedFromQ(true);									
+			LinkedList<Edge> edges = currentNode.getEdgeList();	
+			for (Edge edge : edges) { 						
 				if (!((DijkstraNode)edge.getSuccessor()).isRemovedFromQ()) {
 					updateSuccessorDistance(currentNode, (DijkstraNode)edge.getSuccessor());
-					Q.decreaseKey((DijkstraNode)edge.getSuccessor(), ((DijkstraNode)edge.getSuccessor()).getDist());				//O(1)
+					Q.decreaseKey((DijkstraNode)edge.getSuccessor(), ((DijkstraNode)edge.getSuccessor()).getDist());				
 				}
-				if (checkThreads(currentNode, (DijkstraNode)edge.getSuccessor())) {						//Gemeinsamer Knoten(Successor) der beiden Threads? Wenn ja, dann Weg gefunden
+				if (checkThreads(currentNode, (DijkstraNode)edge.getSuccessor())) {					
 					break;
 				}
 			}
@@ -93,25 +100,27 @@ public class Dijkstra extends Thread {
 	 * Wenn ja, dann endet die Wegsuche an dieser Stelle.
 	 */
 	private synchronized boolean checkThreads(DijkstraNode currentNode, DijkstraNode successor) {
-		if (thread1 && successor.getPredecessor2() != null) {
-			finnished = true;   							//nächster Thread wird beim Eintritt in die Schleife abgebrochen
-			while (successor != null) {						//konkatenieren des ergebnisses von thread1 and das des knotens successor
-				successor.setPredecessor(currentNode);
-				currentNode = successor;
-				successor = successor.getPredecessor2();
+		if (!finnished) {
+			if (thread1 && successor.getPredecessor2() != null) {
+				finnished = true;   							//nächster Thread wird beim Eintritt in die Schleife abgebrochen
+				while (successor != null) {						//konkatenieren des ergebnisses von thread1 and das des knotens successor
+					successor.setPredecessor(currentNode);
+					currentNode = successor;
+					successor = successor.getPredecessor2();
+				}
+				reactivateCaller();
+				return true;
 			}
-			reactivateCaller();
-			return true;
-		}
-		if (!thread1 && successor.getPredecessor() != null) {
-			finnished = true;								//nächster Thread wird beim Eintritt in die Schleife abgebrochen
-			while (currentNode != null) {					//konkatenieren des ergebnisses von thread2 and das des knotens currentNode
-				currentNode.setPredecessor(successor);
-				successor = currentNode;
-				currentNode = currentNode.getPredecessor2();
+			if (!thread1 && successor.getPredecessor() != null) {
+				finnished = true;								//nächster Thread wird beim Eintritt in die Schleife abgebrochen
+				while (currentNode != null) {					//konkatenieren des ergebnisses von thread2 and das des knotens currentNode
+					currentNode.setPredecessor(successor);
+					successor = currentNode;
+					currentNode = currentNode.getPredecessor2();
+				}
+				reactivateCaller();
+				return true;
 			}
-			reactivateCaller();
-			return true;
 		}
 		return false;
 	}
