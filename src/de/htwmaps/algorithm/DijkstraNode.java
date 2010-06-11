@@ -7,7 +7,7 @@ class DijkstraNode extends Node {
 
 	private double dist;
 
-	private volatile DijkstraNode predecessor, predecessor2; 
+	private volatile DijkstraNode predecessor; 
 	private volatile boolean removed = false;
 
 	/*
@@ -42,13 +42,5 @@ class DijkstraNode extends Node {
 
 	public DijkstraNode getPredecessor() {
 		return predecessor;
-	}
-
-	public void setPredecessor2(DijkstraNode predecessor2) {
-		this.predecessor2 = predecessor2;
-	}
-
-	public DijkstraNode getPredecessor2() {
-		return predecessor2;
 	}
 }
