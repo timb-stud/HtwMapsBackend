@@ -16,7 +16,7 @@ public class AStarNode extends Node{
 	 * @param x latitude
 	 * @param y longitude
 	 */
-	public AStarNode(int id, double x, double y) {
+	public AStarNode(int id, float x, float y) {
 		super(x, y, id);
 		this.f = -1;
 		this.g = -1;

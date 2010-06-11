@@ -1,6 +1,5 @@
 package de.htwmaps.algorithm;
 
-import java.util.LinkedList;
 
 /*
  * Node representing location on earth
@@ -20,7 +19,6 @@ class DijkstraNode extends Node {
     public DijkstraNode(float x, float y, int id) {
     	super(x, y, id);
     	setDist(Double.MAX_VALUE);
-    	edgeList = new LinkedList<Edge>();
     }
     
     public boolean isRemovedFromQ() {
