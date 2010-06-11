@@ -13,10 +13,10 @@ public class DijkstraTest {
 		int[] allNodeIDs = {1,2,3,4,5,6,7};
 		float[] x = {0,6,6,16,16,22,28};
 		float[] y = {10,16,6,10,6,10,6};
-		int startNodeID = 1;
-		int goalNodeID = 7;
+		int startNodeID = 7;
+		int goalNodeID = 1;
 		int[] fromNodeIDs = {1,1,2,3,4,4,5,6};
-		int[] toNodeIDs = {2,3,4,5,5,6,7,7};
+		int[] toNodeIDs =   {2,3,4,5,5,6,7,7};
 		double[] fromToDistances = {8.49, 7.21, 11.66, 10, 12, 6, 4, 7.21};
 		boolean[] oneways = {false, false, false, false, false, false, false, false};
 		int[] highwayTypes = {0,0,0,0,0,0,0,0};

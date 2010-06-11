@@ -24,8 +24,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		}
 	}
 	
-	private HashMap<Integer, DijkstraNode> generateNodesQ(int[] allNodesIDs, float[] x,
-			float[] y) {
+	private HashMap<Integer, DijkstraNode> generateNodesQ(int[] allNodesIDs, float[] x, float[] y) {
 		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode> (allNodesIDs.length);
 		for (int i = 0; i < allNodesIDs.length; i++) {
 			Q.put(allNodesIDs[i], new DijkstraNode(x[i], y[i], allNodesIDs[i]));
@@ -36,17 +35,16 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	/*
 	 * node list -> Node[] array
 	 */
-	public Node[] nodeToArray(DijkstraNode endNode, DijkstraNode startNode) {
-		DijkstraNode tmp = startNode.getPredecessor() != null ? startNode : endNode;
+	public Node[] nodeToArray(DijkstraNode endNode) {
 		ArrayList<DijkstraNode> nodesContainer = new ArrayList<DijkstraNode>();
-		while (tmp != null) {
-			nodesContainer.add(tmp);
-			tmp = tmp.getPredecessor();
+		while (endNode != null) {
+			nodesContainer.add(endNode);
+			endNode = endNode.getPredecessor();
 		}
 		return nodesContainer.toArray(new Node[0]);
 	}
 
-	//TODO PathNotFoundException
+
 	@Override
 	public Node[] findShortestPath(int[] allNodesIDs,
 			float[] x,
@@ -64,29 +62,14 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		
 
 		FibonacciHeap fh = new FibonacciHeap();
-		FibonacciHeap fh2 = new FibonacciHeap();
 		for (DijkstraNode n : Q.values()) {
 			fh.add(n, n.getDist());
-			fh2.add(n, n.getDist());
 		}
 		
 		DijkstraNode startNode = Q.get(startNodeID); 
 		DijkstraNode endNode = Q.get(goalNodeID);
-
-		
-		Dijkstra d0 = new Dijkstra(fh, startNode, endNode, true, this, "Tread1");
-		Dijkstra d1 = new Dijkstra(fh2, endNode, startNode, false, this, "Thread2");
-		d0.start();
-		d1.start();
-		
-		synchronized(this.getClass()) {
-			try{
-				while (!Dijkstra.finnished)
-					this.getClass().wait();
-			} catch(InterruptedException iexc) {
-			}
-		}
-		Node[] result = nodeToArray(endNode, startNode);
+		new Dijkstra().dijkstra(fh, startNode, endNode);
+		Node[] result = nodeToArray(endNode);
 		if (result.length == 1) {
 			throw new PathNotFoundException();
 		}
