@@ -80,7 +80,7 @@ public class Dijkstra extends Thread {
 	}
 
 	private void concantenate(DijkstraNode currentNode, DijkstraNode successor) {
-		synchronized (this.getClass()) {
+		synchronized (getClass()) {
 			DijkstraNode tmp;
 			if (!finnished) {
 				finnished = true;
@@ -96,19 +96,12 @@ public class Dijkstra extends Thread {
 
 	private void updateSuccessorDistance(DijkstraNode currentNode, Edge edge) {
 		DijkstraNode successor = (DijkstraNode)edge.getSuccessor();
-		double alternative = currentNode.getDist() + edge.getDistance() - getDistBetweenNodes(currentNode, endNode) + getDistBetweenNodes(successor, endNode);
+		double alternative = currentNode.getDist() + edge.getDistance() - currentNode.getDistanceTo(endNode) + successor.getDistanceTo(endNode);
 		if (alternative < successor.getDist()) {
 			successor.setDist(alternative);
 			successor.setPredecessor(currentNode);
 			touch(successor);
 		}
-	}
-
-	
-	private double getDistBetweenNodes(DijkstraNode u, DijkstraNode v) {
-		double dX = Math.abs(u.getX() - v.getX());
-		double dY = Math.abs(u.getY() - v.getY());
-		return Math.sqrt(dX * dX + dY * dY);
 	}
 	
 	private void reactivateCaller() {

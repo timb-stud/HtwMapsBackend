@@ -70,7 +70,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		Dijkstra d1 = new Dijkstra(fh2, endNode, startNode, false, this, "Thread2");
 		d0.start();
 		d1.start();
-		synchronized(this.getClass()) {
+		synchronized(getClass()) {
 			try {
 				this.getClass().wait();
 			} catch (InterruptedException e) {}
