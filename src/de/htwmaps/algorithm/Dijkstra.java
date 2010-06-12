@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import de.htwmaps.util.FibonacciHeap;
 
 public class Dijkstra extends Thread {
-	private volatile static boolean finnished;
-	private volatile boolean thread1;
+	private static boolean finnished;
+	private boolean thread1;
 	private FibonacciHeap Q;
 	private DijkstraNode startNode, endNode;
 	private Object caller;
@@ -26,7 +26,7 @@ public class Dijkstra extends Thread {
 		try {
 			dijkstra();
 		} catch (InterruptedException e) {
-			System.out.println(this + " got oneway");
+			System.out.println(e.getMessage());
 			return;
 		}
 	}
@@ -35,11 +35,14 @@ public class Dijkstra extends Thread {
 		startNode.setDist(0.0);
 		touch(startNode);
 		Q.decreaseKey(startNode, 0.0);
-		main:while (Q.size() > 0 && !finnished) {
+		mainloop:while (Q.size() > 0) {
+			if (finnished) {
+				throw new InterruptedException(this + " has been finnished");
+			}
 			DijkstraNode currentNode = (DijkstraNode) Q.popMin();
 			if (currentNode == null || currentNode.getDist() == Double.MAX_VALUE || currentNode == endNode ) {
 				if (endNode.getPredecessor() == null) {
-					throw new InterruptedException("oneway");
+					throw new InterruptedException(this + " oneway");
 				}
 				finnished = true;
 				break;
@@ -49,10 +52,10 @@ public class Dijkstra extends Thread {
 			for (Edge edge : edges) {
 				DijkstraNode successor = (DijkstraNode) edge.getSuccessor();
 				if (checkForCommonNode(currentNode, successor)) {
-					break main;
+					break mainloop;
 				}
 				if (!successor.isRemovedFromQ()) {
-					updateSuccessorDistance(currentNode, successor, endNode);
+					updateSuccessorDistance(currentNode, edge);
 					Q.decreaseKey(successor, successor.getDist());
 				}
 			}
@@ -76,22 +79,24 @@ public class Dijkstra extends Thread {
 		return false;
 	}
 
-	//TODO
-	private synchronized void concantenate(DijkstraNode currentNode, DijkstraNode successor) {
-		DijkstraNode tmp;
-		if (!finnished) {
-			finnished = true;
-			while (successor != null) {
-				tmp = successor.getPredecessor();
-				successor.setPredecessor(currentNode);
-				currentNode = successor;
-				successor = tmp;
+	private void concantenate(DijkstraNode currentNode, DijkstraNode successor) {
+		synchronized (this.getClass()) {
+			DijkstraNode tmp;
+			if (!finnished) {
+				finnished = true;
+				while (successor != null) {
+					tmp = successor.getPredecessor();
+					successor.setPredecessor(currentNode);
+					currentNode = successor;
+					successor = tmp;
+				}
 			}
 		}
 	}
 
-	private void updateSuccessorDistance(DijkstraNode currentNode, DijkstraNode successor, DijkstraNode endNode) {
-		double alternative = currentNode.getDist() + getDistBetweenNodes(currentNode, successor) - getDistBetweenNodes(currentNode, endNode) + getDistBetweenNodes(successor, endNode);
+	private void updateSuccessorDistance(DijkstraNode currentNode, Edge edge) {
+		DijkstraNode successor = (DijkstraNode)edge.getSuccessor();
+		double alternative = currentNode.getDist() + edge.getDistance() - getDistBetweenNodes(currentNode, endNode) + getDistBetweenNodes(successor, endNode);
 		if (alternative < successor.getDist()) {
 			successor.setDist(alternative);
 			successor.setPredecessor(currentNode);

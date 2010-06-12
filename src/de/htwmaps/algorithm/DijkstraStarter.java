@@ -19,7 +19,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
 			int fromID = fromNodeIDs[i], toID = toNodeIDs[i];
 			Q.get(fromID).addEdge(new Edge(Q.get(toID), fromToDistances[i]));
-			if(!oneways[i]) //nicht oneway
+			if(!oneways[i])
 				Q.get(toID).addEdge(new Edge(Q.get(fromID), fromToDistances[i]));
 		}
 	}
@@ -47,12 +47,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 
 
 	@Override
-	public Node[] findShortestPath(int[] allNodesIDs,
-			float[] x,
-			float[] y,
-			int startNodeID,
-			int goalNodeID,
-			int[] fromNodeIDs,
+	public Node[] findShortestPath(int[] allNodesIDs, float[] x, float[] y, int startNodeID, int goalNodeID, int[] fromNodeIDs,
 			int[] toNodeIDs,
 			double[] fromToDistances, 
 			boolean[] oneways,

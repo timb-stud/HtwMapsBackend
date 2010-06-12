@@ -21,5 +21,4 @@ public class Edge {
 	public String toString() {
 		return "[" + successor + "; " + distance + "]";
 	}
-	
 }
