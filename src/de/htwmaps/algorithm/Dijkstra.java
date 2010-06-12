@@ -4,6 +4,15 @@ import java.util.LinkedList;
 
 import de.htwmaps.util.FibonacciHeap;
 
+/*
+ * @author Stanislaw Tartakowski
+ * 
+ * This is a concurrent implementation of an graph search algorithm based on Dijkstra's.
+ * Depart from classic implementations this algorithm has a goal oriented heuristic similar to A*'s 
+ * and is optimized for maximal speed performance. Though, this algorithm doesn't guarantee
+ * best possible solution, but a relatively good one. This class can only be reasonably used if the caller of this class
+ * remains sleeping until this class awakens him when the work is done.
+ */
 public class Dijkstra extends Thread {
 	private static boolean finnished;
 	private boolean thread1;
@@ -105,7 +114,7 @@ public class Dijkstra extends Thread {
 	}
 	
 	private void reactivateCaller() {
-		synchronized(caller.getClass()) {								//weckruf muss auf das aufrufende runtime objekt synchronisiert sein
+		synchronized(caller.getClass()) {							
 			caller.getClass().notifyAll();
 		}
 	}
