@@ -15,6 +15,7 @@ import de.htwmaps.util.FibonacciHeap;
  */
 public class Dijkstra extends Thread {
 	private static boolean finnished;
+	private static int count;
 	private boolean thread1;
 	private FibonacciHeap Q;
 	private DijkstraNode startNode, endNode;
@@ -36,11 +37,18 @@ public class Dijkstra extends Thread {
 			dijkstra();
 		} catch (InterruptedException e) {
 			System.out.println(e.getMessage());
+			synchronized (getClass()) { count++; } 							
+			if (count == 2) {
+				reactivateCaller();
+			}
 			return;
 		}
 	}
 	
-	public void dijkstra() throws InterruptedException {
+	/*
+	 * Main loop
+	 */
+	private void dijkstra() throws InterruptedException {
 		startNode.setDist(0.0);
 		touch(startNode);
 		Q.decreaseKey(startNode, 0.0);
