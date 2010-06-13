@@ -7,12 +7,7 @@ import de.htwmaps.algorithm.PathNotFoundException;
 
 public class AStarTest extends TestCase {
 
-	public void testFindShortestPath() {
-		test1();
-		test2();
-	}
-	
-	public void test1(){
+	public void testFindShortestPath1() {
 		Node[] result;
 		int[] expectedResult = {7,5,3,1};
 		AStar as = new AStar();
@@ -38,7 +33,7 @@ public class AStarTest extends TestCase {
 		}
 	}
 	
-	public void test2(){
+	public void testFindShortestPath2(){
 		Node[] result;
 		int[] expectedResult = {6,4,2,1};
 		AStar as = new AStar();
