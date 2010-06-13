@@ -50,22 +50,27 @@ public class Dijkstra extends Thread {
 			}
 			DijkstraNode currentNode = (DijkstraNode) Q.popMin();
 			if (currentNode == null || currentNode.getDist() == Double.MAX_VALUE || currentNode == endNode ) {
-				if (endNode.getPredecessor() == null) {
-					throw new InterruptedException(this + " oneway");
+				if (currentNode == endNode && currentNode.getPredecessor() != null) {
+					finnished = true;
+					break;					
+				} else {
+					throw new InterruptedException(this + " no path found");
 				}
-				finnished = true;
-				break;
 			}
 			currentNode.setRemovedFromQ(true);
 			LinkedList<Edge> edges = currentNode.getEdgeList();
 			for (Edge edge : edges) {
 				DijkstraNode successor = (DijkstraNode) edge.getSuccessor();
-				if (checkForCommonNode(currentNode, successor)) {
-					break mainloop;
-				}
-				if (!successor.isRemovedFromQ()) {
-					updateSuccessorDistance(currentNode, edge);
-					Q.decreaseKey(successor, successor.getDist());
+				if (thread1 || (!thread1 && !edge.isOneway())) {
+					synchronized(getClass()) {
+						if (checkForCommonNode(currentNode, successor)) {
+							break mainloop;
+						}
+						if (!successor.isRemovedFromQ()) {
+							updateSuccessorDistance(currentNode, edge);
+							Q.decreaseKey(successor, successor.getDist());
+						}
+					}
 				}
 			}
 		}
@@ -89,16 +94,14 @@ public class Dijkstra extends Thread {
 	}
 
 	private void concantenate(DijkstraNode currentNode, DijkstraNode successor) {
-		synchronized (getClass()) {
-			DijkstraNode tmp;
-			if (!finnished) {
-				finnished = true;
-				while (successor != null) {
-					tmp = successor.getPredecessor();
-					successor.setPredecessor(currentNode);
-					currentNode = successor;
-					successor = tmp;
-				}
+		DijkstraNode tmp;
+		if (!finnished) {
+			finnished = true;
+			while (successor != null) {
+				tmp = successor.getPredecessor();
+				successor.setPredecessor(currentNode);
+				currentNode = successor;
+				successor = tmp;
 			}
 		}
 	}
