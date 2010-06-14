@@ -37,6 +37,7 @@ public class Dijkstra extends Thread {
 			System.out.println(e.getMessage());
 			synchronized (getClass()) { count++; } 							
 			if (count == 2) {
+				finished = true;
 				reactivateCaller();
 			}
 			return;
