@@ -135,8 +135,10 @@ public class Dijkstra extends Thread {
 	}
 	
 	private void reactivateCaller() {
-		synchronized(caller.getClass()) {							
+		synchronized(caller.getClass()) {	
+			//System.out.println(this + " reactivates main");
 			caller.getClass().notifyAll();
+			//System.out.println(this + "reactivated main");
 		}
 	}
 	
