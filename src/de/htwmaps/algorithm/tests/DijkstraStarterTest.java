@@ -1,5 +1,7 @@
 package de.htwmaps.algorithm.tests;
 
+import java.util.Arrays;
+
 import junit.framework.TestCase;
 import de.htwmaps.algorithm.DijkstraStarter;
 import de.htwmaps.algorithm.Node;
@@ -25,8 +27,8 @@ public class DijkstraStarterTest extends TestCase {
 		
 		try{
 			result = ds.findShortestPath(allNodeIDs, x, y, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, fromToDistances, oneways, highwayTypes);
+			System.out.println(Arrays.toString(result));
 			for(int i = 0; i < result.length; i++){
-				System.out.println(result[i]);
 				assertEquals(expectedResult[i], result[i].getId());
 			}
 		}catch(PathNotFoundException e){
