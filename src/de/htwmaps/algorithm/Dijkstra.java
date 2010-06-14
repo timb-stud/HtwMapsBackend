@@ -14,7 +14,7 @@ import de.htwmaps.util.FibonacciHeap;
  * remains sleeping until this class awakens him when the work is done.
  */
 public class Dijkstra extends Thread {
-	private static boolean finished;
+	public static boolean finished;
 	private static int count;
 	private boolean thread1;
 	private FibonacciHeap Q;
