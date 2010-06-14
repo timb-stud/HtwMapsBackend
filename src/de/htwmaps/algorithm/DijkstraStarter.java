@@ -77,9 +77,9 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		d1.start();
 		synchronized(getClass()) {
 			try {
-				//while (!Dijkstra.finished) {
+				while (!Dijkstra.finished) {
 					this.getClass().wait();
-				//}
+				}
 			} catch (InterruptedException e) {}
 		}
 		Node[] result = nodeToArray(startNode, endNode);
