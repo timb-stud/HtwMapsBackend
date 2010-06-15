@@ -50,9 +50,9 @@ public class ParseEdges {
             BufferedWriter ways_fw = new BufferedWriter( new FileWriter(outputFile));
             
             XMLStreamReader xmlStreamReader = inputFactory.createXMLStreamReader(in);
-            LinkedList<String> retCache = new LinkedList<String>() ;
+            LinkedList<String> refliste = new LinkedList<String>() ;
             
-            int retCounter = 0;
+            int refCounter = 0;
 
             while (xmlStreamReader.hasNext()) {
                 int event = xmlStreamReader.next();                
@@ -76,8 +76,8 @@ public class ParseEdges {
                         for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++) {
                             String attributeName = xmlStreamReader.getAttributeLocalName(i).toString();
                             if (attributeName.equals("ref")) {
-                                retCache.add(retCounter, xmlStreamReader.getAttributeValue(i).toString());
-                                retCounter++;
+                                refliste.add(refCounter, xmlStreamReader.getAttributeValue(i).toString());
+                                refCounter++;
                             }
                         }
                     }
@@ -93,15 +93,16 @@ public class ParseEdges {
                 }                
                 //bei END ELEMENT wird in Datei geschrieben
                 if (event == XMLStreamConstants.END_ELEMENT && xmlStreamReader.getLocalName().equals("way")) {
-                    for (int i = 0; i < retCache.size(); i++) {
-                        if (i+1 < retCounter) {
+                    for (int i = 0; i < refliste.size(); i++) {
+                        if (i+1 < refCounter) {
                             sb.append("INSERT INTO `").append(tablename).append("` (`fromNodeID`, `toNodeID`, `wayID`) VALUES (")
-                              .append(retCache.get(i) + ", " + retCache.get(i+1) + "," + id + ")\n");
+                              .append(refliste.get(i) + ", " + refliste.get(i+1) + "," + id + ")\n");
                         }
                     }
                         ways_fw.write(sb.toString());
                         sb.delete(0, sb.length());
-                        retCounter = 0;
+                        refliste.clear();
+                        refCounter = 0;
                 }                
             }
             ways_fw.close();
@@ -118,3 +119,4 @@ public class ParseEdges {
     }
 
 }
+
