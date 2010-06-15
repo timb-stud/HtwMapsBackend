@@ -16,7 +16,7 @@ import de.htwmaps.util.FibonacciHeap;
 public class Dijkstra extends Thread {
 	public static boolean finished;
 	private static int count;
-	private boolean thread1;
+	private boolean thread;
 	private FibonacciHeap Q;
 	private DijkstraNode startNode, endNode;
 	private Object caller;
@@ -25,7 +25,7 @@ public class Dijkstra extends Thread {
 		this.Q = Q;
 		this.startNode = startNode;
 		this.endNode = endNode;
-		this.thread1 = thread1;
+		this.thread = thread1;
 		this.caller = caller;
 	}
 	
@@ -35,7 +35,7 @@ public class Dijkstra extends Thread {
 			dijkstra();
 		} catch (InterruptedException e) {
 			System.out.println(e.getMessage());
-			synchronized (getClass()) { count++; } 							
+			synchronized (Object.class) { count++; } 							
 			if (count == 2) {
 				finished = true;
 				reactivateCaller();
@@ -56,7 +56,7 @@ public class Dijkstra extends Thread {
 				throw new InterruptedException(this + " has been finnished");
 			}
 			DijkstraNode currentNode = (DijkstraNode) Q.popMin();
-			if (currentNode == null || currentNode.getDist() == Double.MAX_VALUE || currentNode == endNode ) {
+			if (thread && currentNode.isTouchedByTh2() || !thread && currentNode.isTouchedByTh1() || currentNode.getDist() == Double.MAX_VALUE || currentNode == endNode ) {
 				if (currentNode == endNode && currentNode.getPredecessor() != null) {
 					finished = true;
 					break;					
@@ -68,7 +68,7 @@ public class Dijkstra extends Thread {
 			LinkedList<Edge> edges = currentNode.getEdgeList();
 			for (Edge edge : edges) {
 				DijkstraNode successor = (DijkstraNode) edge.getSuccessor();
-				if (thread1 || (!thread1 && !edge.isOneway())) {
+				if (thread || (!thread && !edge.isOneway())) {
 					synchronized(getClass()) {
 						if (checkForCommonNode(currentNode, successor)) {
 							break mainloop;
@@ -88,7 +88,7 @@ public class Dijkstra extends Thread {
 	 * Sets a touched mark on the current node as a hint for the threads whether the node has been analyzed before
 	 */
 	private void touch(DijkstraNode node) {
-		if (thread1) {
+		if (thread) {
 			node.setTouchedByTh1(true);
 		} else {
 			node.setTouchedByTh2(true);
@@ -99,7 +99,7 @@ public class Dijkstra extends Thread {
 	 * Checks whether the current thread may build the result and finish the algorithm
 	 */
 	private boolean checkForCommonNode(DijkstraNode currentNode, DijkstraNode successor) {
-		if (!thread1 && successor.isTouchedByTh1() || thread1 && successor.isTouchedByTh2()) {
+		if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2()) {
 			concantenate(currentNode, successor);
 			return true;
 		}
