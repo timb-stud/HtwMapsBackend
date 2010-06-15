@@ -69,6 +69,10 @@ public class DBConnector {
 		return true;
 	}
 
+	public Connection getCon() {
+		return con;
+	}
+	
 	private boolean disconnect() {
 		if (connected) {
 			try {

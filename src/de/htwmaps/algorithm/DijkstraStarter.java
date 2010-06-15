@@ -71,13 +71,15 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		
 		DijkstraNode startNode = Q.get(startNodeID); 
 		DijkstraNode endNode = Q.get(goalNodeID);
-		Dijkstra d0 = new Dijkstra(fh, startNode, endNode, true, this, "Thread1");
-		Dijkstra d1 = new Dijkstra(fh2, endNode, startNode, false, this, "Thread2");
+		Dijkstra d0 = new Dijkstra(fh, startNode, endNode, true, this);
+		Dijkstra d1 = new Dijkstra(fh2, endNode, startNode, false, this);
 		d0.start();
 		d1.start();
 		synchronized(getClass()) {
 			try {
-				this.getClass().wait();
+				while (!Dijkstra.finished) {
+					this.getClass().wait();
+				}
 			} catch (InterruptedException e) {}
 		}
 		Node[] result = nodeToArray(startNode, endNode);

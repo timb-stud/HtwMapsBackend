@@ -4,7 +4,7 @@ public class Edge {
 	private Node successor;
 	private double distance;
 	private boolean oneway;
-	
+
 	public Edge(Node successor, double distance) {
 		this.successor = successor;
 		this.distance = distance;
@@ -18,7 +18,7 @@ public class Edge {
 	public double getDistance() {
 		return distance;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[" + successor + "; " + distance + "]";
