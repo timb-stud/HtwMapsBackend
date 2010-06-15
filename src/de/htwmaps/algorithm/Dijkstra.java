@@ -21,11 +21,11 @@ public class Dijkstra extends Thread {
 	private DijkstraNode startNode, endNode;
 	private Object caller;
 	
-	public Dijkstra(FibonacciHeap Q, DijkstraNode startNode, DijkstraNode endNode, boolean thread1, Object caller) {
+	public Dijkstra(FibonacciHeap Q, DijkstraNode startNode, DijkstraNode endNode, boolean thread, Object caller) {
 		this.Q = Q;
 		this.startNode = startNode;
 		this.endNode = endNode;
-		this.thread = thread1;
+		this.thread = thread;
 		this.caller = caller;
 	}
 	
@@ -100,7 +100,11 @@ public class Dijkstra extends Thread {
 	 */
 	private boolean checkForCommonNode(DijkstraNode currentNode, DijkstraNode successor) {
 		if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2()) {
-			concantenate(currentNode, successor);
+			if (thread) {
+				concantenate(currentNode, successor);
+			} else {
+				concantenate(successor, currentNode);
+			}
 			return true;
 		}
 		return false;
