@@ -67,8 +67,8 @@ public class Dijkstra extends Thread {
 			currentNode.setRemovedFromQ(true);
 			LinkedList<Edge> edges = currentNode.getEdgeList();
 			for (Edge edge : edges) {
-				DijkstraNode successor = (DijkstraNode) edge.getSuccessor();
-				if (thread || (!thread && !edge.isOneway())) {
+				DijkstraNode successor = edge.getSuccessor() != currentNode ? (DijkstraNode)edge.getSuccessor() : (DijkstraNode)edge.getPredecessor();
+				if (thread || (!thread && edge.getPredecessor() != null)) {
 					synchronized(getClass()) {
 						if (checkForCommonNode(currentNode, successor)) {
 							break mainloop;
@@ -130,7 +130,7 @@ public class Dijkstra extends Thread {
 	 * Updates the distance to a successor node
 	 */
 	private void updateSuccessorDistance(DijkstraNode currentNode, Edge edge) {
-		DijkstraNode successor = (DijkstraNode)edge.getSuccessor();
+		DijkstraNode successor = edge.getSuccessor() != currentNode ? (DijkstraNode)edge.getSuccessor() : (DijkstraNode)edge.getPredecessor();
 		double alternative = currentNode.getDist() + edge.getDistance() - currentNode.getDistanceTo(endNode) + successor.getDistanceTo(endNode);
 		if (alternative < successor.getDist()) {
 			successor.setDist(alternative);

@@ -18,23 +18,24 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	public void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
 			int fromID = fromNodeIDs[i], toID = toNodeIDs[i];
-			Edge onewayEdge = new Edge(Q.get(toID), fromToDistances[i]);
-			Q.get(fromID).addEdge(onewayEdge);
+			DijkstraNode fromNode = Q.get(fromID), toNode = Q.get(toID);
+			Edge onewayEdge = new Edge(toNode, fromToDistances[i]);
+			fromNode.addEdge(onewayEdge);
 			if(!oneways[i]) {
-				Edge wayBackEdge = new Edge(Q.get(fromID), fromToDistances[i]);
-				Q.get(toID).addEdge(wayBackEdge);
-				onewayEdge.setOneway(false);
-				wayBackEdge.setOneway(false);
+				onewayEdge.setPredecessor(fromNode);
+				toNode.addEdge(onewayEdge);
 			}
 		}
 	}
 	
-	private HashMap<Integer, DijkstraNode> generateNodesQ(int[] allNodesIDs, float[] x, float[] y) {
-		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode> (allNodesIDs.length);
+	private void generateNodesQ(FibonacciHeap fh, FibonacciHeap fh2, HashMap<Integer, DijkstraNode> Q, int[] allNodesIDs, float[] x, float[] y) {
+		DijkstraNode node;
 		for (int i = 0; i < allNodesIDs.length; i++) {
-			Q.put(allNodesIDs[i], new DijkstraNode(x[i], y[i], allNodesIDs[i]));
+			node = new DijkstraNode(x[i], y[i], allNodesIDs[i]);
+			Q.put(allNodesIDs[i], node);
+			fh.add(node, node.getDist());
+			fh2.add(node, node.getDist());
 		}
-		return Q;
 	}
 	
 	/*
@@ -58,16 +59,14 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 			boolean[] oneways,
 			int[] highwayTypes) throws PathNotFoundException {
 		
-		HashMap<Integer, DijkstraNode> Q = generateNodesQ(allNodesIDs, x, y);
+		FibonacciHeap fh = new FibonacciHeap();
+		FibonacciHeap fh2 = new FibonacciHeap();
+		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode> (allNodesIDs.length);
+		
+		generateNodesQ(fh, fh2, Q, allNodesIDs, x, y);
 		generateReferences(Q, fromNodeIDs, toNodeIDs, oneways, fromToDistances);
 		
 
-		FibonacciHeap fh = new FibonacciHeap();
-		FibonacciHeap fh2 = new FibonacciHeap();
-		for (DijkstraNode n : Q.values()) {
-			fh.add(n, n.getDist());
-			fh2.add(n, n.getDist());
-		}
 		
 		DijkstraNode startNode = Q.get(startNodeID); 
 		DijkstraNode endNode = Q.get(goalNodeID);
