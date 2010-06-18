@@ -2,7 +2,6 @@ package de.htwmaps.algorithm;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import de.htwmaps.util.FibonacciHeap;
 
@@ -15,10 +14,9 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	/*
 	 * knotenobjekte miteinander referenzieren
 	 */
-	public void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
+	public void generateReferences(FibonacciHeap Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
-			int fromID = fromNodeIDs[i], toID = toNodeIDs[i];
-			DijkstraNode fromNode = Q.get(fromID), toNode = Q.get(toID);
+			DijkstraNode fromNode = Q.getDijkstraNode(fromNodeIDs[i]), toNode = Q.getDijkstraNode(toNodeIDs[i]);
 			Edge onewayEdge = new Edge(toNode, fromToDistances[i]);
 			fromNode.addEdge(onewayEdge);
 			if(!oneways[i]) {
@@ -28,13 +26,12 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		}
 	}
 	
-	private void generateNodesQ(FibonacciHeap fh, FibonacciHeap fh2, HashMap<Integer, DijkstraNode> Q, int[] allNodesIDs, float[] x, float[] y) {
+	private void generateNodes(FibonacciHeap QTh1, FibonacciHeap QTh2, int[] allNodesIDs, float[] x, float[] y) {
 		DijkstraNode node;
 		for (int i = 0; i < allNodesIDs.length; i++) {
 			node = new DijkstraNode(x[i], y[i], allNodesIDs[i]);
-			Q.put(allNodesIDs[i], node);
-			fh.add(node, node.getDist());
-			fh2.add(node, node.getDist());
+			QTh1.add(node, Double.MAX_VALUE);
+			QTh2.add(node, Double.MAX_VALUE);
 		}
 	}
 	
@@ -59,24 +56,22 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 			boolean[] oneways,
 			int[] highwayTypes) throws PathNotFoundException {
 		
-		FibonacciHeap fh = new FibonacciHeap();
-		FibonacciHeap fh2 = new FibonacciHeap();
-		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode> (allNodesIDs.length);
-		
-		generateNodesQ(fh, fh2, Q, allNodesIDs, x, y);
-		generateReferences(Q, fromNodeIDs, toNodeIDs, oneways, fromToDistances);
-		
+		FibonacciHeap QTh1 = new FibonacciHeap();
+		FibonacciHeap QTh2 = new FibonacciHeap();
 
+		generateNodes(QTh1, QTh2, allNodesIDs, x, y);
+		generateReferences(QTh1, fromNodeIDs, toNodeIDs, oneways, fromToDistances);
 		
-		DijkstraNode startNode = Q.get(startNodeID); 
-		DijkstraNode endNode = Q.get(goalNodeID);
-		Dijkstra d0 = new Dijkstra(fh, startNode, endNode, true, this);
-		Dijkstra d1 = new Dijkstra(fh2, endNode, startNode, false, this);
+		DijkstraNode startNode = QTh1.getDijkstraNode(startNodeID); 
+		DijkstraNode endNode = QTh1.getDijkstraNode(goalNodeID);
+		
+		Dijkstra d0 = new Dijkstra(QTh1, startNode, endNode, true, this);
+		Dijkstra d1 = new Dijkstra(QTh2, endNode, startNode, false, this);
 		d0.start();
 		d1.start();
 		synchronized(getClass()) {
 			try {
-				while (!Dijkstra.finished) {
+				while (!Dijkstra.isFinished()) {
 					this.getClass().wait();
 				}
 			} catch (InterruptedException e) {}
@@ -87,5 +82,4 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		}
 		return result;
 	}
-
 }
