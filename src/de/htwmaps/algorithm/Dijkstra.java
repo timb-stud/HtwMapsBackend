@@ -14,12 +14,12 @@ import de.htwmaps.util.FibonacciHeap;
  * remains sleeping until this class awakens him when the work is done.
  */
 public class Dijkstra extends Thread {
-	public static boolean finished;
+	private static boolean finished;
 	private static int count;
 	private boolean thread;
 	private FibonacciHeap Q;
 	private DijkstraNode startNode, endNode;
-	private Object caller;
+	private Object caller, lock = new Object();
 	
 	public Dijkstra(FibonacciHeap Q, DijkstraNode startNode, DijkstraNode endNode, boolean thread, Object caller) {
 		this.Q = Q;
@@ -35,7 +35,7 @@ public class Dijkstra extends Thread {
 			dijkstra();
 		} catch (InterruptedException e) {
 			System.out.println(e.getMessage());
-			synchronized (Object.class) { count++; } 							
+			synchronized (lock.getClass()) { count++; } 							
 			if (count == 2) {
 				finished = true;
 				reactivateCaller();
@@ -74,7 +74,7 @@ public class Dijkstra extends Thread {
 							break mainloop;
 						}
 						if (!successor.isRemovedFromQ()) {
-							updateSuccessorDistance(currentNode, edge);
+							updateSuccessorDistance(currentNode, successor);
 							Q.decreaseKey(successor, successor.getDist());
 						}
 					}
@@ -129,9 +129,8 @@ public class Dijkstra extends Thread {
 	/*
 	 * Updates the distance to a successor node
 	 */
-	private void updateSuccessorDistance(DijkstraNode currentNode, Edge edge) {
-		DijkstraNode successor = edge.getSuccessor() != currentNode ? (DijkstraNode)edge.getSuccessor() : (DijkstraNode)edge.getPredecessor();
-		double alternative = currentNode.getDist() + edge.getDistance() - currentNode.getDistanceTo(endNode) + successor.getDistanceTo(endNode);
+	private void updateSuccessorDistance(DijkstraNode currentNode, DijkstraNode successor) {
+		double alternative = currentNode.getDist() + currentNode.getDistanceTo(successor) - currentNode.getDistanceTo(endNode) + successor.getDistanceTo(endNode);
 		if (alternative < successor.getDist()) {
 			successor.setDist(alternative);
 			successor.setPredecessor(currentNode);
@@ -148,5 +147,9 @@ public class Dijkstra extends Thread {
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	public static boolean isFinished() {
+		return finished;
 	}
 }
