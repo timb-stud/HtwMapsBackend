@@ -7,7 +7,7 @@ class DijkstraNode extends Node {
 
 	private double dist;
 	private DijkstraNode predecessor; 
-	private volatile boolean removed, touchedByTh1, touchedByTh2;
+	private boolean removed, touchedByTh1, touchedByTh2;
 
 	/*
 	 * @param id unique node id on earth
