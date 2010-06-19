@@ -44,9 +44,28 @@ public class DBAdapterRectangle {
 			nodeLats[i] = resultSet.getFloat(3);
 		}
 	}
-	//TODO implementieren
-	private void initEdges(){
+
+	private void initEdges() throws SQLException{
+		int tableLength;
+		PreparedStatement pStmt = dbConnector.con.prepareStatement("select fromNodeID, toNodeID, length1, oneway, k_highwayspeedID from edges");
+		ResultSet resultSet = pStmt.executeQuery();
+		pStmt = null;
+		resultSet.last();
+		tableLength = resultSet.getRow();
+		resultSet.beforeFirst();
+		fromNodeIDs = new int[tableLength];
+		toNodeIDs = new int[tableLength];
+		distances = new double[tableLength];
+		oneways = new boolean[tableLength];
+		highwayTypes = new int[tableLength];
 		
+		for (int i = 0; resultSet.next(); i++){
+			fromNodeIDs[i] = resultSet.getInt(1);
+			toNodeIDs[i] = resultSet.getInt(2);
+			distances[i] = resultSet.getFloat(3);
+			oneways[i] = resultSet.getBoolean(4);
+			highwayTypes[i] = resultSet.getInt(5);
+		}
 	}
 	
 	private void setRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) {
