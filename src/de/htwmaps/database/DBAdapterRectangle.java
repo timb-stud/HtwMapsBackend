@@ -69,14 +69,25 @@ public class DBAdapterRectangle {
 	}
 	
 	private void setRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) {
-		//TODO Tauschen
-		if(startNodeLon > endNodeLon )
+		if((startNodeLon > endNodeLon && startNodeLat > endNodeLat) || (startNodeLon > endNodeLon && startNodeLat < endNodeLat) ){
+			float buffer = startNodeLon;
+			startNodeLon = endNodeLon;
+			endNodeLon = buffer;
+			buffer = startNodeLat;
+			startNodeLat = endNodeLat;
+			endNodeLat = buffer;
+		}
+		
+		if(startNodeLon < endNodeLon && startNodeLat > endNodeLat){
+			float buffer = startNodeLat;
+			startNodeLat = endNodeLat;
+			endNodeLat = buffer;
+		}
 		
 		this.rectangleStartNodeLon = startNodeLon;
 		this.rectangleStartNodeLat = startNodeLat;
 		this.rectangleEndNodeLon = endNodeLon;
 		this.rectangleEndNodeLat = endNodeLat;
-		
 	}
 	
 	
