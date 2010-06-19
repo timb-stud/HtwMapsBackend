@@ -23,7 +23,7 @@ public class DBAdapterRectangle {
 	private int[] highwayTypes;
 	
 	private final static String NODE_SELECT = "select ID, lon, lat from nodes where partofhighway = 1";
-	private final static String EDGE_SELECT = "select fromNodeID, toNodeID, length1, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from edges, nodes n1, nodes n2 where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID";
+	private final static String EDGE_SELECT = "select fromNodeID, toNodeID, length1, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from edges, nodes n1, nodes n2 where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID AND n1.partofhighway = 1 AND n2.partofhighway = 1";
 	
 	public DBAdapterRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {
 		dbConnector = DBConnector.getInstance();
