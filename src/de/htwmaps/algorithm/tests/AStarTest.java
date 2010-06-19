@@ -40,7 +40,40 @@ public class AStarTest extends TestCase {
 		}
 	}
 	
+	/**
+	 * Illingen Schillerstraßße nach  Schiffweiler Schillerstraße
+	 * @throws SQLException
+	 * @throws PathNotFoundException
+	 */
 	public void testFindShortestPath2() throws SQLException, PathNotFoundException{
+		AStar as = new AStar();
+		int startNodeID = 274026832;
+		int goalNodeID = 587836344;
+		float startNodeLon = 7.0213f;
+		float startNodeLat = 49.3431f;
+		float endNodeLon = 7.1549f;
+		float endNodeLat = 49.391f;
+		
+		
+		DBAdapterRectangle dbar;
+		dbar = new DBAdapterRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
+		int[] nodeIDs = dbar.getNodeIDs();
+		float[] nodeLons = dbar.getNodeLons(); //x
+		float[] nodeLats = dbar.getNodeLats(); //y
+		
+		int[] fromNodeIDs = dbar.getFromNodeIDs();
+		int[] toNodeIDs = dbar.getToNodeIDs();
+		double[] distances = dbar.getDistances();
+		boolean[] oneways = dbar.getOneways();
+		int[] highwayTypes = dbar.getHighwayTypes();
+		Node[] result = as.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
+		
+		for(Node n : result){
+			System.out.println(n);
+		}
+	}
+	
+	public void testFindShortestPath3() throws SQLException, PathNotFoundException{
 		AStar as = new AStar();
 		int startNodeID = 334539268;
 		int goalNodeID = 307999903;
@@ -68,7 +101,7 @@ public class AStarTest extends TestCase {
 		}
 	}
 	
-//	public void testFindShortestPath3() throws SQLException{
+//	public void testFindShortestPath4() throws SQLException{
 //		System.out.println("A* test");
 //		ResultSetToArray_ohne_fehler r = new ResultSetToArray_ohne_fehler();
 //		Node[] result;
