@@ -20,3 +20,5 @@ java.exe sucht nach einer "main" methode. Möglicherweise kann man java.exe für J
 deswegen hab ich die junit.jar aus dem classpath weggelassen.
 
 beim git add sollte man nun bib weglassen sonst gibts fehler.
+man sollte immer git add src/ machen.
+nicht git add .
