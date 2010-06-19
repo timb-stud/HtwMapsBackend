@@ -23,7 +23,7 @@ public class DBAdapterRectangle {
 	private int[] highwayTypes;
 	
 	private final static String NODE_SELECT = "select ID, lon, lat from nodes where partofhighway = 1";
-	private final static String EDGE_SELECT = "select fromNodeID, toNodeID, length1, oneway, k_highwayspeedID from edges";
+	private final static String EDGE_SELECT = "select fromNodeID, toNodeID, length1, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from edges, nodes n1, nodes n2 where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID";
 	
 	public DBAdapterRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {
 		dbConnector = DBConnector.getInstance();
@@ -43,12 +43,22 @@ public class DBAdapterRectangle {
 	}
 	
 	private String buildEdgeSelectStatement(){
-		//TODO implement
+		StringBuilder sb = new StringBuilder(EDGE_SELECT);
+		sb.append(" AND n1.lon > ").append(rectStartNodeLon)
+		.append(" AND n1.lat > ").append(rectStartNodeLat)
+		.append(" AND n1.lon  < ").append(rectEndNodeLon)
+		.append(" AND n1.lat < ").append(rectEndNodeLat)
+		.append(" AND n2.lon > ").append(rectStartNodeLon)
+		.append(" AND n2.lat > ").append(rectStartNodeLat)
+		.append(" AND n2.lon  < ").append(rectEndNodeLon)
+		.append(" AND n2.lat < ").append(rectEndNodeLat);
+		
+		return sb.toString();
 	}
 
 	private void initNodes() throws SQLException{
 		int tableLength;
-		PreparedStatement pStmt = dbConnector.con.prepareStatement(NODE_SELECT);
+		PreparedStatement pStmt = dbConnector.con.prepareStatement(buildNodeSelectStatement());
 		ResultSet resultSet = pStmt.executeQuery();
 		resultSet.last();
 		tableLength = resultSet.getRow();
@@ -66,7 +76,7 @@ public class DBAdapterRectangle {
 
 	private void initEdges() throws SQLException{
 		int tableLength;
-		PreparedStatement pStmt = dbConnector.con.prepareStatement(EDGE_SELECT);
+		PreparedStatement pStmt = dbConnector.con.prepareStatement(buildEdgeSelectStatement());
 		ResultSet resultSet = pStmt.executeQuery();
 		pStmt = null;
 		resultSet.last();
