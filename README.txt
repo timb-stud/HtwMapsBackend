@@ -1,6 +1,6 @@
-Bereits vorhandenes ausführen
+Ausführen ohne Eclipse
 =============================
-Um das Programm laufen zu lassen besteht die möglichkeit es über die Konsole zu tun. Erstens mit javac, zweitens mit java.
+Um das Programm ohne Eclipse laufen zu lassen besteht die möglichkeit es über die Konsole zu tun. Erstens mit javac, zweitens mit java.
 Im Downloadbereich gibt es die notwendigen Jar Dateien vom MySQL Treiber Log4J und junit. 
 
 Nach einem clone auf das Repo hat man einen Ordner "HtwMapsBackend". Ich gehe folglich davon aus dass man die genannten .jar dateien in den Ordner HtwMapsBackend/bib/ kopiert.
