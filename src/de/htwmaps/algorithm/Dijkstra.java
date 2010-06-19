@@ -59,7 +59,7 @@ public class Dijkstra extends Thread {
 			if (thread && currentNode.isTouchedByTh2() || !thread && currentNode.isTouchedByTh1() || currentNode.getDist() == Double.MAX_VALUE || currentNode == endNode ) {
 				if (currentNode == endNode && currentNode.getPredecessor() != null) {
 					finished = true;
-					break;					
+					break;		//			
 				} else {
 					throw new InterruptedException(this + " no path found");
 				}
