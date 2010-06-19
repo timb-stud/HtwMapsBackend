@@ -7,10 +7,10 @@ import java.sql.SQLException;
 
 public class DBAdapterRectangle {
 	private DBConnector dbConnector;
-	private float rectangleStartNodeLon;
-	private float rectangleStartNodeLat;
-	private float rectangleEndNodeLon;
-	private float rectangleEndNodeLat;
+	private float rectStartNodeLon;
+	private float rectStartNodeLat;
+	private float rectEndNodeLon;
+	private float rectEndNodeLat;
 	//Nodes
 	private int[] nodeIDs;
 	private float[] nodeLons; //x
@@ -22,14 +22,33 @@ public class DBAdapterRectangle {
 	private boolean[] oneways;
 	private int[] highwayTypes;
 	
-	public DBAdapterRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) {
+	private final static String NODE_SELECT = "select ID, lon, lat from nodes where partofhighway = 1";
+	private final static String EDGE_SELECT = "select fromNodeID, toNodeID, length1, oneway, k_highwayspeedID from edges";
+	
+	public DBAdapterRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {
 		dbConnector = DBConnector.getInstance();
 		setRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
+		initNodes();
+		initEdges();
+	}
+	
+	private String buildNodeSelectStatement(){
+		StringBuilder sb = new StringBuilder(NODE_SELECT);
+		sb.append(" AND lon > ").append(rectStartNodeLon)
+			.append(" AND lat > ").append(rectStartNodeLat)
+			.append(" AND lon  < ").append(rectEndNodeLon)
+			.append(" AND lat < ").append(rectEndNodeLat);
+		
+		return sb.toString();
+	}
+	
+	private String buildEdgeSelectStatement(){
+		//TODO implement
 	}
 
 	private void initNodes() throws SQLException{
 		int tableLength;
-		PreparedStatement pStmt = dbConnector.con.prepareStatement("select ID, lon, lat from nodes where partofhighway = 1");
+		PreparedStatement pStmt = dbConnector.con.prepareStatement(NODE_SELECT);
 		ResultSet resultSet = pStmt.executeQuery();
 		resultSet.last();
 		tableLength = resultSet.getRow();
@@ -47,7 +66,7 @@ public class DBAdapterRectangle {
 
 	private void initEdges() throws SQLException{
 		int tableLength;
-		PreparedStatement pStmt = dbConnector.con.prepareStatement("select fromNodeID, toNodeID, length1, oneway, k_highwayspeedID from edges");
+		PreparedStatement pStmt = dbConnector.con.prepareStatement(EDGE_SELECT);
 		ResultSet resultSet = pStmt.executeQuery();
 		pStmt = null;
 		resultSet.last();
@@ -84,10 +103,10 @@ public class DBAdapterRectangle {
 			endNodeLat = buffer;
 		}
 		
-		this.rectangleStartNodeLon = startNodeLon;
-		this.rectangleStartNodeLat = startNodeLat;
-		this.rectangleEndNodeLon = endNodeLon;
-		this.rectangleEndNodeLat = endNodeLat;
+		this.rectStartNodeLon = startNodeLon;
+		this.rectStartNodeLat = startNodeLat;
+		this.rectEndNodeLon = endNodeLon;
+		this.rectEndNodeLat = endNodeLat;
 	}
 	
 	
