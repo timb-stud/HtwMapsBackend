@@ -143,10 +143,10 @@ public class AStar implements ShortestPathAlgorithm {
 			int[] highwayTypes) throws PathNotFoundException {
 		long time = System.currentTimeMillis();
 		HashMap<Integer, AStarNode> allNodes = buildNodes(allNodeIDs, x, y);
-		System.out.println(System.currentTimeMillis() - time);
+		System.out.println("HashMap bauen:" + (System.currentTimeMillis() - time) + "ms");
 		time = System.currentTimeMillis();
 		buildEdges(allNodes, fromNodeIDs, toNodeIDs, fromToDistances, oneways, highwayTypes);
-		System.out.println(System.currentTimeMillis() - time);
+		System.out.println("Edges bauen: " + (System.currentTimeMillis() - time) + "ms");
 		return aStar(allNodes, startNodeID, goalNodeID).toArray(new Node[0]);
 	}
 
