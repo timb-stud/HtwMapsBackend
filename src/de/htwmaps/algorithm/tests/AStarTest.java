@@ -2,10 +2,13 @@ package de.htwmaps.algorithm.tests;
 
 
 
+import java.sql.SQLException;
+
 import junit.framework.TestCase;
 import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
+import de.htwmaps.database.DBAdapterRectangle;
 
 public class AStarTest extends TestCase {
 
@@ -37,7 +40,31 @@ public class AStarTest extends TestCase {
 		}
 	}
 	
-//	public void testFindShortestPath2() throws SQLException{
+	public void testFindShortestPath2() throws SQLException, PathNotFoundException{
+		AStar as = new AStar();
+		int startNodeID = 25202737;
+		int goalNodeID = 28049125;
+		float startNodeLon = 7.0004f;
+		float startNodeLat = 49.4037f;
+		float endNodeLon = 7.0998f;
+		float endNodeLat = 49.3496f;
+		
+		
+		DBAdapterRectangle dbar;
+		dbar = new DBAdapterRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
+		int[] nodeIDs = dbar.getNodeIDs();
+		float[] nodeLons = dbar.getNodeLons(); //x
+		float[] nodeLats = dbar.getNodeLats(); //y
+		
+		int[] fromNodeIDs = dbar.getFromNodeIDs();
+		int[] toNodeIDs = dbar.getToNodeIDs();
+		double[] distances = dbar.getDistances();
+		boolean[] oneways = dbar.getOneways();
+		int[] highwayTypes = dbar.getHighwayTypes();
+		as.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
+	}
+	
+//	public void testFindShortestPath3() throws SQLException{
 //		System.out.println("A* test");
 //		ResultSetToArray_ohne_fehler r = new ResultSetToArray_ohne_fehler();
 //		Node[] result;
