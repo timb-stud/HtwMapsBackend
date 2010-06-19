@@ -29,7 +29,7 @@ public class DBConnector {
 	private static DBConnector instance = null;
 	
 	private DBConnector() {
-		Property prop = new Property("Datenbank.ini");
+		Property prop = new Property("./config/Datenbank.ini");
 		host = prop.getProp("host");
 		username = prop.getProp("username");
 		password = prop.getProp("password");

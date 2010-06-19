@@ -7,14 +7,16 @@ import de.htwmaps.util.FibonacciHeap;
 
 
 
-/*
- * Dieses Programm ruft den Suchalgorithmus auf
+/**
+ * @author Stanislaw Tartakowski
+ * 
+ * This class build a graph, calls the search algorithms, awaits their end and builds result
  */
 public class DijkstraStarter implements ShortestPathAlgorithm {
-	/*
+	/**
 	 * knotenobjekte miteinander referenzieren
 	 */
-	public void generateReferences(FibonacciHeap Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
+	private void generateReferences(FibonacciHeap Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
 			DijkstraNode fromNode = Q.getDijkstraNode(fromNodeIDs[i]), toNode = Q.getDijkstraNode(toNodeIDs[i]);
 			Edge onewayEdge = new Edge(toNode, fromToDistances[i]);
@@ -26,6 +28,9 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		}
 	}
 	
+	/**
+	 * Knoten erstellen
+	 */
 	private void generateNodes(FibonacciHeap QTh1, FibonacciHeap QTh2, int[] allNodesIDs, float[] x, float[] y) {
 		DijkstraNode node;
 		for (int i = 0; i < allNodesIDs.length; i++) {
@@ -35,7 +40,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		}
 	}
 	
-	/*
+	/**
 	 * node list -> Node[] array
 	 */
 	public Node[] nodeToArray(DijkstraNode startNode, DijkstraNode endNode) {
@@ -48,7 +53,10 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		return nodesContainer.toArray(new Node[0]);
 	}
 
-
+	/**
+	 * This method is the interface to this class
+	 * @return result node array
+	 */
 	@Override
 	public Node[] findShortestPath(int[] allNodesIDs, float[] x, float[] y, int startNodeID, int goalNodeID, int[] fromNodeIDs,
 			int[] toNodeIDs,

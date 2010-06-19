@@ -12,11 +12,11 @@ import de.htwmaps.database.DBConnector;
 
 
 
-/*
+/**
  * @author Stanislaw Tartakowski
- * Hilfsklasse zum Befüllen der Datenbank
+ * Hilfsklasse zum Befuellen der Datenbank
  *
- * Diese Klasse markiert alle Straßen auf der Datenbank mit ihrem zugehörigen Ort. Der Ort wird über einen Kreisradius und einen zentralen Punkt definiert.
+ * Diese Klasse markiert alle Strassen auf der Datenbank mit ihrem zugehoerigen Ort. Der Ort wird ueber einen Kreisradius und einen zentralen Punkt definiert.
 */ 
 public class Ways_in_Kreis {
 	private double diameter;
