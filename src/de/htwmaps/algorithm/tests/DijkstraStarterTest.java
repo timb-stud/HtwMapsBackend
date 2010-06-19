@@ -1,20 +1,18 @@
 package de.htwmaps.algorithm.tests;
 
-import java.sql.SQLException;
+
 import java.util.Arrays;
 
-import junit.framework.TestCase;
 import de.htwmaps.algorithm.DijkstraStarter;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.util.InitLogger;
 
-public class DijkstraStarterTest extends TestCase {
+public class DijkstraStarterTest {
 
-	public void testFindShortestPath1() throws SQLException {
+	public static void main(String[] args) {
 		System.out.println("Dijkstra test");
 		Node[] result;
-		int[] expectedResult = { 1, 3, 5, 7 };
 		DijkstraStarter ds = new DijkstraStarter();
 		InitLogger.INSTANCE.initLogger();
 		
@@ -37,11 +35,7 @@ public class DijkstraStarterTest extends TestCase {
 					oneways, highwayTypes);
 			System.out.println(System.currentTimeMillis() - time + " ms");
 			System.out.println(Arrays.toString(result));
-			for (int i = 0; i < result.length; i++) {
-				assertEquals(expectedResult[i], result[i].getId());
-			}
 		} catch (PathNotFoundException e) {
-			fail("Path not found");
 		}
 	}
 
