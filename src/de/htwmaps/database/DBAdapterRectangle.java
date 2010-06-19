@@ -118,6 +118,39 @@ public class DBAdapterRectangle {
 		this.rectEndNodeLon = endNodeLon;
 		this.rectEndNodeLat = endNodeLat;
 	}
+
+	public int[] getNodeIDs() {
+		return nodeIDs;
+	}
+
+	public float[] getNodeLons() {
+		return nodeLons;
+	}
+
+	public float[] getNodeLats() {
+		return nodeLats;
+	}
+
+	public int[] getFromNodeIDs() {
+		return fromNodeIDs;
+	}
+
+	public int[] getToNodeIDs() {
+		return toNodeIDs;
+	}
+
+	public double[] getDistances() {
+		return distances;
+	}
+
+	public boolean[] getOneways() {
+		return oneways;
+	}
+
+	public int[] getHighwayTypes() {
+		return highwayTypes;
+	}
+	
 	
 	
 }
