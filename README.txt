@@ -15,10 +15,15 @@ Ausführen:
 cd HtwMapsBackend
 java -classpath .\bib\log4j-1.2.16.jar;.\bib\mysql-connector-java-5.0.6-bin.jar;.\bin de.htwmaps.algorithm.tests.DijkstraStarterTest
 
+Kompilieren und Ausführen können in endgültiger Programmauslieferung
+so in ein batch-, shell-, oder ant-Skript kopiert werden und in Eclipse 
+gibt es ein sehr bequemes Export-Jar-Tool.
+
+ 
 JUnit funktioniert hier so nicht.
 java.exe sucht nach einer "main" methode. Möglicherweise kann man java.exe für JUnit konfigurieren.
 deswegen hab ich die junit.jar aus dem classpath weggelassen.
 
 beim git add sollte man nun bib weglassen sonst gibts fehler.
-man sollte immer git add src/ machen.
-nicht git add .
+man sollte immer git add src/ machen. nicht git add .
+
