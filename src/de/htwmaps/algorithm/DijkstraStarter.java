@@ -66,9 +66,13 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		
 		FibonacciHeap QTh1 = new FibonacciHeap();
 		FibonacciHeap QTh2 = new FibonacciHeap();
-
+		
+		long time = System.currentTimeMillis();
 		generateNodes(QTh1, QTh2, allNodesIDs, x, y);
+		System.out.println(System.currentTimeMillis() - time + "ms knoten hashmap bauen");
+		time = System.currentTimeMillis();
 		generateReferences(QTh1, fromNodeIDs, toNodeIDs, oneways, fromToDistances);
+		System.out.println(System.currentTimeMillis() - time + "ms graph bauen");
 		
 		DijkstraNode startNode = QTh1.getDijkstraNode(startNodeID); 
 		DijkstraNode endNode = QTh1.getDijkstraNode(goalNodeID);

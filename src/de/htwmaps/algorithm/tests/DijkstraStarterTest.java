@@ -37,9 +37,9 @@ public class DijkstraStarterTest {
 		int[] highwayTypes = dbar.getHighwayTypes();
 		long time = System.currentTimeMillis();
 		Node[] result = ds.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
-		System.out.println(System.currentTimeMillis() - time + " ms für algo");
-		System.out.println(generateXML(result));
+		System.out.println(System.currentTimeMillis() - time + " ms algo + bauen");
 		System.out.println(Arrays.toString(result));
+		System.out.println(generateXML(result));
 	}
 	
 	public static String generateXML(Node[] result) {
