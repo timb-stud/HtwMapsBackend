@@ -1,39 +1,41 @@
 package de.htwmaps.algorithm.tests;
 
-import java.util.Arrays;
 
-import junit.framework.TestCase;
+import java.sql.SQLException;
+
 import de.htwmaps.algorithm.DijkstraStarter;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
+import de.htwmaps.database.DBAdapterRectangle;
+import de.htwmaps.util.InitLogger;
 
-public class DijkstraStarterTest extends TestCase {
+public class DijkstraStarterTest {
 
-	public void testFindShortestPath1() {
-		Node[] result;
-		int[] expectedResult = {1,3,5,7};
+	public static void main(String[] args) throws SQLException, PathNotFoundException {
+		InitLogger.INSTANCE.initLogger();
 		DijkstraStarter ds = new DijkstraStarter();
-		//
-		int[] allNodeIDs = {1,2,3,4,5,6,7};
-		float[] x = {0,6,6,16,16,22,28};
-		float[] y = {10,16,6,10,6,10,6};
-		int startNodeID = 7;
-		int goalNodeID = 1;
-		int[] fromNodeIDs = {1,1,2,3,4,4,5,6};
-		int[] toNodeIDs =   {2,3,4,5,5,6,7,7};
-		double[] fromToDistances = {8.49, 7.21, 11.66, 10, 12, 6, 4, 7.21};
-		boolean[] oneways = {false, false, false, false, false, false, false, false};
-		int[] highwayTypes = {0,0,0,0,0,0,0,0};
+		int startNodeID = 279562557;
+		int goalNodeID = 316840868;
+		float startNodeLon = 6.57f;
+		float startNodeLat = 49.475f;
+		float endNodeLon = 7.201f;
+		float endNodeLat = 49.178f;
 		
-		try{
-			result = ds.findShortestPath(allNodeIDs, x, y, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, fromToDistances, oneways, highwayTypes);
-			System.out.println(Arrays.toString(result));
-			for(int i = 0; i < result.length; i++){
-				assertEquals(expectedResult[i], result[i].getId());
-			}
-		}catch(PathNotFoundException e){
-			fail("Path not found");
-		}
+		
+		DBAdapterRectangle dbar;
+		dbar = new DBAdapterRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
+		int[] nodeIDs = dbar.getNodeIDs();
+		float[] nodeLons = dbar.getNodeLons(); //x
+		float[] nodeLats = dbar.getNodeLats(); //y
+		
+		int[] fromNodeIDs = dbar.getFromNodeIDs();
+		int[] toNodeIDs = dbar.getToNodeIDs();
+		double[] distances = dbar.getDistances();
+		boolean[] oneways = dbar.getOneways();
+		int[] highwayTypes = dbar.getHighwayTypes();
+		long time = System.currentTimeMillis();
+		Node[] result = ds.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
+		System.out.println(System.currentTimeMillis() - time + " ms algo + bauen");
+		System.out.println(ds.generateTrack(result));
 	}
-
 }

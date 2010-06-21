@@ -9,16 +9,13 @@ import java.sql.Statement;
 
 import de.htwmaps.database.DBConnector;
 
-
-
-
 /**
  * @author Stanislaw Tartakowski
  * Hilfsklasse zum Befuellen der Datenbank
  *
  * Diese Klasse markiert alle Strassen auf der Datenbank mit ihrem zugehoerigen Ort. Der Ort wird ueber einen Kreisradius und einen zentralen Punkt definiert.
 */ 
-public class Ways_in_Kreis {
+public class UpdateStreets {
 	private double diameter;
 	private BufferedWriter toFileWriter;
 	private Statement cityNodeStatement, everyWayStartNodeStatement, everyCityNodeStatement;
@@ -27,7 +24,7 @@ public class Ways_in_Kreis {
 	/*
 	 * diameter ist der Durchmesser (in km) des Kreises(Ortes) in dem alle Wege erfasst werden sollen
 	 */
-	public Ways_in_Kreis(String fileName, String place, double diameter) throws Exception {
+	public UpdateStreets(String fileName, String place, double diameter) throws Exception {
 		this.place = place;
 		this.diameter = 0.0099 * diameter;
 		toFileWriter = new BufferedWriter(new FileWriter(new File(fileName)));
@@ -77,19 +74,19 @@ public class Ways_in_Kreis {
 		System.out.println("fertig");
 	}
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String WRITE_PATH) throws Exception {
 		/*
 		 * 
 			place=city 		Node 	10km
 			place=town 		Node 	5km
-			place=village 	Node 	4km
+			place=village 	Node 	2km
 			place=hamlet 	Node 	0.7km
 			place=suburb 	Node 	1km
 		 */
-		String typ = "village";
-		double diameter = 4;
+		String typ = "suburb";
+		double diameter = 1;
 		
-		Ways_in_Kreis w = new Ways_in_Kreis("ways_in_kreis_" + typ + ".txt", typ, diameter);
+		UpdateStreets w = new UpdateStreets(WRITE_PATH, typ, diameter);
 		w.writeEveryWayToFile();
 	}
 }

@@ -1,1 +1,4 @@
 bin
+.classpath
+log4j-1.2.16.jar
+mysql-connector-java-5.1.12-bin.jar
