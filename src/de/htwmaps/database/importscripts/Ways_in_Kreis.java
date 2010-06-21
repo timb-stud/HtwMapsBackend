@@ -82,12 +82,12 @@ public class Ways_in_Kreis {
 		 * 
 			place=city 		Node 	10km
 			place=town 		Node 	5km
-			place=village 	Node 	2km
+			place=village 	Node 	4km
 			place=hamlet 	Node 	0.7km
 			place=suburb 	Node 	1km
 		 */
-		String typ = "suburb";
-		double diameter = 1;
+		String typ = "village";
+		double diameter = 4;
 		
 		Ways_in_Kreis w = new Ways_in_Kreis("ways_in_kreis_" + typ + ".txt", typ, diameter);
 		w.writeEveryWayToFile();
