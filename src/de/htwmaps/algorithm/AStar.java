@@ -38,37 +38,33 @@ public class AStar implements ShortestPathAlgorithm {
 				allNodes.size());
 		FibonacciHeap openSet = new FibonacciHeap();
 		AStarNode current;
-		openSet.add(start, start.getF());
 		start.setG(0);
 		start.setF(start.getDistanceTo(goal));
+		openSet.add(start, start.getF());
 
-		while (!(openSet.size() < 1)) {
+		while (openSet.size() > 0) {
 			current = (AStarNode) openSet.popMin();
 			if (current == goal) {
 				return reconstructPath(goal);
 			}
 			closedSet.put(current.getId(), current);
 			for (Edge edge : current.getEdgeList()) {
-				boolean useTentativeG;
 				AStarNode successor = (AStarNode)edge.getSuccessor();
 				if (closedSet.containsKey(successor.id)) // TODO contains key or value !?!??!
 					continue;
 				double tentativeG = current.getG() + edge.getDistance();
 				
 				if (!openSet.contains(successor)) {
-					openSet.add(successor, successor.getF());
-					useTentativeG = true;
-				} else {
-					if (tentativeG < successor.getG()) {
-						useTentativeG = true;
-					} else {
-						useTentativeG = false;
-					}
-				}
-				if (useTentativeG) {
 					successor.setPredeccessor(current);
 					successor.setG(tentativeG);
 					successor.setF(successor.getG() + successor.getDistanceTo(goal));
+					openSet.add(successor, successor.getF());
+				} else {
+					if (tentativeG < successor.getG()) {
+						successor.setPredeccessor(current);
+						successor.setG(tentativeG);
+						successor.setF(successor.getG() + successor.getDistanceTo(goal));
+					}
 				}
 			}
 		}

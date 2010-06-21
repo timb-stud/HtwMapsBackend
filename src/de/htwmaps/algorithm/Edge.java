@@ -3,7 +3,7 @@ package de.htwmaps.algorithm;
 /**
  * 
  * @author Stanislaw Tartakowski, Tim Bartsch
- *	Diese Klasse ist eine Kante zwichen 2 Knoten im Graphen
+ *	Diese Klasse ist eine Kante zwischen 2 Knoten im Graphen
  */
 public class Edge {
 	private Node successor, predecessor;
