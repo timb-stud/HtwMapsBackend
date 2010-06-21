@@ -79,7 +79,7 @@ public class ParseEdges {
                         		System.out.println(currentTime + ": " + counter + " edges geparst");
                         	}
                             sb.append("INSERT INTO `edges` (`fromNodeID`, `toNodeID`, `wayID`) VALUES (")
-                              .append(retCache.get(i) + ", " + retCache.get(i+1) + "," + id + ")\n");
+                              .append(retCache.get(i) + ", " + retCache.get(i+1) + "," + id + ");\n");
                         }
                     }
                     bw.write(sb.toString());
