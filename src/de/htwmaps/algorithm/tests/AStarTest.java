@@ -97,9 +97,7 @@ public class AStarTest extends TestCase {
 		double[] distances = dbar.getDistances();
 		boolean[] oneways = dbar.getOneways();
 		int[] highwayTypes = dbar.getHighwayTypes();
-		long time = System.currentTimeMillis();
 		Node[] result = as.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
-		System.out.println(System.currentTimeMillis() - time + "ms bauen + algo");
 		System.out.println(Arrays.toString(result));
 		for(Node n: result){
 			System.out.println(n);
