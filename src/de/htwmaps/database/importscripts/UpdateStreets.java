@@ -28,9 +28,9 @@ public class UpdateStreets {
 		this.place = place;
 		this.diameter = 0.0099 * diameter;
 		toFileWriter = new BufferedWriter(new FileWriter(new File(fileName)));
-		cityNodeStatement = DBConnector.getInstance().getCon().createStatement();
-		everyWayStartNodeStatement = DBConnector.getInstance().getCon().createStatement();
-		everyCityNodeStatement = DBConnector.getInstance().getCon().createStatement();
+		cityNodeStatement = DBConnector.getConnection().createStatement();
+		everyWayStartNodeStatement = DBConnector.getConnection().createStatement();
+		everyCityNodeStatement = DBConnector.getConnection().createStatement();
 	}
 	
 	/*

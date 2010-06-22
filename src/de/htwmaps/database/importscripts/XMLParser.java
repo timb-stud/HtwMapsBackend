@@ -32,15 +32,15 @@ public class XMLParser {
 		//new UpdatePartOfHightway();
 		print("Updating finished!");
 
-		print("Parsing streets...");
-		try {
-			UpdateStreets.main(WRITE_PATH + "streets.sql");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		print("Parsing streets finished!");
-
-		print("XMLParser finished!");
+//		print("Parsing streets...");
+//		try {
+//			UpdateStreets.main(WRITE_PATH + "streets.sql");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		print("Parsing streets finished!");
+//
+//		print("XMLParser finished!");
 	}
 
 	private static void print(String s) {
