@@ -83,19 +83,19 @@ public class ParseTags {
                         			rs.next();
                         			id = rs.getInt("ID");
                         		}
-                    		}
-                    	}
-                    	counter++;
-                    	if (counter % 40000 == 0) {
-                    		bw.write(sb.toString());
-                    		sb.delete(0, sb.length());
-                    		currentTime = new Date();
-                    		System.out.println(currentTime + ": " + counter + " tags geparst");
-                    	}
-                    	if (isNode) {
-                    		sb.append("INSERT INTO `r_node_tag` (`ID`, `nodeID`, `tagID`) VALUES (NULL, '" + parentValue + "', '" + id + "');").append("\n");
-                    	} else {
-                    		sb.append("INSERT INTO `r_way_tag` (`ID`, `wayID`, `tagID`) VALUES (NULL, '" + parentValue + "', '" + id + "');").append("\n");
+                            	counter++;
+                            	if (counter % 40000 == 0) {
+                            		bw.write(sb.toString());
+                            		sb.delete(0, sb.length());
+                            		currentTime = new Date();
+                            		System.out.println(currentTime + ": " + counter + " tags geparst");
+                            	}
+                            	if (isNode) {
+                            		sb.append("INSERT INTO `r_node_tag` (`ID`, `nodeID`, `tagID`) VALUES (NULL, '" + parentValue + "', '" + id + "');").append("\n");
+                            	} else {
+                            		sb.append("INSERT INTO `r_way_tag` (`ID`, `wayID`, `tagID`) VALUES (NULL, '" + parentValue + "', '" + id + "');").append("\n");
+                            	}
+                            }
                     	}
                     }
                 }
