@@ -24,12 +24,12 @@ public class DBConnector {
 	private String username;
 	private String password;
 	private String driver;
-	private boolean connected = false;
+	private static boolean connected = false;
 	private Connection con = null;
 	private static DBConnector instance = null;
-	
+
 	private DBConnector() {
-		Property prop = new Property("./config/Datenbank.ini");
+		Property prop = new Property("Datenbank.ini");
 		host = prop.getProp("host");
 		username = prop.getProp("username");
 		password = prop.getProp("password");
@@ -42,15 +42,15 @@ public class DBConnector {
 		instance = null;
 	}
 
-	public boolean isConnected() {
+	public static boolean isConnected() {
 		return connected;
 	}
 
-	public static DBConnector getInstance(){
+	public static Connection getConnection(){
 		if (instance == null) {
 			instance = new DBConnector();
 		}
-		return instance;
+		return instance.con;
 	}
 
 	private boolean connect() {

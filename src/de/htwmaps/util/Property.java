@@ -50,7 +50,7 @@ public class Property {
 	
 	/**
 	 * get-Methode um Parameter auszulesen
-	 * @param name	zugewiesener Name der erwünschten Variable 
+	 * @param name	zugewiesener Name der erwuenschten Variable 
 	 * @return Inhalt der Variable
 	 */
 	public String getProp(String name) {
