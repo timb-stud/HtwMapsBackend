@@ -30,8 +30,8 @@ public class ParseWays {
     	int startNodeID = 0;
     	String attributeName;
         Date currentTime;
-        StringBuilder sb = new StringBuilder();
         LinkedList<Integer> ll = new LinkedList<Integer>();
+        StringBuilder sb = new StringBuilder();
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 		try {
 			XMLStreamReader xmlStreamReader = inputFactory.createXMLStreamReader(new FileInputStream(READ_PATH));

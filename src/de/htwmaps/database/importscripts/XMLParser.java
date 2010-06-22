@@ -13,34 +13,35 @@ public class XMLParser {
 		print("XMLParser running...");
 
 		print("Parsing nodes...");
-		//new ParseNodes(READ_PATH, WRITE_PATH + "nodes.sql");
+		new ParseNodes(READ_PATH, WRITE_PATH + "nodes.sql");
 		print("Parsing nodes finished!");
 
 		print("Parsing ways...");
-		//new ParseWays(READ_PATH, WRITE_PATH + "ways.sql");
+		new ParseWays(READ_PATH, WRITE_PATH + "ways.sql");
 		print("Parsing ways finished!");
 
 		print("Parsing edges...");
-		//new ParseEdges(READ_PATH, WRITE_PATH + "edges.sql");
+		new ParseEdges(READ_PATH, WRITE_PATH + "edges.sql");
 		print("Parsing edges finished!");
 
 		print("Parsing tags...");
 		new ParseTags(READ_PATH, WRITE_PATH + "tags.sql");
 		print("Parsing tags finished!");
 
+		//Ab hier muessen nodes.sql/ways.sql/edges.sql/tags.sql bereits der DB hinzugefuegt worden sein
 		print("Updating PartsOfHighway...");
-		//new UpdatePartOfHightway();
+		new UpdatePartOfHightway();
 		print("Updating finished!");
 
-//		print("Parsing streets...");
-//		try {
-//			UpdateStreets.main(WRITE_PATH + "streets.sql");
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		print("Parsing streets finished!");
-//
-//		print("XMLParser finished!");
+		print("Parsing streets...");
+		try {
+			UpdateStreets.main(WRITE_PATH + "streets.sql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		print("Parsing streets finished!");
+
+		print("XMLParser finished!");
 	}
 
 	private static void print(String s) {
