@@ -73,15 +73,16 @@ public class ParseTags {
                                 rs = ps1.executeQuery();
                         		if (rs.next()) {
                         			id = rs.getInt("ID");
+                        		} else {
+                        			ps2.setString(1, key);
+                        			ps2.setString(2, value);
+                        			ps2.executeUpdate();
+                        			ps1.setString(1, key);
+                        			ps1.setString(2, value);
+                        			rs = ps1.executeQuery();
+                        			rs.next();
+                        			id = rs.getInt("ID");
                         		}
-	                            ps2.setString(1, key);
-	                            ps2.setString(2, value);
-	                            ps2.executeUpdate();
-	                            ps1.setString(1, key);
-	                            ps1.setString(2, value);
-	                            rs = ps1.executeQuery();
-	                            rs.next();
-	                            id = rs.getInt("ID");
                     		}
                     	}
                     	counter++;
