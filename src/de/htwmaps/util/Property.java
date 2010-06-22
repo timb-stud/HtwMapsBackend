@@ -34,7 +34,7 @@ public class Property {
 		FileInputStream stream = null;
 		
 		try {
-			stream = new FileInputStream("./" + filename.toString());
+			stream = new FileInputStream("./config/" + filename.toString());
 			properties.load(stream);
 			
 			if (stream != null)

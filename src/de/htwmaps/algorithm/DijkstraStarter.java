@@ -66,13 +66,10 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		
 		FibonacciHeap QTh1 = new FibonacciHeap();
 		FibonacciHeap QTh2 = new FibonacciHeap();
-		
-		long time = System.currentTimeMillis();
+
 		generateNodes(QTh1, QTh2, allNodesIDs, x, y);
-		System.out.println(System.currentTimeMillis() - time + "ms knoten hashmap bauen");
-		time = System.currentTimeMillis();
 		generateReferences(QTh1, fromNodeIDs, toNodeIDs, oneways, fromToDistances);
-		System.out.println(System.currentTimeMillis() - time + "ms graph bauen");
+
 		
 		DijkstraNode startNode = QTh1.getDijkstraNode(startNodeID); 
 		DijkstraNode endNode = QTh1.getDijkstraNode(goalNodeID);
@@ -93,5 +90,33 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 			throw new PathNotFoundException();
 		}
 		return result;
+	}
+	
+	public String generateXML(Node[] result) {
+		StringBuilder str = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<osm version=\"0.6\" generator=\"De gute gute Generator 1.0\">\n");
+		StringBuilder way = new StringBuilder(" <way id=\"1\">\n");
+		for (Node tmp: result) {
+			str.append(" <node id=\"").append(tmp.getId()).append("\" lat=\"").append(tmp.getY()).append("\" lon=\"").append(tmp.getX()).append("\"/>\n");
+			way.append("  <nd ref=\"").append(tmp.getId()).append("\"/>\n");
+		}
+		str.append(way).append("  <tag k=\"highway\" v=\"secondary\"/>\n </way>\n <relation id=\"1\">\n  <member type=\"way\" ref=\"1\" role=\"\"/>\n  <tag k=\"route\" v=\"bicycle\"/>\n  <tag k=\"type\" v=\"route\"/>\n </relation>\n").append("</osm>");
+		return str.toString();
+	}
+	
+	public String generatePOI(Node[] result) {
+		StringBuilder str = new StringBuilder("lat\tlon\ttitle\tdescription\ticon\ticonoffset\n");
+		for (Node tmp: result) {
+			str.append(tmp.getY()).append("\t").append(tmp.getX()).append("\t").append("title\t").append("descr\t").append("rosa_punkt.png\t").append("8,8\t").append("0,0\n");
+		}
+		return str.toString();
+	}
+	
+	public String generateTrack(Node[] result) {
+		StringBuilder str = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<gpx>\n<trk>\n <trkseg>\n");
+		for (Node tmp : result) {
+			str.append("  <trkpt lat=\"").append(tmp.getY()).append("\" lon=\"").append(tmp.getX()).append("\">\n").append("  </trkpt>\n");
+		}
+		str.append(" </trkseg>\n</trk>\n</gpx>");
+		return str.toString();
 	}
 }

@@ -34,7 +34,7 @@ public class DBConnector {
 		username = prop.getProp("username");
 		password = prop.getProp("password");
 		driver = prop.getProp("driver");
-		connect();
+		connected = connect();
 	}
 
 	protected void finalize() {
@@ -57,6 +57,7 @@ public class DBConnector {
 			try {
 				Class.forName(driver).newInstance();
 				con = DriverManager.getConnection(host, username, password);
+
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
