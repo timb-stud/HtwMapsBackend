@@ -25,7 +25,7 @@ public class DBConnector {
 	private String password;
 	private String driver;
 	private boolean connected = false;
-	public Connection con = null;
+	private Connection con = null;
 	private static DBConnector instance = null;
 	
 	private DBConnector() {
@@ -68,10 +68,6 @@ public class DBConnector {
 				e.printStackTrace();
 			}
 		return true;
-	}
-
-	public Connection getCon() {
-		return con;
 	}
 	
 	private boolean disconnect() {
