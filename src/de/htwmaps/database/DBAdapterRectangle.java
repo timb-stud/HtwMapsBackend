@@ -22,7 +22,7 @@ public class DBAdapterRectangle {
 	private int[] highwayTypes;
 	
 	private final static String NODE_SELECT = "select ID, lon, lat from nodes where partofhighway = 1";
-	private final static String EDGE_SELECT = "select fromNodeID, toNodeID, length1, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from edges, nodes n1, nodes n2 where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID AND n1.partofhighway = 1 AND n2.partofhighway = 1";
+	private final static String EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from edges, nodes n1, nodes n2 where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID AND n1.partofhighway = 1 AND n2.partofhighway = 1";
 	
 	public DBAdapterRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {
 		setRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
@@ -89,9 +89,9 @@ public class DBAdapterRectangle {
 		for (int i = 0; resultSet.next(); i++){
 			fromNodeIDs[i] = resultSet.getInt(1);
 			toNodeIDs[i] = resultSet.getInt(2);
-			distances[i] = resultSet.getFloat(3);
-			oneways[i] = resultSet.getBoolean(4);
-			highwayTypes[i] = resultSet.getInt(5);
+			distances[i] = 0.0;
+			oneways[i] = resultSet.getBoolean(3);
+			highwayTypes[i] = resultSet.getInt(4);
 		}
 	}
 	
