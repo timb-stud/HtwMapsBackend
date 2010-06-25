@@ -16,12 +16,14 @@ import de.htwmaps.util.InitLogger;
  * remains sleeping until this class awakens him when the work is done.
  */
 public class Dijkstra extends Thread {
-	private static boolean finished;								//TODO should be volatile
-	private static AtomicInteger count = new AtomicInteger();		//TODO should be volatile
+	private volatile static boolean finished;								
+	private volatile static AtomicInteger count = new AtomicInteger();		
+	private volatile Dijkstra dij;
 	private boolean thread;
 	private FibonacciHeap Q;
-	private DijkstraNode startNode, endNode;
+	private DijkstraNode startNode, endNode, currentNode;
 	private Object caller;
+	private int nodesVisited;
 	
 	/**
 	 * 
@@ -44,21 +46,15 @@ public class Dijkstra extends Thread {
 	 */
 	@Override
 	public void run() {
-		dijkstra();
-	}
-	
-	/**
-	 * Main loop
-	 */
-	private void dijkstra() {
 		startNode.setDist(0.0);
 		touch(startNode);
 		Q.decreaseKey(startNode, 0.0);
+		nodesVisited++;
 		mainloop:while (Q.size() > 0) {
 			if (finished) {
 				return;
 			}
-			DijkstraNode currentNode = (DijkstraNode) Q.popMin();
+			currentNode = (DijkstraNode) Q.popMin();
 			if (thread && currentNode.isTouchedByTh2() || !thread && currentNode.isTouchedByTh1() || currentNode.getDist() == Double.MAX_VALUE || currentNode == endNode ) {
 				if (currentNode == endNode && currentNode.getPredecessor() != null) {
 					finished = true;
@@ -79,11 +75,11 @@ public class Dijkstra extends Thread {
 				if (thread || (!thread && edge.getPredecessor() != null)) {
 					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ()) {
 						synchronized(getClass()) {
-							if (checkForCommonNode(currentNode, successor)) {
+							if (checkForCommonNode(successor)) {
 								break mainloop;
 							}
 							if (!successor.isRemovedFromQ()) {
-								updateSuccessorDistance(currentNode, successor);
+								updateSuccessorDistance(successor);
 								Q.decreaseKey(successor, successor.getDist());
 							}
 						}
@@ -108,9 +104,13 @@ public class Dijkstra extends Thread {
 	/**
 	 * Checks whether the current thread may build the result and finish the algorithm
 	 */
-	private boolean checkForCommonNode(DijkstraNode currentNode, DijkstraNode successor) {
+	private boolean checkForCommonNode(DijkstraNode successor) {
 		if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2()) {
-			concantenate(currentNode, successor);
+			if (dij.getNodesVisited() > nodesVisited) {
+				concantenate(currentNode, successor);
+			} else {
+				concantenate(successor, currentNode);
+			}
 			return true;
 		}
 		return false;
@@ -135,12 +135,18 @@ public class Dijkstra extends Thread {
 	/**
 	 * Updates the distance to a successor node
 	 */
-	private void updateSuccessorDistance(DijkstraNode currentNode, DijkstraNode successor) {
-		double alternative = currentNode.getDist() + currentNode.getDistanceTo(successor) - currentNode.getDistanceTo(endNode) + successor.getDistanceTo(endNode);
+	private void updateSuccessorDistance(DijkstraNode successor) {
+		double alternative;
+		if (dij.getCurrentNode() != null) {
+			alternative = currentNode.getDistanceTo(successor) + dij.getCurrentNode().getDistanceTo(successor) + successor.getDistanceTo(endNode);
+		} else {
+			alternative = currentNode.getDistanceTo(successor) + successor.getDistanceTo(endNode);
+		}
 		if (alternative < successor.getDist()) {
 			successor.setDist(alternative);
 			successor.setPredecessor(currentNode);
 			touch(successor);
+			nodesVisited++;
 		}
 	}
 	
@@ -164,5 +170,25 @@ public class Dijkstra extends Thread {
 	 */
 	public static boolean isFinished() {
 		return finished;
+	}
+
+	public void setDijkstra(Dijkstra dij) {
+		this.setDij(dij);
+	}
+
+	public int getNodesVisited() {
+		return nodesVisited;
+	}
+
+	public void setDij(Dijkstra dij) {
+		this.dij = dij;
+	}
+
+	public Dijkstra getDij() {
+		return dij;
+	}
+
+	public DijkstraNode getCurrentNode() {
+		return currentNode;
 	}
 }
