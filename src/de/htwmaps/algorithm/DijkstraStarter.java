@@ -16,10 +16,10 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	/**
 	 * knotenobjekte miteinander referenzieren
 	 */
-	private void generateReferences(FibonacciHeap Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
+	private void generateReferences(FibonacciHeap Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
 			DijkstraNode fromNode = Q.getDijkstraNode(fromNodeIDs[i]), toNode = Q.getDijkstraNode(toNodeIDs[i]);
-			Edge onewayEdge = new Edge(toNode, fromToDistances[i]);
+			Edge onewayEdge = new Edge(toNode, 0.0);
 			fromNode.addEdge(onewayEdge);
 			if(!oneways[i]) {
 				onewayEdge.setPredecessor(fromNode);
@@ -60,7 +60,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	@Override
 	public Node[] findShortestPath(int[] allNodesIDs, float[] x, float[] y, int startNodeID, int goalNodeID, int[] fromNodeIDs,
 			int[] toNodeIDs,
-			double[] fromToDistances, 
+			double[] fromToDistances,
 			boolean[] oneways,
 			int[] highwayTypes) throws PathNotFoundException {
 		
@@ -68,7 +68,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		FibonacciHeap QTh2 = new FibonacciHeap();
 
 		generateNodes(QTh1, QTh2, allNodesIDs, x, y);
-		generateReferences(QTh1, fromNodeIDs, toNodeIDs, oneways, fromToDistances);
+		generateReferences(QTh1, fromNodeIDs, toNodeIDs, oneways);
 
 		
 		DijkstraNode startNode = QTh1.getDijkstraNode(startNodeID); 
@@ -76,8 +76,13 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		
 		Dijkstra d0 = new Dijkstra(QTh1, startNode, endNode, true, this);
 		Dijkstra d1 = new Dijkstra(QTh2, endNode, startNode, false, this);
+		
+		d0.setDijkstra(d1);
+		d1.setDijkstra(d0);
+		
 		d0.start();
 		d1.start();
+		
 		synchronized(getClass()) {
 			try {
 				while (!Dijkstra.isFinished()) {
