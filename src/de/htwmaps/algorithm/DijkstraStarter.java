@@ -3,6 +3,7 @@ package de.htwmaps.algorithm;
 
 import java.util.ArrayList;
 
+import de.htwmaps.algorithm.util.RouteByLetter;
 import de.htwmaps.util.FibonacciHeap;
 
 
@@ -111,7 +112,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		return str.toString();
 	}
 	
-	public String generateTrack(Node[] result) {
+	public String generateTrack(Node[] result) {	
 		StringBuilder str = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<gpx>\n<trk>\n <trkseg>\n");
 		for (Node tmp : result) {
 			str.append("  <trkpt lat=\"").append(tmp.getY()).append("\" lon=\"").append(tmp.getX()).append("\">\n").append("  </trkpt>\n");
