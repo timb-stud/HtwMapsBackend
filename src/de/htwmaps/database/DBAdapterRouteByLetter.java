@@ -8,13 +8,22 @@ import java.util.Iterator;
 
 import de.htwmaps.algorithm.Node;
 
+/**
+ * Klasse erwartet eine gefundene Route und erstellt aus dieser ein Liste mit 
+ * den befahrenen Strassen und die dazugehoerige Laenge
+ * 
+ * @author Christian Rech
+ * @version 27.06.10
+ *
+ */
+
 public class DBAdapterRouteByLetter {
 	
 	private ArrayList<String> streetnames;
-	private ArrayList<Integer> specificNumber; //wieviele Knoten auf der Straße besucht werden
+	private ArrayList<Integer> specificNumber; //wieviele Knoten auf der Straï¿½e besucht werden
 	private ArrayList<Double> distance;
 
-	private final static String STREETS_SELECT = "select streetname, count(*) from streets";
+//	private final static String STREETS_SELECT = "select streetname, count(*) from streets";
 	
 	public DBAdapterRouteByLetter(Node[] result) throws SQLException {	
 		streetnames = null;
@@ -26,18 +35,9 @@ public class DBAdapterRouteByLetter {
 	}
 	
 	private String buildStreetnamesSelectStatement(Node[] result) {
-		
-//		select count(streetname)
-//		from nodes inner join edges on
-//		nodes.id = edges.fromNodeID
-//		inner join ways on
-//		edges.wayID = ways.ID
-//		inner join streets on
-//		ways.ID = streets.wayID;
-		
-//		select streetname, count(*) 
+//		select nodes.id, streetname, count(*) 
 //		from streets inner join edges on way.id = edges.wayid 
-//		inner join nodes on nodes.id = edges.fromNodeID 
+//		inner join nodes on nodes.id =273184315 , 3345392 edges.fromNodeID 
 //		where nodes.ID in  (  273184315 , 334539283 , ... , 274026832 , 0 ) 
 //		group by streetname;
 		
@@ -57,13 +57,9 @@ public class DBAdapterRouteByLetter {
 	
 
 	private void initStreetnames(Node[] result) throws SQLException {
-			int tableLength; 
 			PreparedStatement pStmt = DBConnector.getConnection().prepareStatement(buildStreetnamesSelectStatement(result));
 			ResultSet resultSet = pStmt.executeQuery();
 			pStmt = null;
-			resultSet.last();
-			tableLength = resultSet.getRow();
-			resultSet.beforeFirst();
 			streetnames = new ArrayList<String>();
 			specificNumber = new ArrayList<Integer>();
 			
@@ -92,7 +88,7 @@ public class DBAdapterRouteByLetter {
 	
 	@Override
 	public String toString() {
-		String text = null;
+		String text = "";
 		Iterator<String> sn = streetnames.iterator();
 		Iterator<Double> dist = distance.iterator();
 		while(sn.hasNext()){
