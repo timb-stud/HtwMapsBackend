@@ -30,9 +30,7 @@ public class AStarTest extends TestCase {
 		int[] highwayTypes = {0,0,0,0,0,0,0,0};
 		
 		try{
-			long time = System.currentTimeMillis();
 			result = as.findShortestPath(allNodeIDs, x, y, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, fromToDistances, oneways, highwayTypes);
-			System.out.println(System.currentTimeMillis() - time + " ms");
 			for(int i = 0; i < result.length; i++){
 				assertEquals(expectedResult[i], result[i].getId());
 			}
@@ -58,11 +56,8 @@ public class AStarTest extends TestCase {
 		int[] highwayTypes = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		
 		try{
-			long time = System.currentTimeMillis();
 			result = as.findShortestPath(allNodeIDs, x, y, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, fromToDistances, oneways, highwayTypes);
-			System.out.println("Algo:" + (System.currentTimeMillis() - time) + " ms");
 			for(int i = 0; i < result.length; i++){
-				System.out.println(result[i]);
 				assertEquals(expectedResult[i], result[i].getId());
 			}
 		}catch(PathNotFoundException e){
@@ -99,9 +94,6 @@ public class AStarTest extends TestCase {
 		int[] highwayTypes = dbar.getHighwayTypes();
 		Node[] result = as.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
 		System.out.println(Arrays.toString(result));
-		for(Node n: result){
-			System.out.println(n);
-		}
 	}
 	
 //	public void testFindShortestPath3() throws SQLException, PathNotFoundException{

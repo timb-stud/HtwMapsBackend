@@ -62,11 +62,13 @@ public abstract class Node {
 	/**
 	 * 
 	 * @param n Knoten zu dem die Laenge ermittelt werden soll
-	 * @return Laenge
+	 * @return Laenge in km
 	 */
 	public double getDistanceTo(Node n) {
-		return Math.sqrt((this.x - n.x) * (this.x - n.x)
-				+ (this.y - n.y) * (this.y - n.y));
+		double lat = (this.y + n.y) / 2 * 0.01745;
+		double dx = 111.3 * Math.cos(lat) * (this.x - n.x);
+		double dy = 111.3 * (this.y - n.y);
+		return Math.sqrt(dx * dx + dy * dy);
 	}
 
 	/**

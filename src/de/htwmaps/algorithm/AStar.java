@@ -113,9 +113,9 @@ public class AStar implements ShortestPathAlgorithm {
 		for (int i = 0; i < fromNodeIDs.length; i++) {
 			AStarNode fromNode = allNodes.get(fromNodeIDs[i]);
 			AStarNode toNode = allNodes.get(toNodeIDs[i]);
-			fromNode.addEdge(new Edge(toNode, fromToDistances[i]));
+			fromNode.addEdge(new Edge(toNode, fromNode.getDistanceTo(toNode)));
 			if(!oneways[i]){
-				toNode.addEdge(new Edge(fromNode, fromToDistances[i]));
+				toNode.addEdge(new Edge(fromNode, fromNode.getDistanceTo(toNode)));
 			}
 		}
 	}
