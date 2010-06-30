@@ -2,7 +2,9 @@ package de.htwmaps.algorithm.tests;
 
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
+import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.DijkstraStarter;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
@@ -14,12 +16,12 @@ public class DijkstraStarterTest {
 	public static void main(String[] args) throws SQLException, PathNotFoundException {
 		InitLogger.INSTANCE.initLogger();
 		DijkstraStarter ds = new DijkstraStarter();
-		 int startNodeID = 318113531;
-		 int goalNodeID = 587836344;
-		 float startNodeLon = 7.0886f;
-		 float startNodeLat = 49.388f;
-		 float endNodeLon = 7.2021f;
-		 float endNodeLat = 49.3268f;
+		 int startNodeID = 262529904;
+		 int goalNodeID = 403500108;
+		 float startNodeLon = 6.326f;
+		 float startNodeLat = 49.657f;
+		 float endNodeLon = 7.4f;
+		 float endNodeLat = 49.121f;
 		
 		
 		
@@ -36,7 +38,30 @@ public class DijkstraStarterTest {
 		int[] highwayTypes = dbar.getHighwayTypes();
 		long time = System.currentTimeMillis();
 		Node[] result = ds.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
-		System.out.println(System.currentTimeMillis() - time + " ms algo + bauen");
+		System.out.println("insgesamt: " + (System.currentTimeMillis() - time));
 		System.out.println(ds.generateTrack(result));
+		
+		
+		
+//		Node[] result;
+//		DijkstraStarter as = new DijkstraStarter();
+//		//
+//		int[] allNodeIDs = {1,2,3,4,5,6,7};
+//		float[] x = {0,6,6,16,16,22,28};
+//		float[] y = {10,16,6,10,6,10,6};
+//		int startNodeID = 7;
+//		int goalNodeID = 1;
+//		int[] fromNodeIDs = {1,1,2,3,4,4,5,6};
+//		int[] toNodeIDs =   {2,3,4,5,5,6,7,7};
+//		double[] fromToDistances = {8.49, 7.21, 11.66, 10, 12, 6, 4, 7.21};
+//		boolean[] oneways = {false, false, false, false, false, false, false, false};
+//		int[] highwayTypes = {0,0,0,0,0,0,0,0};
+//		
+//		try{
+//			result = as.findShortestPath(allNodeIDs, x, y, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, fromToDistances, oneways, highwayTypes);
+//			System.out.println(Arrays.toString(result));
+//		}catch(PathNotFoundException e){
+//			System.out.println("Path not found");
+//		}
 	}
 }
