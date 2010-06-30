@@ -2,8 +2,7 @@ package de.htwmaps.algorithm;
 
 
 import java.util.ArrayList;
-
-import de.htwmaps.util.FibonacciHeap;
+import java.util.HashMap;
 
 
 
@@ -16,9 +15,9 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	/**
 	 * knotenobjekte miteinander referenzieren
 	 */
-	private void generateReferences(FibonacciHeap Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways) {
+	private void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
-			DijkstraNode fromNode = Q.getDijkstraNode(fromNodeIDs[i]), toNode = Q.getDijkstraNode(toNodeIDs[i]);
+			DijkstraNode fromNode = Q.get(fromNodeIDs[i]), toNode = Q.get(toNodeIDs[i]);
 			Edge onewayEdge = new Edge(toNode, 0.0);
 			fromNode.addEdge(onewayEdge);
 			if(!oneways[i]) {
@@ -31,12 +30,9 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	/**
 	 * Knoten erstellen
 	 */
-	private void generateNodes(FibonacciHeap QTh1, FibonacciHeap QTh2, int[] allNodesIDs, float[] x, float[] y) {
-		DijkstraNode node;
+	private void generateNodes(HashMap<Integer, DijkstraNode> Q, int[] allNodesIDs, float[] x, float[] y) {
 		for (int i = 0; i < allNodesIDs.length; i++) {
-			node = new DijkstraNode(x[i], y[i], allNodesIDs[i]);
-			QTh1.add(node, Double.MAX_VALUE);
-			QTh2.add(node, Double.MAX_VALUE);
+			Q.put(allNodesIDs[i], new DijkstraNode(x[i], y[i], allNodesIDs[i]));
 		}
 	}
 	
@@ -64,18 +60,17 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 			boolean[] oneways,
 			int[] highwayTypes) throws PathNotFoundException {
 		
-		FibonacciHeap QTh1 = new FibonacciHeap();
-		FibonacciHeap QTh2 = new FibonacciHeap();
+		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode>(allNodesIDs.length);
 
-		generateNodes(QTh1, QTh2, allNodesIDs, x, y);
-		generateReferences(QTh1, fromNodeIDs, toNodeIDs, oneways);
+		generateNodes(Q, allNodesIDs, x, y);
+		generateReferences(Q, fromNodeIDs, toNodeIDs, oneways);
 
 		
-		DijkstraNode startNode = QTh1.getDijkstraNode(startNodeID); 
-		DijkstraNode endNode = QTh1.getDijkstraNode(goalNodeID);
+		DijkstraNode startNode = Q.get(startNodeID); 
+		DijkstraNode endNode = Q.get(goalNodeID);
 		
-		Dijkstra d0 = new Dijkstra(QTh1, startNode, endNode, true, this);
-		Dijkstra d1 = new Dijkstra(QTh2, endNode, startNode, false, this);
+		Dijkstra d0 = new Dijkstra(startNode, endNode, true, this);
+		Dijkstra d1 = new Dijkstra(endNode, startNode, false, this);
 		
 		d0.setDijkstra(d1);
 		d1.setDijkstra(d0);
