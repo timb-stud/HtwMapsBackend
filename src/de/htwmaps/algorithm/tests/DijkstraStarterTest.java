@@ -17,12 +17,14 @@ public class DijkstraStarterTest {
 	public static void main(String[] args) throws SQLException, PathNotFoundException {
 		InitLogger.INSTANCE.initLogger();
 		DijkstraStarter ds = new DijkstraStarter();
+
 		 int startNodeID = 403500108;
 		 int goalNodeID =  262529904;
 		 float startNodeLon = 7.3093605f;
 		 float startNodeLat = 49.1737379f;
 		 float endNodeLon = 6.3849224f;
 		 float endNodeLat = 49.5321632f;
+
 		
 //		 int startNodeID = 335981487;
 //		 int goalNodeID =  587836344;
