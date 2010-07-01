@@ -41,15 +41,23 @@ public class DBAdapterRouteByLetter {
 		ResultSet resultSet =  pStmt.executeQuery();
 		pStmt = null;
 		
+		resultSet.last();
+		int rsSize = resultSet.getRow();
+		resultSet.first();
 		double dist = 0;
 		String preview = null, current = null;
-
+		
 		for (int i = 1; resultSet.next(); i++){
 			current = resultSet.getString(3);
 			if (preview == null)
 				preview = current;
 			
-			if (preview == current){
+			if (i == rsSize){
+				dist =+ route[i - 1].getDistanceTo(route[i]);
+				streetnames.add(current);
+				distance.add(dist);
+				dist = 0;
+			} else if (preview == current){
 					dist =+ route[i - 1].getDistanceTo(route[i]);
 			} else {
 					streetnames.add(current);
