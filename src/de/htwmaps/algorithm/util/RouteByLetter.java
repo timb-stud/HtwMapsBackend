@@ -5,15 +5,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import de.htwmaps.algorithm.Node;
-import de.htwmaps.database.DBAdapterRouteByLetter;
+import de.htwmaps.trash.old_DBAdapterRouteByLetter;
 
 public class RouteByLetter {
 
 	public RouteByLetter(Node[] result) {
-		DBAdapterRouteByLetter test = null;
+		old_DBAdapterRouteByLetter test = null;
 		try {
 			long time = System.currentTimeMillis();
-			test = new DBAdapterRouteByLetter(result);
+			test = new old_DBAdapterRouteByLetter(result);
 			System.out.println("Algo: " + (System.currentTimeMillis() - time) + "ms");
 			
 		} catch (SQLException e) {
@@ -21,7 +21,7 @@ public class RouteByLetter {
 			e.printStackTrace();
 		}
 		System.out.println("\n\n-----------RouteByLetter Test-------------");
-		System.out.println(test.toString());
+//		System.out.println(test.toString());
 		System.out.println("------------------------\n\n");
 	}
 	

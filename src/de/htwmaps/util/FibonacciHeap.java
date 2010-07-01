@@ -83,22 +83,7 @@ private FibonacciHeapNode min;
       return userObject.getId() + "";
     }
   }
-  
-  public AStarNode getAstarNode(int id) {
-	  FibonacciHeapNode n = itemsToNodes.get(new AStarNode(0, 0, id));
-	  if (n != null && n.getUserObject() instanceof AStarNode) {
-		  return (AStarNode)n.getUserObject();
-	  }
-	  return null; 
-  }
-  
-  public DijkstraNode getDijkstraNode(int id) {
-	  FibonacciHeapNode n = itemsToNodes.get(new DijkstraNode(0, 0, id));
-	  if (n != null && n.getUserObject() instanceof DijkstraNode) {
-		  return (DijkstraNode)n.getUserObject();
-	  }
-	  return null; 
-  }
+ 
   /**
    * Creates a new <code>FibonacciHeap</code>.
    */

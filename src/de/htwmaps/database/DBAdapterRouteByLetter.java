@@ -8,82 +8,83 @@ import java.util.Iterator;
 
 import de.htwmaps.algorithm.Node;
 
-/**
- * Klasse erwartet eine gefundene Route und erstellt aus dieser ein Liste mit 
- * den befahrenen Strassen und die dazugehoerige Laenge
- * 
- * @author Christian Rech
- * @version 27.06.10
- *
- */
-
 public class DBAdapterRouteByLetter {
-	
-	private ArrayList<String> streetnames;
-	private ArrayList<Integer> specificNumber; //wieviele Knoten auf der Stra�e besucht werden
-	private ArrayList<Double> distance;
 
-//	private final static String STREETS_SELECT = "select streetname, count(*) from streets";
+	private ArrayList<String> streetnames = null;
+	private ArrayList<Double> distance = null;
+
 	
-	public DBAdapterRouteByLetter(Node[] result) throws SQLException {	
-		streetnames = null;
-		specificNumber = null;
-		distance = null;
-		
-		initStreetnames(result);
-		initDistance(result);
+	public DBAdapterRouteByLetter(Node[] route) throws SQLException {
+		initRouteByLetter(route);
 	}
 	
-	private String buildStreetnamesSelectStatement(Node[] result) {
-//		select nodes.id, streetname, count(*) 
-//		from streets inner join edges on way.id = edges.wayid 
-//		inner join nodes on nodes.id =273184315 , 3345392 edges.fromNodeID 
-//		where nodes.ID in  (  273184315 , 334539283 , ... , 274026832 , 0 ) 
-//		group by streetname;
+	private void initRouteByLetter(Node[] route) throws SQLException{
+		PreparedStatement pStmt;
 		
-		StringBuilder sb = new StringBuilder("select nodes.id, streetname, count(*) from streets");
-		//sb.append(" inner join ways on way.id = streets.wayid");
-		sb.append(" inner join edges on streets.wayid = edges.wayid");
-		sb.append(" inner join nodes on nodes.id = edges.fromNodeID");
-		sb.append(" where nodes.ID in ").append("( ");
+//		//Sicherstellen, dass kein View bereits existiert
+//		String dropView = "drop view if exists nodesView;";
 		
-		for (Node node : result){
-			sb.append(" " + node + " ,");
+		//View mit Index und Nodes aus route erstellen
+		String createView = buildViewStatement(route);
+		
+		//Join Query mit View um benoetigte Daten zu bekommen
+		String execQuery = buildStreetsStatement(route);
+		
+		
+//		pStmt = DBConnector.getConnection().prepareStatement(dropView);
+//		pStmt.executeQuery();
+//		pStmt = null;
+		pStmt = DBConnector.getConnection().prepareStatement(createView);
+		pStmt.executeQuery();
+		pStmt = null;
+		pStmt = DBConnector.getConnection().prepareStatement(execQuery);
+		ResultSet resultSet =  pStmt.executeQuery();
+		pStmt = null;
+		
+		double dist = 0;
+		String preview = null, current = null;
+
+		for (int i = 1; resultSet.next(); i++){
+			current = resultSet.getString(3);
+			if (preview == null)
+				preview = current;
+			
+			if (preview == current){
+					dist =+ route[i - 1].getDistanceTo(route[i]);
+			} else {
+					streetnames.add(current);
+					distance.add(dist);
+					dist = 0;
+			}
+			preview = current;
 		}
-		sb.append(" 0 )");// 0 da am Ende der Schleife noch ein Komma gemacht wird
-		sb.append(" group by ").append("streetname;");
+	}
+	
+	//muss noch umgeschrieben werden, weil sich DB Aufbau aendert
+	private String buildStreetsStatement(Node[] route) {
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from nodesView "); 
+		sb.append("inner join Nodes on ");
+		sb.append("nodeid = id ");
+		sb.append("sorted by index; ");
+		
 		return sb.toString();
 	}
-	
 
-	private void initStreetnames(Node[] result) throws SQLException {
-			PreparedStatement pStmt = DBConnector.getConnection().prepareStatement(buildStreetnamesSelectStatement(result));
-			ResultSet resultSet = pStmt.executeQuery();
-			pStmt = null;
-			streetnames = new ArrayList<String>();
-			specificNumber = new ArrayList<Integer>();
-			
-			for (Node node : result){	
-				resultSet.beforeFirst();
-				while (resultSet.next()){
-					if (resultSet.getString(1).equals(node.toString())){
-						streetnames.add(resultSet.getString(2));
-						specificNumber.add(resultSet.getInt(3));
-						break;
-					}
-				}
-			}
-	}
-	
-	private void initDistance(Node[] result) {
-		double dist = 0;
-		distance = new ArrayList<Double>();
-		for (int sn : specificNumber){
-			for (int i = 0; i < sn; i++){
-				dist =+ result[i].getDistanceTo(result[i+1]);
-			}
-			distance.add(dist);
+	private String buildViewStatement(Node[] route) {
+		StringBuilder sb = new StringBuilder("delimiter // ");
+		sb.append("drop view if exists nodesView; ");
+		sb.append("create view nodesView as ");
+		
+		int i= 1;
+		sb.append("select " + i + " as index , " + route[i - 1] + " as nodeID");
+		for (i = 2; i < route.length; i++){
+			sb.append(" union select " + i + ", " + route[i - 1]);
 		}
+		sb.append("; delimiter ;");
+
+		return sb.toString();
 	}
 	
 	@Override
@@ -97,19 +98,4 @@ public class DBAdapterRouteByLetter {
 		return text;
 	}
 	
-	public ArrayList<String> getStreetnames() {
-		return streetnames;
-	}
-
-	public String getStreetname(int pos) {
-		return streetnames.get(pos);
-	}
-	
-	public double getDistancePos(int pos) {
-		return distance.get(pos);
-	}
-	
-	public ArrayList<Double> getDistance() {
-		return distance;
-	}
 }

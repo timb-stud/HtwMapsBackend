@@ -18,9 +18,8 @@ public class DBConnectionTest {
 	private String sqlQuery = "select count(*) from `edges`";
 
 	private DBConnectionTest() {
-		DBConnector sql = DBConnector.getInstance();
-		
-		System.out.println("Database connected: " + sql.isConnected());
+				
+		System.out.println("Database connected: " + DBConnector.isConnected());
 		
 		ResultSet rs = null;
 		
@@ -29,10 +28,11 @@ public class DBConnectionTest {
 		PreparedStatement sqlRS;
 		
 		try {
-			sqlRS = sql.con.prepareStatement(sqlString.toString());
+			sqlRS = DBConnector.getConnection().prepareStatement(sqlString.toString());
 			rs = sqlRS.executeQuery();
 			
 			while(rs.next()) {
+				System.out.println(sqlString.toString());
 				System.out.println("Datenbank Abfrageergebnis: \n" + rs.getString(1));
 			}
 			

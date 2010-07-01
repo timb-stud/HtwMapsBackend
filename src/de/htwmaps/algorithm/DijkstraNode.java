@@ -7,9 +7,9 @@ package de.htwmaps.algorithm;
  */
 public class DijkstraNode extends Node {
 
-	private double dist;									//should be volatile
-	private DijkstraNode predecessor; 						//should be volatile
-	private boolean removed, touchedByTh1, touchedByTh2;	//should be volatile
+	private double dist;								
+	private volatile DijkstraNode predecessor; 					
+	private volatile boolean removed, touchedByTh1, touchedByTh2;	
 
 	/**
 	 * @param id unique node on earth

@@ -14,15 +14,15 @@ import org.apache.log4j.Level;
  * @author Christian Rech, Stanislaw Tartakowski
  * 
  * Diese Klasse dient als sehr performantes Hilfsmittel zum schreiben von Ereignissen in eine Datei
- * und, oder Stdout. Es kann zusaetzlich für jedes Ereignis eine Prioritaet festgelegt werden, sodass
+ * und, oder Stdout. Es kann zusaetzlich fuer jedes Ereignis eine Prioritaet festgelegt werden, sodass
  * man schneller und einfacher die Ereignismeldungen regulieren kann, als mit beispielsweise System.out.
  * 
- * Prioritäten sind von links nach rechts aufsteigend sortiert: 
+ * Prioritaeten sind von links nach rechts aufsteigend sortiert: 
  * ALL > TRACE > DEBUG > INFO > WARN > ERROR > FATAL > OFF
  * 
  * Beispiel: InitLogger.INSTANCE.getLogger().setLevel( Level.WARN )
  * 
- * Diese Klasse ist ein enum, um die bestmögliche Art und Weise zu erreichen, ein Singletonmuster in
+ * Diese Klasse ist ein enum, um die bestmoegliche Art und Weise zu erreichen, ein Singletonmuster in
  * Java zu implementieren. Dieser Ansatz wird vom chief Java architect bei Google, Joshua Bloch, empfohlen.
  * Siehe Effective Java Second Edition S. 18
  */
