@@ -49,23 +49,14 @@ public class Dijkstra extends Thread {
 		touch(startNode);
 		Q.add(startNode, 0.0);
 		nodesVisited++;
-		mainloop:while (Q.size() > 0) {
+		while (Q.size() > 0) {
 			if (finished) {
 				return;
 			}
 			DijkstraNode currentNode = (DijkstraNode) Q.popMin();
-			if (thread && currentNode.isTouchedByTh2() || !thread && currentNode.isTouchedByTh1() || currentNode.getDist() == Double.MAX_VALUE || currentNode == endNode ) {
-				if (currentNode == endNode && currentNode.getPredecessor() != null) {
-					finished = true;
-					break;					
-				} else {
-					InitLogger.INSTANCE.getLogger().warn(this + ": no path found. Terminates");
-					if (count.incrementAndGet() == 2) {
-						finished = true;
-						break;
-					}
-					return;
-				}
+			if (currentNode == endNode) {
+				reactivateCaller();
+				return;					
 			}
 			currentNode.setRemovedFromQ(true);
 			LinkedList<Edge> edges = currentNode.getEdgeList();
@@ -75,7 +66,7 @@ public class Dijkstra extends Thread {
 					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ()) {
 						synchronized(getClass()) {
 							if (checkForCommonNode(currentNode, successor)) {
-								break mainloop;
+								return;
 							}
 							if (!successor.isRemovedFromQ()) {
 								updateSuccDist(Q, currentNode, successor);
@@ -85,7 +76,11 @@ public class Dijkstra extends Thread {
 				}
 			}
 		}
-		reactivateCaller();
+		InitLogger.INSTANCE.getLogger().warn(this + ": no path found. Terminates");
+		if (count.incrementAndGet() == 2) {
+			reactivateCaller();
+			return;
+		}
 	}
 
 	private void updateSuccDist(FibonacciHeap Q, DijkstraNode currentNode, DijkstraNode successor) {
@@ -134,13 +129,13 @@ public class Dijkstra extends Thread {
 	private void concantenate(DijkstraNode currentNode, DijkstraNode successor) {
 		DijkstraNode tmp;
 		if (!finished) {
-			finished = true;
 			while (successor != null) {
 				tmp = successor.getPredecessor();
 				successor.setPredecessor(currentNode);
 				currentNode = successor;
 				successor = tmp;
 			}
+			reactivateCaller();
 		}
 	}
 	
