@@ -4,6 +4,8 @@ package de.htwmaps.algorithm;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -130,25 +132,32 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	}
 	
 	public String writeRoute(Node[] result) throws Exception {
+		DecimalFormat df = new DecimalFormat("0.00");
 		String street = "";
+		String streetBefore = "";
+		double dist = 0.0;
 		ArrayList<String> streets = new ArrayList<String>();
-		ArrayList<String> directions = new ArrayList<String>();
 		Statement wayStatement = DBConnector.getConnection().createStatement();
 		
 		for (int i = 0; i < result.length; i++) {
 			ResultSet currentNodeRS = wayStatement.executeQuery("select value from edges, r_way_tag, k_tags where r_way_tag.tagID = k_tags.ID and edges.wayID = r_way_tag.wayID and (edges.fromNodeID = " + result[i].getId() + " or edges.toNodeID = " + result[i].getId() + ") and k_tags.key = 'name'");
 			if (currentNodeRS.next()) {
 				street = currentNodeRS.getString(1);
-				if (!streets.isEmpty() && !streets.get(streets.size() - 1).equals(street)) {
+				if (i > 0) {
+					dist += result[i].getDistanceTo(result[i - 1]);
+				}
+				if (!streets.isEmpty() && !streetBefore.equals(street)) {
 					if (i < result.length - 1) {
 						ResultSet nextNodeRS = wayStatement.executeQuery("select value from edges, r_way_tag, k_tags where r_way_tag.tagID = k_tags.ID and edges.wayID = r_way_tag.wayID and (edges.fromNodeID = " + result[i + 1].getId() + " or edges.toNodeID = " + result[i + 1].getId() + ") and k_tags.key = 'name'");
 						if (nextNodeRS.next() && street.equals(nextNodeRS.getString(1))) {
-							directions.add(giveDirection(result[i], result[i + 1]));
-							streets.add(street);
+							streetBefore = street;
+							streets.add(df.format(dist) + " km " + giveDirection(result[i], result[i + 1]) + street);
+							dist = 0.0;
 						}
 					}
 				} else {
 					if (streets.isEmpty()) {
+						streetBefore = street;
 						streets.add(street);
 					}
 				}
@@ -158,7 +167,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		}
 		StringBuilder res = new StringBuilder("fahren sie auf die erste straße: " + streets.get(0) + "\n");
 		for (int i = 1; i < streets.size(); i++) {
-			res.append(directions.get(i - 1) + streets.get(i) + "\n");
+			res.append(streets.get(i) + "\n");
 		}
 		return res.toString();
 	}
