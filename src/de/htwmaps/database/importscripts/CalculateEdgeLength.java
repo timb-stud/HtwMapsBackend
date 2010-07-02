@@ -6,6 +6,7 @@ package de.htwmaps.database.importscripts;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -23,6 +24,7 @@ public class CalculateEdgeLength {
 	int node1ID = 0;
 	int node2ID = 0;
 	int edgeID 	= 0;
+	int restEdge = 0;
 	float node1lat, node1lon, node2lat, node2lon;
 	float length;
 	
@@ -57,20 +59,28 @@ public class CalculateEdgeLength {
 	
 	private void start() {
 		boolean moreResults = true;
-		ResultSet allEdges = null;
+		ResultSet allEdges 	= null;
+		ResultSet restEdges = null;
+
 		try {
 	        PreparedStatement psNode1 	= DBConnector.getConnection().prepareStatement("SELECT lat, lon FROM `nodes` WHERE `ID` = ?");
 	        PreparedStatement psNode2 	= DBConnector.getConnection().prepareStatement("SELECT lat, lon FROM `nodes` WHERE `ID` = ?");
 	        PreparedStatement psLength 	= DBConnector.getConnection().prepareStatement("UPDATE `edges` SET `length` = ? WHERE `ID`= ?");
 	        while (moreResults) {
+	        	System.out.println("Lade Edges");
 	        	allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, fromNodeID, toNodeID FROM edges WHERE length = 0 LIMIT 0, 100000");
-		        System.out.println("neue 1000000 geladen");
-	        	if (!allEdges.next()) {
+	        	System.out.println("Edges geladen");
+		        System.out.println("Setze Edgecount");
+		        restEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT COUNT(*) FROM edges WHERE length <> 0");
+	        	restEdges.next();
+	        	restEdge = restEdges.getInt(1);
+		        System.out.println("noch " + restEdge + " Edges");
+	        	if (restEdge == 0) {
 		        	moreResults = false;
 		        	System.out.println("nichts mehr da");
 		        }
-	        	System.out.println("Edges geladen");
 				while (allEdges.next()){
+					//System.out.println("Inner");
 					edgeID	= allEdges.getInt(1);
 					node1ID = allEdges.getInt(2);
 					node2ID = allEdges.getInt(3);
