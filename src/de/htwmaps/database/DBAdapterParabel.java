@@ -32,9 +32,9 @@ public class DBAdapterParabel{
 		int tableLength;
 		PreparedStatement pStmt = DBConnector.getConnection().prepareStatement(NODE_SELECT);
 		ResultSet resultSet = pStmt.executeQuery();
-		while (resultSet.next()) {
-			System.out.println(resultSet.getFloat(3)+"\t"+resultSet.getFloat(2)+"\t"+"title\t"+"descr\t"+"rosa_punkt.png\t"+"8,8\t"+"0,0");
-		}
+//		while (resultSet.next()) {
+//			System.out.println(resultSet.getFloat(3)+"\t"+resultSet.getFloat(2)+"\t"+"title\t"+"descr\t"+"rosa_punkt.png\t"+"8,8\t"+"0,0");
+//		}
 		resultSet.last();
 		tableLength = resultSet.getRow();
 		resultSet.beforeFirst();
@@ -73,95 +73,70 @@ public class DBAdapterParabel{
 	}
 
 	private void setRectangle(int startID, int endID, float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) {
-		float h = 0.02f;
-		if(startNodeLon < endNodeLon && startNodeLat > endNodeLat){
-			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes"
-				+ " where startNodes.id = " + startID + " and endNodes.id = " + endID
-				+ " and"
-				+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon - " + h + ")*(varNodes.lon - startNodes.lon - " + h + ")) + startNodes.lat  + " + h + " >= varNodes.lat"
-				+ " and"
-				+ " ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon + " + h + ")*(varNodes.lon - endNodes.lon + " + h + ")) + endNodes.lat - " + h + " <= varNodes.lat"
+		float h = 1f;
+		float k = 0.02f;
+		if(startNodeLon < endNodeLon && startNodeLat < endNodeLat || startNodeLon > endNodeLon && startNodeLat < endNodeLat){
+			//ps(x) = h (ey - sy) / (ex - sx)² (x - sx)² + sy - k
+			//pe(x) = h (sy - ey) / (sx - ex)² (x - ex)² + ey + k
+			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
+				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
+				+ " and "
+				+ " " + h + " *((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  - " + k + " <= varNodes.lat "
+				+ " and "
+				+ " " + h + " *((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat + " + k + " >= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
 			EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from saarland.edges, saarland.nodes n1, saarland.nodes n2 "
 				+ " where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID " 
 				+ " and  fromNodeID in ("
-				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes where startNodes.id = " + startID + " and endNodes.id = " + endID + " and "
-				+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon - " + h + ")*(varNodes.lon - startNodes.lon - " + h + ")) + startNodes.lat + " + h + " >= varNodes.lat"
-				+ " and"
-				+ " ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon + " + h + ")*(varNodes.lon - endNodes.lon + " + h + ")) + endNodes.lat - " + h + " <= varNodes.lat) "
+				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
+				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
+				+ " and "
+				+ " " + h + "*((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  - " + k + " <= varNodes.lat "
+				+ " and "
+				+ " " + h + "*((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat + " + k + " >= varNodes.lat "
+				+ " and varNodes.partofhighway = 1"
+				+ ")"
 				+ " and toNodeID in ("
-				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes where startNodes.id = " + startID + " and endNodes.id = " + endID + " and "
-				+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon - " + h + ")*(varNodes.lon - startNodes.lon - " + h + ")) + startNodes.lat + " + h + " >= varNodes.lat"
-				+ " and ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon + " + h + ")*(varNodes.lon - endNodes.lon + " + h + ")) + endNodes.lat - " + h + " <= varNodes.lat) and edges.partofhighway = 1";
-	
+				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
+				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
+				+ " and "
+				+ " " + h + " *((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  - " + k + " <= varNodes.lat "
+				+ " and "
+				+ " " + h + " *((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat + " + k + " >= varNodes.lat "
+				+ " and varNodes.partofhighway = 1"
+				+ ")";
 		} else {
-			if (startNodeLon > endNodeLon && startNodeLat > endNodeLat) {
-				NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes"
-					+ " where startNodes.id = " + startID + " and endNodes.id = " + endID
-					+ " and"
-					+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon + " + h + ")*(varNodes.lon - startNodes.lon + " + h + ")) + startNodes.lat  + " + h + " >= varNodes.lat"
-					+ " and"
-					+ " ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon - " + h + ")*(varNodes.lon - endNodes.lon - " + h + ")) + endNodes.lat - " + h + " <= varNodes.lat"
-					+ " and varNodes.partofhighway = 1";
-				EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from saarland.edges, saarland.nodes n1, saarland.nodes n2 "
-					+ " where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID " 
-					+ " and  fromNodeID in ("
-					+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes where startNodes.id = " + startID + " and endNodes.id = " + endID + " and "
-					+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon + " + h + ")*(varNodes.lon - startNodes.lon + " + h + ")) + startNodes.lat + " + h + " >= varNodes.lat"
-					+ " and"
-					+ " ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon - " + h + ")*(varNodes.lon - endNodes.lon - " + h + ")) + endNodes.lat - " + h + " <= varNodes.lat) "
-					+ " and toNodeID in ("
-					+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes where startNodes.id = " + startID + " and endNodes.id = " + endID + " and "
-					+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon + " + h + ")*(varNodes.lon - startNodes.lon + " + h + ")) + startNodes.lat + " + h + " >= varNodes.lat"
-					+ " and ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon - " + h + ")*(varNodes.lon - endNodes.lon - " + h + ")) + endNodes.lat - " + h + " <= varNodes.lat) and edges.partofhighway = 1";
-			} else {
-				if (startNodeLon > endNodeLon && startNodeLat < endNodeLat) {
-					h *= -1;
-					NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes"
-						+ " where startNodes.id = " + startID + " and endNodes.id = " + endID
-						+ " and"
-						+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon - " + h + ")*(varNodes.lon - startNodes.lon - " + h + ")) + startNodes.lat  + " + h + " <= varNodes.lat"
-						+ " and"
-						+ " ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon + " + h + ")*(varNodes.lon - endNodes.lon + " + h + ")) + endNodes.lat - " + h + " >= varNodes.lat"
-						+ " and varNodes.partofhighway = 1";
-					EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from saarland.edges, saarland.nodes n1, saarland.nodes n2 "
-						+ " where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID " 
-						+ " and  fromNodeID in ("
-						+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes where startNodes.id = " + startID + " and endNodes.id = " + endID + " and "
-						+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon - " + h + ")*(varNodes.lon - startNodes.lon - " + h + ")) + startNodes.lat + " + h + " <= varNodes.lat"
-						+ " and"
-						+ " ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon + " + h + ")*(varNodes.lon - endNodes.lon + " + h + ")) + endNodes.lat - " + h + " >= varNodes.lat) "
-						+ " and toNodeID in ("
-						+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes where startNodes.id = " + startID + " and endNodes.id = " + endID + " and "
-						+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon - " + h + ")*(varNodes.lon - startNodes.lon - " + h + ")) + startNodes.lat + " + h + " <= varNodes.lat"
-						+ " and ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon + " + h + ")*(varNodes.lon - endNodes.lon + " + h + ")) + endNodes.lat - " + h + " >= varNodes.lat) and edges.partofhighway = 1";
-			
-				} else {
-					h *= -1;
-					NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes"
-						+ " where startNodes.id = " + startID + " and endNodes.id = " + endID
-						+ " and"
-						+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon + " + h + ")*(varNodes.lon - startNodes.lon + " + h + ")) + startNodes.lat  + " + h + " <= varNodes.lat"
-						+ " and"
-						+ " ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon - " + h + ")*(varNodes.lon - endNodes.lon - " + h + ")) + endNodes.lat - " + h + " >= varNodes.lat"
-						+ " and varNodes.partofhighway = 1";
-					EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from saarland.edges, saarland.nodes n1, saarland.nodes n2 "
-						+ " where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID " 
-						+ " and  fromNodeID in ("
-						+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes where startNodes.id = " + startID + " and endNodes.id = " + endID + " and "
-						+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon + " + h + ")*(varNodes.lon - startNodes.lon + " + h + ")) + startNodes.lat + " + h + " <= varNodes.lat"
-						+ " and"
-						+ " ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon - " + h + ")*(varNodes.lon - endNodes.lon - " + h + ")) + endNodes.lat - " + h + " >= varNodes.lat) "
-						+ " and toNodeID in ("
-						+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes where startNodes.id = " + startID + " and endNodes.id = " + endID + " and "
-						+ " ((endNodes.lat - startNodes.lat)/((endNodes.lon - startNodes.lon)*(endNodes.lon - startNodes.lon)))*((varNodes.lon - startNodes.lon + " + h + ")*(varNodes.lon - startNodes.lon + " + h + ")) + startNodes.lat + " + h + " <= varNodes.lat"
-						+ " and ((startNodes.lat - endNodes.lat)/((startNodes.lon - endNodes.lon)*(startNodes.lon - endNodes.lon)))*((varNodes.lon - endNodes.lon - " + h + ")*(varNodes.lon - endNodes.lon - " + h + ")) + endNodes.lat - " + h + " >= varNodes.lat) and edges.partofhighway = 1";
-				}
-			}
+			//ps(x) = h (ey - sy) / (ex - sx)² (x - sx)² + sy + k
+			//pe(x) = h (sy - ey) / (sx - ex)² (x - ex)² + ey - k
+			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
+				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
+				+ " and "
+				+ " " + h + " *((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  + " + k + " >= varNodes.lat "
+				+ " and "
+				+ " " + h + " *((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat - " + k + " <= varNodes.lat "
+				+ " and varNodes.partofhighway = 1";
+			EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from saarland.edges, saarland.nodes n1, saarland.nodes n2 "
+				+ " where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID " 
+				+ " and  fromNodeID in ("
+				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
+				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
+				+ " and "
+				+ " " + h + "*((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  + " + k + " >= varNodes.lat "
+				+ " and "
+				+ " " + h + "*((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat - " + k + " <= varNodes.lat "
+				+ " and varNodes.partofhighway = 1"
+				+ ")"
+				+ " and toNodeID in ("
+				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
+				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
+				+ " and "
+				+ " " + h + " *((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  + " + k + " >= varNodes.lat "
+				+ " and "
+				+ " " + h + " *((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat - " + k + " <= varNodes.lat "
+				+ " and varNodes.partofhighway = 1"
+				+ ")";
 		}
-
-		
-		}
+	}
 
 	public int[] getNodeIDs() {
 		return nodeIDs;
