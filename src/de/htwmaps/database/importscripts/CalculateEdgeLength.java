@@ -29,15 +29,7 @@ public class CalculateEdgeLength {
 	ResultSet rsNode1 = null;
 	ResultSet rsNode2 = null;
 	
-	private Statement allEdgesStatement;
-
 	public CalculateEdgeLength() {
-		try {
-			allEdgesStatement = DBConnector.getConnection().createStatement();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		start();
 	}
     
@@ -64,40 +56,47 @@ public class CalculateEdgeLength {
     }
 	
 	private void start() {
-		Connection con = DBConnector.getConnection();
+		boolean moreResults = true;
 		ResultSet allEdges = null;
 		try {
 	        PreparedStatement psNode1 	= DBConnector.getConnection().prepareStatement("SELECT lat, lon FROM `nodes` WHERE `ID` = ?");
 	        PreparedStatement psNode2 	= DBConnector.getConnection().prepareStatement("SELECT lat, lon FROM `nodes` WHERE `ID` = ?");
 	        PreparedStatement psLength 	= DBConnector.getConnection().prepareStatement("UPDATE `edges` SET `length` = ? WHERE `ID`= ?");
-	        allEdges = allEdgesStatement.executeQuery("SELECT ID, fromNodeID, toNodeID FROM edges");
-	        System.out.println("Edges geladen");
-		while (allEdges.next()){
-			edgeID	= allEdges.getInt(1);
-			node1ID = allEdges.getInt(2);
-			node2ID = allEdges.getInt(3);
-			psNode1.setInt(1, node1ID);
-			rsNode1 = psNode1.executeQuery();
-			//System.out.println("Node1 Daten geladen");
-			if (rsNode1.next()) {
-				node1lat = rsNode1.getFloat(1);
-				node1lon = rsNode1.getFloat(2);
-			}
-			psNode2.setInt(1, node2ID);
-			rsNode2 = psNode2.executeQuery();
-			//System.out.println("Node2 Daten geladen");
-
-			if (rsNode2.next()) {
-				node2lat = rsNode2.getFloat(1);
-				node2lon = rsNode2.getFloat(2);
-			}
-			length = (float) betterDistance(node1lat, node1lon, node2lat, node2lon);
-			psLength.setFloat(1, length);
-			psLength.setInt(2, edgeID);
-			//System.out.println("SQL: " + psLength.toString());
-			psLength.execute();
-			//allEdges.next();
-		}
+	        while (moreResults) {
+	        	allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, fromNodeID, toNodeID FROM edges WHERE length = 0 LIMIT 0, 100000");
+		        System.out.println("neue 1000000 geladen");
+	        	if (!allEdges.next()) {
+		        	moreResults = false;
+		        	System.out.println("nichts mehr da");
+		        }
+	        	System.out.println("Edges geladen");
+				while (allEdges.next()){
+					edgeID	= allEdges.getInt(1);
+					node1ID = allEdges.getInt(2);
+					node2ID = allEdges.getInt(3);
+					psNode1.setInt(1, node1ID);
+					rsNode1 = psNode1.executeQuery();
+					//System.out.println("Node1 Daten geladen");
+					if (rsNode1.next()) {
+						node1lat = rsNode1.getFloat(1);
+						node1lon = rsNode1.getFloat(2);
+					}
+					psNode2.setInt(1, node2ID);
+					rsNode2 = psNode2.executeQuery();
+					//System.out.println("Node2 Daten geladen");
+		
+					if (rsNode2.next()) {
+						node2lat = rsNode2.getFloat(1);
+						node2lon = rsNode2.getFloat(2);
+					}
+					length = (float) betterDistance(node1lat, node1lon, node2lat, node2lon);
+					psLength.setFloat(1, length);
+					psLength.setInt(2, edgeID);
+					//System.out.println("SQL: " + psLength.toString());
+					psLength.execute();
+				}
+	        }
+	        
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
