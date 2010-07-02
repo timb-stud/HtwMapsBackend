@@ -1,11 +1,7 @@
 package de.htwmaps.database.importscripts;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Connection;
+import java.io.FileNotFoundException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,36 +16,29 @@ import de.htwmaps.database.DBConnector;
 
 public class ParseTags {
 	private final String READ_PATH;
-	private final String WRITE_PATH;
 
-    public ParseTags(String READ_PATH, String WRITE_PATH) {
+    public ParseTags(String READ_PATH) {
     	this.READ_PATH = READ_PATH;
-    	this.WRITE_PATH = WRITE_PATH;
     	start();
     }    
 
     private void start() {
     	boolean isNode = true;
     	int counter = 0;
-    	int event = 0;
     	int id = 0;
-    	String attributeName;
-    	String parentValue = "";
+    	String parentValue = null;
 		String key;
 		String value;
 		Date currentTime;
 		ResultSet rs = null;
-        StringBuilder sb = new StringBuilder();
-        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-        Connection con = DBConnector.getConnection();
 		try {
-	        PreparedStatement ps1 = con.prepareStatement("SELECT ID FROM `k_tags` WHERE `key` = ? AND `value` = ?");
-	        PreparedStatement ps2 = con.prepareStatement("INSERT INTO `k_tags` (`ID`, `key`, `value`) VALUES (NULL, ?, ?);");
-			XMLStreamReader xmlStreamReader = inputFactory.createXMLStreamReader(new FileInputStream(READ_PATH));
-			BufferedWriter bw = new BufferedWriter(new FileWriter(WRITE_PATH));
+	        PreparedStatement ps1 = DBConnector.getConnection().prepareStatement("SELECT ID FROM `k_tags` WHERE `key` = ? AND `value` = ?");
+	        PreparedStatement ps2 = DBConnector.getConnection().prepareStatement("INSERT INTO `k_tags` (`ID`, `key`, `value`) VALUES (NULL, ?, ?)");
+	        PreparedStatement ps3 = DBConnector.getConnection().prepareStatement("INSERT INTO `r_node_tag` (`ID`, `nodeID`, `tagID`) VALUES (NULL, ?, ?)");
+	        PreparedStatement ps4 = DBConnector.getConnection().prepareStatement("INSERT INTO `r_way_tag` (`ID`, `wayID`, `tagID`) VALUES (NULL, ?, ?)");
+			XMLStreamReader xmlStreamReader = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(READ_PATH));
             while (xmlStreamReader.hasNext()) {
-                event = xmlStreamReader.next();
-				if (event == XMLStreamConstants.START_ELEMENT) {
+				if (xmlStreamReader.next() == XMLStreamConstants.START_ELEMENT) {
 					if ((xmlStreamReader.getName().toString().equals("relation"))) {
 						break;
 					}
@@ -62,8 +51,7 @@ public class ParseTags {
 						parentValue = xmlStreamReader.getAttributeValue(0);
 					}
                     if (xmlStreamReader.getName().toString().equals("tag")) {
-                        attributeName = xmlStreamReader.getAttributeLocalName(0);
-                        if (attributeName.equals("k") && !(xmlStreamReader.getAttributeValue(0).equals("created_by") || xmlStreamReader.getAttributeValue(0).equals("ele"))) {
+                        if (xmlStreamReader.getAttributeLocalName(0).equals("k") && !(xmlStreamReader.getAttributeValue(0).equals("created_by") || xmlStreamReader.getAttributeValue(0).equals("ele"))) {
                         	key = xmlStreamReader.getAttributeValue(0);
                             value = xmlStreamReader.getAttributeValue(1);
                             value = value.replaceAll("'", " ");
@@ -82,33 +70,33 @@ public class ParseTags {
                     			rs.next();
                     			id = rs.getInt("ID");
                     		}
+                        	if (isNode) {
+                        		ps3.setString(1, parentValue);
+                        		ps3.setInt(2, id);
+                        		ps3.executeUpdate();
+                        	} else {
+                        		ps4.setString(1, parentValue);
+                        		ps4.setInt(2, id);
+                        		ps4.executeUpdate();
+                            }
                         	counter++;
-                        	if (counter % 40000 == 0) {
-                        		bw.write(sb.toString());
-                        		sb.delete(0, sb.length());
+                        	if (counter % 100000 == 0) {
                         		currentTime = new Date();
                         		System.out.println(currentTime + ": " + counter + " tags geparst");
                         	}
-                        	if (isNode) {
-                        		sb.append("INSERT INTO `r_node_tag` (`ID`, `nodeID`, `tagID`) VALUES (NULL, '" + parentValue + "', '" + id + "');").append("\n");
-                        	} else {
-                        		sb.append("INSERT INTO `r_way_tag` (`ID`, `wayID`, `tagID`) VALUES (NULL, '" + parentValue + "', '" + id + "');").append("\n");
-                            }
                     	}
                     }
                 }
             }
             ps1.close();
             ps2.close();
-    		bw.write(sb.toString());
-    		bw.close();
+            ps3.close();
+            ps4.close();
 		} catch (XMLStreamException e1) {
 			e1.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
     }

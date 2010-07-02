@@ -1,9 +1,7 @@
 package de.htwmaps.database.importscripts;
 
 import java.awt.geom.Arc2D;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -11,23 +9,22 @@ import de.htwmaps.database.DBConnector;
 
 /**
  * @author Stanislaw Tartakowski
+ * @coAuthor Yassir Klos (Strassen werden jetzt direkt in die DB geschrieben, und nicht erst in eine Datei)
  * Hilfsklasse zum Befuellen der Datenbank
  *
  * Diese Klasse markiert alle Strassen auf der Datenbank mit ihrem zugehoerigen Ort. Der Ort wird ueber einen Kreisradius und einen zentralen Punkt definiert.
 */ 
 public class UpdateStreets {
 	private double diameter;
-	private BufferedWriter toFileWriter;
 	private Statement cityNodeStatement, everyWayStartNodeStatement, everyCityNodeStatement;
 	private String place;
 	
 	/*
 	 * diameter ist der Durchmesser (in km) des Kreises(Ortes) in dem alle Wege erfasst werden sollen
 	 */
-	public UpdateStreets(String fileName, String place, double diameter) throws Exception {
+	public UpdateStreets(String place, double diameter) throws Exception {
 		this.place = place;
 		this.diameter = 0.0099 * diameter;
-		toFileWriter = new BufferedWriter(new FileWriter(new File(fileName)));
 		cityNodeStatement = DBConnector.getConnection().createStatement();
 		everyWayStartNodeStatement = DBConnector.getConnection().createStatement();
 		everyCityNodeStatement = DBConnector.getConnection().createStatement();
@@ -37,6 +34,7 @@ public class UpdateStreets {
 	 * Diese Methode prüft alle Ways die es in der DB gibt, ob diese in einem bestimmten Kreis(Ort) liegen und schreibt das ergebnis in eine datei.
 	 */
 	public void writeEveryWayToFile() throws Exception {
+		PreparedStatement ps = DBConnector.getConnection().prepareStatement("INSERT INTO streets (ID, wayID, streetname, nodeID, cityname) VALUES (null, ?, ?, ?, ?)");
 		Arc2D arc = new Arc2D.Double();
 		ResultSet everyCityNode = everyCityNodeStatement.executeQuery("select nodes.id from"
 																	+ " nodes, r_node_tag, k_tags"
@@ -61,8 +59,11 @@ public class UpdateStreets {
 
 				while (everyWayStartNode.next()) {
 					if (arc.contains(everyWayStartNode.getFloat(1), everyWayStartNode.getFloat(2))) {
-						toFileWriter.write("INSERT INTO streets (ID, wayID, streetname, nodeID, cityname) VALUES (null, " + everyWayStartNode.getInt(3) + ", '" + everyWayStartNode.getString(4) + "', " + everyCityNode.getInt(1) + ", '" + cityNode.getString(3) + "');\r\n");
-						System.out.println("INSERT INTO streets (ID, wayID, streetname, nodeID, cityname) VALUES (null, " + everyWayStartNode.getInt(3) + ", '" + everyWayStartNode.getString(4) + "', " + everyCityNode.getInt(1) + ", '" + cityNode.getString(3) + "');");
+						ps.setInt(1, everyWayStartNode.getInt(3));
+						ps.setString(2, everyWayStartNode.getString(4));
+						ps.setInt(3, everyCityNode.getInt(1));
+						ps.setString(4, cityNode.getString(3));
+						ps.executeUpdate();
 					}
 				}
 			} catch (Exception e) {
@@ -70,11 +71,10 @@ public class UpdateStreets {
 				continue;
 			}
 		}
-		toFileWriter.close();
-		System.out.println("fertig");
+		ps.close();
 	}
 	
-	public static void main(String WRITE_PATH) throws Exception {
+	public static void main() throws Exception {
 		/*
 		 * 
 			place=city 		Node 	10km
@@ -86,7 +86,7 @@ public class UpdateStreets {
 		String typ = "suburb";
 		double diameter = 1;
 		
-		UpdateStreets w = new UpdateStreets(WRITE_PATH, typ, diameter);
+		UpdateStreets w = new UpdateStreets(typ, diameter);
 		w.writeEveryWayToFile();
 	}
 }

@@ -3,43 +3,46 @@ package de.htwmaps.database.importscripts;
 import java.util.Date;
 
 public class XMLParser {
-	private static final String READ_PATH = "D:/HTWMaps/saarland.osm";
-	private static final String WRITE_PATH = "D:/HTWMaps/output/saarland/";
-
 	public XMLParser() {
 	}
 
+	/**
+	 * 
+	 * @param args[0] Dateiname der XMLDatei, die geparst werden soll
+	 */
 	public static void main(String[] args) {
+		String READ_PATH = args[0];
 		print("XMLParser running...");
 
+		//Parse Methoden: nodes/ways/edges/tags werden in die DB eingetragen
 		print("Parsing nodes...");
-		new ParseNodes(READ_PATH, WRITE_PATH + "nodes.sql");
+		new ParseNodes(READ_PATH);
 		print("Parsing nodes finished!");
 
 		print("Parsing ways...");
-		new ParseWays(READ_PATH, WRITE_PATH + "ways.sql");
+		new ParseWays(READ_PATH);
 		print("Parsing ways finished!");
 
 		print("Parsing edges...");
-		new ParseEdges(READ_PATH, WRITE_PATH + "edges.sql");
+		new ParseEdges(READ_PATH);
 		print("Parsing edges finished!");
 
 		print("Parsing tags...");
-		new ParseTags(READ_PATH, WRITE_PATH + "tags.sql");
+		new ParseTags(READ_PATH);
 		print("Parsing tags finished!");
 
-		//Ab hier muessen nodes.sql/ways.sql/edges.sql/tags.sql bereits der DB hinzugefuegt worden sein
-		print("Updating PartsOfHighway...");
+		//Update Methoden: nodes/ways/edges/tags muessen schon in der DB eingetragen sein
+		print("Updating PartOfHighway...");
 		new UpdatePartOfHightway();
 		print("Updating finished!");
 
-		print("Parsing streets...");
+		print("Updating streets...");
 		try {
-			UpdateStreets.main(WRITE_PATH + "streets.sql");
+			UpdateStreets.main();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		print("Parsing streets finished!");
+		print("Updating finished!");
 
 		print("XMLParser finished!");
 	}

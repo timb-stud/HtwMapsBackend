@@ -1,10 +1,9 @@
 package de.htwmaps.database.importscripts;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -13,88 +12,71 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import de.htwmaps.database.DBConnector;
 
 public class ParseEdges {
 
 	//Attribute
-    private String READ_PATH, WRITE_PATH;
+    private final String READ_PATH;
 
     /**
      * Konstruktor
      * @param READ_PATH Pfad + Name der Datei aus welcher gelesen wird
-     * @param WRITE_PATH Pfad + Name in welche geschrieben wird
-     * @throws IOException 
      */
-    public ParseEdges(String READ_PATH, String WRITE_PATH) {
+    public ParseEdges(String READ_PATH) {
     	this.READ_PATH = READ_PATH;
-    	this.WRITE_PATH = WRITE_PATH;
     	start();
     }    
 
 
     /**
      * Durchsucht die OSM Datei nach allen benoetigten Edges Informationen 
-     * und schreibt diese in SQL-Form in eine Datei.
-     * @throws IOException
+     * und schreibt diese in die Datenbank
      */
     private void start() {
     	int counter = 0;
+    	int event = 0;
     	int retCounter = 0;
-        String id = null;
         Date currentTime;
-        StringBuilder sb = new StringBuilder();
-        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+        LinkedList<String> ll = new LinkedList<String>();
         try {
-            XMLStreamReader xmlStreamReader = inputFactory.createXMLStreamReader(new FileInputStream(READ_PATH));
-			BufferedWriter bw = new BufferedWriter(new FileWriter(WRITE_PATH));
-            LinkedList<String> retCache = new LinkedList<String>() ;
+        	PreparedStatement ps = DBConnector.getConnection().prepareStatement("INSERT INTO `edges` (`fromNodeID`, `toNodeID`, `wayID`) VALUES (?, ?, ?)");
+            XMLStreamReader xmlStreamReader = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(READ_PATH));
             while (xmlStreamReader.hasNext()) {
-                int event = xmlStreamReader.next();
+                event = xmlStreamReader.next();
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     if (xmlStreamReader.getName().toString().equals("way")) {
-                        for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++) {
-                            String attributeName = xmlStreamReader.getAttributeLocalName(i).toString();
-                            if (attributeName.equals("id")) {
-                                id = xmlStreamReader.getAttributeValue(i).toString();
-                                break;
-                            }
-                        }
+                    	ps.setInt(3, Integer.parseInt(xmlStreamReader.getAttributeValue(0).toString()));
                     }
                     if (xmlStreamReader.getLocalName().equals("nd")) {
-                        for (int i = 0; i < xmlStreamReader.getAttributeCount(); i++) {
-                            String attributeName = xmlStreamReader.getAttributeLocalName(i).toString();
-                            if (attributeName.equals("ref")) {
-                                retCache.add(retCounter, xmlStreamReader.getAttributeValue(i).toString());
-                                retCounter++;
-                            }
-                        }
+                    	ll.add(retCounter, xmlStreamReader.getAttributeValue(0).toString());
+                        retCounter++;
                     }
                 }
                 if (event == XMLStreamConstants.END_ELEMENT && xmlStreamReader.getLocalName().equals("way")) {
-                    for (int i = 0; i < retCache.size(); i++) {
-                        if (i+1 < retCounter) {
+                    for (int i = 0; i < ll.size(); i++) {
+                        if (i + 1 < retCounter) {
+                        	ps.setInt(1, Integer.parseInt(ll.get(i)));
+                        	ps.setInt(2, Integer.parseInt(ll.get(i)));
+                        	ps.executeUpdate();
                         	counter++;
-                        	if (counter % 100000 == 0) {
+                        	if (counter % 1000000 == 0) {
                         		currentTime = new Date();
                         		System.out.println(currentTime + ": " + counter + " edges geparst");
                         	}
-                            sb.append("INSERT INTO `edges` (`fromNodeID`, `toNodeID`, `wayID`) VALUES (")
-                              .append(retCache.get(i) + ", " + retCache.get(i+1) + "," + id + ");\n");
                         }
                     }
-                    bw.write(sb.toString());
-                    sb.delete(0, sb.length());
+                    ll.clear();
                     retCounter = 0;
                 }
             }
-            bw.close();
+            ps.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (XMLStreamException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-        }
+        } catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
 }
