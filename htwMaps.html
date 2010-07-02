@@ -1,0 +1,59 @@
+<html> 
+<head> 
+    <title>HTW Maps - Mapstraction</title> 
+    <script src="http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAYfI_xw3MwUbmAScWsa72VBSeiHve5IwsMuqAjxrbixTJ6mqDsxTZLbNcpVxq9PneOXm7mkBjelEQpw" type="text/javascript"></script>    
+    <script type="text/javascript" src="mapstraction.js"></script>
+    <script type="text/javascript"> 
+    		var maps;
+			function init(){
+	            maps = new Mapstraction('mapstraction','openstreetmap');
+                var myPoint = new LatLonPoint(49.3431, 7.0213);
+                maps.setCenterAndZoom(myPoint, 13);
+ 	            maps.addControls({
+     	           pan: true, 
+     	           zoom: 'small',
+     	           map_type: true 
+     	       });
+            }
+            
+            function polyTest(){
+            	var lats = Array(3);
+            	var lons = Array(3);
+            	lats[0] = 49.657;
+            	lons[0] = 6.326;
+            	lats[1] = 49.391;
+            	lons[1] = 7.1549;
+            	lats[2] = 49.121;
+            	lons[2] = 7.4;
+            	addPolyLine(lats, lons);
+            }
+            
+            function addPolyLine(lats, lons){
+            	var points = new Array(lats.length);
+            	for(var i = 0; i < points.length; i++){
+            		points[i] = new LatLonPoint(lats[i], lons[i]);
+            	}
+				var polyline = new Polyline(points);
+				polyline.setColor("#FF0000");
+				polyline.setOpacity(0.5);
+				polyline.setWidth(2);
+				maps.addPolyline(polyline);
+            }
+            
+			function addpolylineRect(){
+				var myPoly = new Polyline([new LatLonPoint(49.3431, 7.0213),
+					new LatLonPoint(49.391, 7.1549)]);
+				myPoly.setColor("#00ee00");
+				myPoly.setOpacity(0.4);
+				myPoly.setWidth(2);
+				maps.addPolyline(myPoly);
+			}
+            
+	</script> 
+</head>
+<h1> HTW MAPS </h1>
+<body onload="init(); addpolylineRect(); polyTest();"> 
+            <div id="mapstraction" style="position:relative;  height: 500px; width: 100% "></div> 
+</body> 
+</html> 
+ 
