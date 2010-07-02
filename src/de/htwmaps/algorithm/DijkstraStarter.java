@@ -1,8 +1,14 @@
 package de.htwmaps.algorithm;
 
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import de.htwmaps.algorithm.util.RouteByLetter;
+import de.htwmaps.database.DBConnector;
 import de.htwmaps.util.FibonacciHeap;
 import java.util.HashMap;
 
@@ -121,5 +127,46 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		}
 		str.append(" </trkseg>\n</trk>\n</gpx>");
 		return str.toString();
+	}
+	
+	public String writeRoute(Node[] result) throws Exception {
+		String street = "";
+		ArrayList<String> streets = new ArrayList<String>();
+		ArrayList<String> directions = new ArrayList<String>();
+		Statement wayStatement = DBConnector.getConnection().createStatement();
+		
+		for (int i = 0; i < result.length; i++) {
+			ResultSet currentNodeRS = wayStatement.executeQuery("select value from edges, r_way_tag, k_tags where r_way_tag.tagID = k_tags.ID and edges.wayID = r_way_tag.wayID and (edges.fromNodeID = " + result[i].getId() + " or edges.toNodeID = " + result[i].getId() + ") and k_tags.key = 'name'");
+			if (currentNodeRS.next()) {
+				street = currentNodeRS.getString(1);
+				if (!streets.isEmpty() && !streets.get(streets.size() - 1).equals(street)) {
+					if (i < result.length - 1) {
+						ResultSet nextNodeRS = wayStatement.executeQuery("select value from edges, r_way_tag, k_tags where r_way_tag.tagID = k_tags.ID and edges.wayID = r_way_tag.wayID and (edges.fromNodeID = " + result[i + 1].getId() + " or edges.toNodeID = " + result[i + 1].getId() + ") and k_tags.key = 'name'");
+						if (nextNodeRS.next() && street.equals(nextNodeRS.getString(1))) {
+							directions.add(giveDirection(result[i], result[i + 1]));
+							streets.add(street);
+						}
+					}
+				} else {
+					if (streets.isEmpty()) {
+						streets.add(street);
+					}
+				}
+			}
+			
+			
+		}
+		StringBuilder res = new StringBuilder("fahren sie auf die erste straße: " + streets.get(0) + "\n");
+		for (int i = 1; i < streets.size(); i++) {
+			res.append(directions.get(i - 1) + streets.get(i) + "\n");
+		}
+		return res.toString();
+	}
+
+	private String giveDirection(Node from, Node to) {
+		if (from.getX() < to.getX()) {
+			return "rechts halten : ";
+		}
+		return "links halten : ";
 	}
 }
