@@ -68,10 +68,10 @@ public class CalculateEdgeLength {
 	        PreparedStatement psLength 	= DBConnector.getConnection().prepareStatement("UPDATE `edges` SET `length` = ? WHERE `ID`= ?");
 	        while (moreResults) {
 	        	System.out.println("Lade Edges");
-	        	allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, fromNodeID, toNodeID FROM edges WHERE length = 0 LIMIT 0, 100000");
+	        	allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, fromNodeID, toNodeID FROM edges WHERE length = 0 LIMIT 0, 10");
 	        	System.out.println("Edges geladen");
 		        System.out.println("Setze Edgecount");
-		        restEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT COUNT(*) FROM edges WHERE length <> 0");
+		        restEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT COUNT(*) FROM edges WHERE length = 0");
 	        	restEdges.next();
 	        	restEdge = restEdges.getInt(1);
 		        System.out.println("noch " + restEdge + " Edges");
@@ -79,7 +79,7 @@ public class CalculateEdgeLength {
 		        	moreResults = false;
 		        	System.out.println("nichts mehr da");
 		        }
-				while (allEdges.next()){
+				while (allEdges.next() && moreResults){
 					//System.out.println("Inner");
 					edgeID	= allEdges.getInt(1);
 					node1ID = allEdges.getInt(2);
