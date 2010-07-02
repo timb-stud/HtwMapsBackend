@@ -73,11 +73,11 @@ public class DBAdapterParabel{
 	}
 
 	private void setRectangle(int startID, int endID, float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) {
-		float h = 1f;
+		float h = 0.9f;
 		float k = 0.02f;
 		if(startNodeLon < endNodeLon && startNodeLat < endNodeLat || startNodeLon > endNodeLon && startNodeLat < endNodeLat){
-			//ps(x) = h (ey - sy) / (ex - sx)² (x - sx)² + sy - k
-			//pe(x) = h (sy - ey) / (sx - ex)² (x - ex)² + ey + k
+			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy - k
+			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey + k
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
 				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
 				+ " and "
@@ -106,8 +106,8 @@ public class DBAdapterParabel{
 				+ " and varNodes.partofhighway = 1"
 				+ ")";
 		} else {
-			//ps(x) = h (ey - sy) / (ex - sx)² (x - sx)² + sy + k
-			//pe(x) = h (sy - ey) / (sx - ex)² (x - ex)² + ey - k
+			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy + k
+			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey - k
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
 				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
 				+ " and "
