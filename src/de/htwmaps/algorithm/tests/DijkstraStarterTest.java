@@ -18,20 +18,26 @@ public class DijkstraStarterTest {
 		InitLogger.INSTANCE.initLogger();
 		DijkstraStarter ds = new DijkstraStarter();
 
-		 int startNodeID = 403500108;
-		 int goalNodeID =  262529904;
-		 float startNodeLon = 7.3093605f;
-		 float startNodeLat = 49.1737379f;
-		 float endNodeLon = 6.3849224f;
-		 float endNodeLat = 49.5321632f;
-
-		
-//		 int startNodeID = 335981487;
+//		 int startNodeID = 274026134;
 //		 int goalNodeID =  587836344;
-//		 float startNodeLon = 7.1910695f;
-//		 float startNodeLat = 49.3699591f;
+//		 float startNodeLon = 7.0504895f;
+//		 float startNodeLat = 49.3752437f;
 //		 float endNodeLon = 7.1199603f;
 //		 float endNodeLat = 49.3599494f;
+
+//		 int startNodeID = 403500108;
+//		 int goalNodeID =  262529904;
+//		 float startNodeLon = 7.3093605f;
+//		 float startNodeLat = 49.1737379f;
+//		 float endNodeLon = 6.3849224f;
+//		 float endNodeLat = 49.5321632f;
+		 
+		 int startNodeID = 335981487;
+		 int goalNodeID =  587836344;
+		 float startNodeLon = 7.1910695f;
+		 float startNodeLat = 49.3699591f;
+		 float endNodeLon = 7.1199603f;
+		 float endNodeLat = 49.3599494f;
 		
 		
 		

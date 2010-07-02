@@ -2,6 +2,8 @@ package de.htwmaps.database.importscripts;
 
 import java.util.Date;
 
+import de.htwmaps.algorithm.Edge;
+
 public class XMLParser {
 	public XMLParser() {
 	}
@@ -35,6 +37,10 @@ public class XMLParser {
 		print("Updating PartOfHighway...");
 		//new UpdatePartOfHightway();
 		print("Updating finished!");
+		
+		print("Update edge.length");
+		new CalculateEdgeLength();
+		print("Update edge.length finished!");
 
 		print("Updating streets...");
 		try {
