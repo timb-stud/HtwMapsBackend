@@ -16,15 +16,15 @@ public class XMLParser {
 
 		//Parse Methoden: nodes/ways/edges/tags werden in die DB eingetragen
 		print("Parsing nodes...");
-		new ParseNodes(READ_PATH);
+		//new ParseNodes(READ_PATH);
 		print("Parsing nodes finished!");
 
 		print("Parsing ways...");
-		new ParseWays(READ_PATH);
+		//new ParseWays(READ_PATH);
 		print("Parsing ways finished!");
 
 		print("Parsing edges...");
-		new ParseEdges(READ_PATH);
+		//new ParseEdges(READ_PATH);
 		print("Parsing edges finished!");
 
 		print("Parsing tags...");
@@ -33,12 +33,12 @@ public class XMLParser {
 
 		//Update Methoden: nodes/ways/edges/tags muessen schon in der DB eingetragen sein
 		print("Updating PartOfHighway...");
-		new UpdatePartOfHightway();
+		//new UpdatePartOfHightway();
 		print("Updating finished!");
 
 		print("Updating streets...");
 		try {
-			UpdateStreets.main();
+			//UpdateStreets.main();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

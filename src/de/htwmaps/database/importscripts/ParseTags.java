@@ -53,8 +53,14 @@ public class ParseTags {
                     if (xmlStreamReader.getName().toString().equals("tag")) {
                         if (xmlStreamReader.getAttributeLocalName(0).equals("k") && !(xmlStreamReader.getAttributeValue(0).equals("created_by") || xmlStreamReader.getAttributeValue(0).equals("ele"))) {
                         	key = xmlStreamReader.getAttributeValue(0);
-                            value = xmlStreamReader.getAttributeValue(1);
+                        	value = xmlStreamReader.getAttributeValue(1);
                             value = value.replaceAll("'", " ");
+                        	if (key.length() > 49){
+                        		key = key.substring(0, 49);
+                        	}
+                            if (value.length() > 299) {
+                            	value = value.substring(0, 299);
+                            }
                             ps1.setString(1, key);
                             ps1.setString(2, value);
                             rs = ps1.executeQuery();
