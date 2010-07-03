@@ -22,7 +22,15 @@ public class DBAdapterParabel{
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
 		
-	public DBAdapterParabel(int startID, int endID, float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {
+	public DBAdapterParabel(int startID, int endID) throws SQLException {
+		ResultSet start = DBConnector.getConnection().createStatement().executeQuery("select lon, lat from nodes where id = " + startID);
+		ResultSet end = DBConnector.getConnection().createStatement().executeQuery("select lon, lat from nodes where id = " + endID);
+		start.next(); end.next();
+		float startNodeLon = start.getFloat(1);
+		float startNodeLat = start.getFloat(2);
+		float endNodeLon = end.getFloat(1);
+		float endNodeLat = end.getFloat(2);
+		
 		setRectangle(startID, endID, startNodeLon, startNodeLat, endNodeLon, endNodeLat);
 		initNodes();
 		initEdges();
