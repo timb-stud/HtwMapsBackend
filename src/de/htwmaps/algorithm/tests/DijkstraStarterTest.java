@@ -51,7 +51,7 @@ public class DijkstraStarterTest {
 		long time = System.currentTimeMillis();
 		Node[] result = ds.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
 		System.out.println("insgesamt: " + (System.currentTimeMillis() - time));
-		System.out.println(ds.generateTrack(result));
+		//System.out.println(ds.generateTrack(result));
 		System.out.println(ds.writeRoute(result));
 		
 		
