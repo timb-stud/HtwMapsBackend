@@ -86,13 +86,13 @@ public class Dijkstra extends Thread {
 	private void updateSuccDist(FibonacciHeap Q, DijkstraNode currentNode, DijkstraNode successor) {
 		double alternative = currentNode.getDist() + currentNode.getDistanceTo(successor);
 
-		if (alternative < successor.getDist()) {
+		if (alternative < successor.getDist()) {	
 			successor.setDist(alternative);
 			successor.setPredecessor(currentNode);
 			touch(successor);
 			nodesVisited++;
 			if (!Q.contains(successor)) { 
-								if (thread) {
+				if (thread) {
 					Q.add(successor, alternative + successor.getDistanceTo(endNode) - successor.getDistanceTo(startNode));
 				} else {
 					Q.add(successor, alternative + successor.getDistanceTo(endNode));
