@@ -3,7 +3,6 @@ package de.htwmaps.algorithm;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import de.htwmaps.algorithm.util.RouteByLetter;
 import de.htwmaps.util.FibonacciHeap;
 
 /**
@@ -147,9 +146,6 @@ public class AStar implements ShortestPathAlgorithm {
 		time = System.currentTimeMillis();
 		Node[] result = aStar(allNodes, startNodeID, goalNodeID).toArray(new Node[0]);
 		System.out.println("Algo: " + (System.currentTimeMillis() - time) + "ms");
-		
-		RouteByLetter rblTest = new RouteByLetter(result);
-		
 		return result;
 	}
 
