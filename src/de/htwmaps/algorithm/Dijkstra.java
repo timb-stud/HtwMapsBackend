@@ -92,11 +92,7 @@ public class Dijkstra extends Thread {
 			touch(successor);
 			nodesVisited++;
 			if (!Q.contains(successor)) { 
-				if (thread) {
-					Q.add(successor, alternative + successor.getDistanceTo(endNode) - successor.getDistanceTo(startNode));
-				} else {
-					Q.add(successor, alternative + successor.getDistanceTo(endNode));
-				}
+				Q.add(successor, Math.abs(successor.getX() - endNode.getX()) + Math.abs(successor.getY() - endNode.getY()));
 			}
 		}
 	}
