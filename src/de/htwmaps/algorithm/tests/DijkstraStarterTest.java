@@ -50,8 +50,6 @@ public class DijkstraStarterTest {
 		
 		
 		
-		DBAdapterParabel dbar;
-		dbar = new DBAdapterParabel(startNodeID, goalNodeID);
 		int[] nodeIDs = dbar.getNodeIDs();
 		float[] nodeLons = dbar.getNodeLons(); //x
 		float[] nodeLats = dbar.getNodeLats(); //y
