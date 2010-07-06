@@ -123,31 +123,31 @@ public class DBAdapterParabel{
 				+ " and varNodes.partofhighway = 1";
 			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID from saarland.edges2"
 			+ " where" 
-			+ " 0.9*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - 0.009 <= node1lat"
+			+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - 0.009 <= node1lat"
 			+ " and"
-			+ " 0.9*((?)/POW((?),2))*POW((node1lon - ?),2) + ? + 0.009 >= node1lat"
+			+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ? + 0.009 >= node1lat"
 			+ " and"
-			+ " 0.9*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  - 0.009 <= node2lat"
+			+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  - 0.009 <= node2lat"
 			+ " and"
-			+ " 0.9*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + 0.009 >= node2lat";
+			+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + 0.009 >= node2lat";
 		} else {
 			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy + k
 			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey - k
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes varNodes "
 				+ " where "
-				+ " 0.9 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + 0.009 >= varNodes.lat "
+				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + 0.009 >= varNodes.lat "
 				+ " and "
-				+ " 0.9 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - 0.009 <= varNodes.lat "
+				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - 0.009 <= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
 			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID from saarland.edges2"
 			+ " where" 
-			+ " 0.9*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + 0.009 >= node1lat"
+			+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + 0.009 >= node1lat"
 			+ " and"
-			+ " 0.9*((?)/POW((?),2))*POW((node1lon - ?),2) + ? - 0.009 <= node1lat"
+			+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ? - 0.009 <= node1lat"
 			+ " and"
-			+ " 0.9*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  + 0.009 >= node2lat"
+			+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  + 0.009 >= node2lat"
 			+ " and"
-			+ " 0.9*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - 0.009 <= node2lat";
+			+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - 0.009 <= node2lat";
 		}
 	}
 
