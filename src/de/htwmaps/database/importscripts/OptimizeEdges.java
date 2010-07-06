@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import de.htwmaps.database.DBConnector;
 
 /**
- * @author tobiaslana
+ * @author Tobias Lana, Yassir Klos
  *
  */
 public class OptimizeEdges {
@@ -45,7 +45,7 @@ public class OptimizeEdges {
 				int startNodeID = 270697578;
 				//int endNodeID = rs1.getInt(2)
 				int endNodeID = 270697627;
-				runWay(wayID, startNodeID, endNodeID);
+				runWay(wayID, startNodeID, startNodeID, endNodeID);
 				/*ps2.setInt(1, wayID);
 				ps2.setInt(2, startNodeID);
 				ResultSet rs2 = ps2.executeQuery();
@@ -88,21 +88,22 @@ public class OptimizeEdges {
 		
 	}
 	
-	private void runWay(int wayID, int currentNodeID, int endNodeID) {
+	private void runWay(int wayID, int startNodeID, int currentNodeID, int endNodeID) {
 		//suche startkante und starte optimierung
 		System.out.println("Current: " + currentNodeID);
 		if (currentNodeID != endNodeID && currentNodeID != 0) {
 			int nextNodeID = getNextNode(currentNodeID, wayID);
 			System.out.println("Next: " + nextNodeID);
-			runWay(wayID, nextNodeID, endNodeID);
+			runWay(wayID, startNodeID, nextNodeID, endNodeID);
 		}
 	}
 
 	private int getNextNode(int currentNodeID, int wayID) {
 		// TODO Auto-generated method stub
-		String sql = "SELECT node2ID FROM `edges2` WHERE `wayID` = ? AND `node1ID` = ?";
+		String sql = "SELECT node2ID, length FROM `edges2` WHERE `wayID` = ? AND `node1ID` = ?";
 		PreparedStatement ps;
 		int nextNodeID = 0;
+		float length = 0.0F;
 		try {
 			ps = DBConnector.getConnection().prepareStatement(sql);
 			ps.setInt(1, wayID);
@@ -110,6 +111,7 @@ public class OptimizeEdges {
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			nextNodeID = rs.getInt(1);
+			length = rs.getFloat(2);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
