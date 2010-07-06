@@ -44,7 +44,7 @@ public class DijkstraStarterTest {
 		
 		
 		DBAdapterParabel dbar;
-		dbar = new DBAdapterParabel(startNodeID, goalNodeID, startNodeLon, startNodeLat, endNodeLon, endNodeLat);
+		dbar = new DBAdapterParabel(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
 
 		
 		
