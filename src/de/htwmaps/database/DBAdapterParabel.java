@@ -4,11 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import de.htwmaps.algorithm.Node;
-
 
 public class DBAdapterParabel{
-	private int startID, endID;
 	private float startNodeLon, startNodeLat, endNodeLon, endNodeLat;
 	//Nodes
 	private int[] nodeIDs;
@@ -29,8 +26,6 @@ public class DBAdapterParabel{
 		this.startNodeLon = startNodeLon;
 		this.endNodeLat = endNodeLat;
 		this.endNodeLon = endNodeLon;
-		this.startID = startID;
-		this.endID = endID;
 		setRectangle();
 		initNodes();
 		initEdges();
@@ -60,7 +55,6 @@ public class DBAdapterParabel{
 		nodeIDs = new int[tableLength];
 		nodeLons = new float[tableLength];
 		nodeLats = new float[tableLength];
-		System.out.println(tableLength);
 		
 		for (int i = 0; resultSet.next(); i++){
 			nodeIDs[i] = resultSet.getInt(1);
@@ -98,7 +92,6 @@ public class DBAdapterParabel{
 		distances = new double[tableLength];
 		oneways = new boolean[tableLength];
 		highwayTypes = new int[tableLength];
-		System.out.println(tableLength);
 		
 		for (int i = 0; resultSet.next(); i++){
 			fromNodeIDs[i] = resultSet.getInt(1);
@@ -110,8 +103,6 @@ public class DBAdapterParabel{
 	}
 
 	private void setRectangle() {
-		float h = 0.9f;
-		float k = 0.02f;
 		if(startNodeLon < endNodeLon && startNodeLat < endNodeLat || startNodeLon > endNodeLon && startNodeLat < endNodeLat){
 			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy - k
 			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey + k
@@ -135,9 +126,9 @@ public class DBAdapterParabel{
 			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey - k
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes varNodes "
 				+ " where "
-				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + 0.009 >= varNodes.lat "
+				+ " 0.09 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + 0.009 >= varNodes.lat "
 				+ " and "
-				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - 0.009 <= varNodes.lat "
+				+ " 0.09 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - 0.009 <= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
 			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID from saarland.edges2"
 			+ " where" 
