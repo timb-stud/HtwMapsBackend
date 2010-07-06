@@ -21,7 +21,7 @@ public class DBAdapterParabel{
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
 		
-	public DBAdapterParabel(int startID, int endID, float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {	
+	public DBAdapterParabel(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {	
 		this.startNodeLat = startNodeLat;
 		this.startNodeLon = startNodeLon;
 		this.endNodeLat = endNodeLat;
