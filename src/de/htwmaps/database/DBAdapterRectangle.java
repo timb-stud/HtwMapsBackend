@@ -21,8 +21,8 @@ public class DBAdapterRectangle {
 	private boolean[] oneways;
 	private int[] highwayTypes;
 	
-	private final static String NODE_SELECT = "select ID, lon, lat from nodes where partofhighway = 1";
-	private final static String EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from edges, nodes n1, nodes n2 where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID AND n1.partofhighway = 1 AND n2.partofhighway = 1";
+	private final static String NODE_SELECT = "SELECT id, lon, lat FROM nodes WHERE partofhighway = 1";
+	private final static String EDGE_SELECT = "SELECT node1ID, node2ID, oneway, speedID, node1lon, node1lat, node2lon, node2lat FROM edges2";
 	
 	public DBAdapterRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {
 		setRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
@@ -42,14 +42,14 @@ public class DBAdapterRectangle {
 	
 	private String buildEdgeSelectStatement(){
 		StringBuilder sb = new StringBuilder(EDGE_SELECT);
-		sb.append(" AND n1.lon > ").append(rectStartNodeLon)
-		.append(" AND n1.lat > ").append(rectStartNodeLat)
-		.append(" AND n1.lon  < ").append(rectEndNodeLon)
-		.append(" AND n1.lat < ").append(rectEndNodeLat)
-		.append(" AND n2.lon > ").append(rectStartNodeLon)
-		.append(" AND n2.lat > ").append(rectStartNodeLat)
-		.append(" AND n2.lon  < ").append(rectEndNodeLon)
-		.append(" AND n2.lat < ").append(rectEndNodeLat);
+		sb.append(" WHERE node1lon > ").append(rectStartNodeLon)
+		.append(" AND node1lat > ").append(rectStartNodeLat)
+		.append(" AND node1lon  < ").append(rectEndNodeLon)
+		.append(" AND node1lat < ").append(rectEndNodeLat)
+		.append(" AND node2lon > ").append(rectStartNodeLon)
+		.append(" AND node2lat > ").append(rectStartNodeLat)
+		.append(" AND node2lon  < ").append(rectEndNodeLon)
+		.append(" AND node2lat < ").append(rectEndNodeLat);
 		
 		return sb.toString();
 	}
@@ -57,6 +57,7 @@ public class DBAdapterRectangle {
 	private void initNodes() throws SQLException{
 		int tableLength;
 		PreparedStatement pStmt = DBConnector.getConnection().prepareStatement(buildNodeSelectStatement());
+		System.out.println(buildEdgeSelectStatement());
 		ResultSet resultSet = pStmt.executeQuery();
 		resultSet.last();
 		tableLength = resultSet.getRow();
