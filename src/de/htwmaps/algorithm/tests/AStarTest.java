@@ -73,8 +73,13 @@ public class AStarTest extends TestCase {
 	 */
 	public void testFindShortestPath3() throws SQLException, PathNotFoundException{
 		AStar as = new AStar();
+//		float h = 0.001f;
 		 int startNodeID = 274026832;
 		 int goalNodeID = 587836344;
+//		 float startNodeLon = 7.0478f - h;
+//		 float startNodeLat = 49.3745f + h;
+//		 float endNodeLon = 7.11996f + h;
+//		 float endNodeLat = 49.36f - h;
 		 float startNodeLon = 7.0213f;
 		 float startNodeLat = 49.3431f;
 		 float endNodeLon = 7.1549f;
@@ -82,7 +87,8 @@ public class AStarTest extends TestCase {
 		
 		
 		DBAdapterRectangle dbar;
-		dbar = new DBAdapterRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
+		//dbar = new DBAdapterRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
+		dbar = new DBAdapterRectangle(startNodeID, goalNodeID);
 		int[] nodeIDs = dbar.getNodeIDs();
 		float[] nodeLons = dbar.getNodeLons(); //x
 		float[] nodeLats = dbar.getNodeLats(); //y
