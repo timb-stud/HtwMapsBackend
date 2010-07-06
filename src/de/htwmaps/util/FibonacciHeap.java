@@ -25,8 +25,6 @@ package de.htwmaps.util;
 
 import java.util.HashMap;
 
-import de.htwmaps.algorithm.AStarNode;
-import de.htwmaps.algorithm.DijkstraNode;
 import de.htwmaps.algorithm.Node;
 
 /**

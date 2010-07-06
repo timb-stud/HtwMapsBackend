@@ -22,11 +22,12 @@ public class DBAdapterParabel{
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
 		
-	public DBAdapterParabel(int startID, int endID, float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {
+	public DBAdapterParabel(int startID, int endID, float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {	
 		setRectangle(startID, endID, startNodeLon, startNodeLat, endNodeLon, endNodeLat);
 		initNodes();
 		initEdges();
 	}
+	
 
 	private void initNodes() throws SQLException{
 		int tableLength;
