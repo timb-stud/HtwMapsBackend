@@ -153,7 +153,7 @@ public class DBAdapterParabel{
 				+ " and varNodes.partofhighway = 1";
 			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID, length from saarland.edges2"
 				+ " where" 
-				+ " ?((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
+				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
 				+ " and"
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ? + ? >= node1lat"
 				+ " and"
@@ -211,8 +211,5 @@ public class DBAdapterParabel{
 
 	public int[] getHighwayTypes() {
 		return highwayTypes;
-	}
-	
-	
-	
+	}	
 }
