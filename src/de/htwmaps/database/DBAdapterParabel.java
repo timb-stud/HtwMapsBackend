@@ -3,6 +3,7 @@ package de.htwmaps.database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
 public class DBAdapterParabel{
@@ -20,6 +21,8 @@ public class DBAdapterParabel{
 	
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
+
+	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes WHERE partofhighway = 1";
 		
 	public DBAdapterParabel(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {	
 		this.startNodeLat = startNodeLat;
@@ -31,6 +34,27 @@ public class DBAdapterParabel{
 		initEdges();
 	}
 	
+	public DBAdapterParabel(int node1Id, int node2Id) throws SQLException{
+		Statement select = DBConnector.getConnection().createStatement();
+		ResultSet resultSet = select.executeQuery(buildCoordSelectStatement(node1Id, node2Id));
+		resultSet.next();
+		startNodeLat = resultSet.getFloat(1);
+		startNodeLon = resultSet.getFloat(2);
+		resultSet.next();
+		endNodeLat = resultSet.getFloat(1);
+		endNodeLon = resultSet.getFloat(2);
+		setRectangle();
+		initNodes();
+		initEdges();
+	}
+
+	private String buildCoordSelectStatement(int node1Id, int node2Id) {
+		StringBuilder sb = new StringBuilder(COORD_SELECT);
+		sb.append(" AND (id = ").append(node1Id)
+		.append(" OR id = ").append(node2Id).append(")");
+		
+		return sb.toString();
+	}
 
 	private void initNodes() throws SQLException{
 		int tableLength;
@@ -113,14 +137,14 @@ public class DBAdapterParabel{
 				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + 0.009 >= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
 			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID from saarland.edges2"
-			+ " where" 
-			+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - 0.009 <= node1lat"
-			+ " and"
-			+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ? + 0.009 >= node1lat"
-			+ " and"
-			+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  - 0.009 <= node2lat"
-			+ " and"
-			+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + 0.009 >= node2lat";
+				+ " where" 
+				+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - 0.009 <= node1lat"
+				+ " and"
+				+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ? + 0.009 >= node1lat"
+				+ " and"
+				+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  - 0.009 <= node2lat"
+				+ " and"
+				+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + 0.009 >= node2lat";
 		} else {
 			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy + k
 			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey - k
@@ -131,14 +155,14 @@ public class DBAdapterParabel{
 				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - 0.009 <= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
 			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID from saarland.edges2"
-			+ " where" 
-			+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + 0.009 >= node1lat"
-			+ " and"
-			+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ? - 0.009 <= node1lat"
-			+ " and"
-			+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  + 0.009 >= node2lat"
-			+ " and"
-			+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - 0.009 <= node2lat";
+				+ " where" 
+				+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + 0.009 >= node1lat"
+				+ " and"
+				+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ? - 0.009 <= node1lat"
+				+ " and"
+				+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  + 0.009 >= node2lat"
+				+ " and"
+				+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - 0.009 <= node2lat";
 		}
 	}
 
@@ -173,7 +197,4 @@ public class DBAdapterParabel{
 	public int[] getHighwayTypes() {
 		return highwayTypes;
 	}
-	
-	
-	
 }
