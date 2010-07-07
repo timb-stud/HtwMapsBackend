@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 
 public class DBAdapterRectangle {
-	private final static  float h = 0.001f;
+	private final static  float h = 0.009f;
 	private float rectStartNodeLon;
 	private float rectStartNodeLat;
 	private float rectEndNodeLon;
