@@ -8,6 +8,8 @@ import java.sql.Statement;
 
 public class DBAdapterParabel{
 	private float startNodeLon, startNodeLat, endNodeLon, endNodeLat;
+	private final static float h = 0.009f;
+	private final static float a = 0.7f; 
 	//Nodes
 	private int[] nodeIDs;
 	private float[] nodeLons; //x
@@ -59,14 +61,19 @@ public class DBAdapterParabel{
 	private void initNodes() throws SQLException{
 		int tableLength;
 		PreparedStatement pStmt = DBConnector.getConnection().prepareStatement(NODE_SELECT);
-		pStmt.setFloat(1, (endNodeLat - startNodeLat));
-		pStmt.setFloat(2, endNodeLon - startNodeLon);
-		pStmt.setFloat(3, startNodeLon);
-		pStmt.setFloat(4, startNodeLat);
-		pStmt.setFloat(5, (startNodeLat - endNodeLat));
-		pStmt.setFloat(6, startNodeLon - endNodeLon);
-		pStmt.setFloat(7, endNodeLon);
-		pStmt.setFloat(8, endNodeLat);
+		pStmt.setFloat(1, a);
+		pStmt.setFloat(2, (endNodeLat - startNodeLat));
+		pStmt.setFloat(3, endNodeLon - startNodeLon);
+		pStmt.setFloat(4, startNodeLon);
+		pStmt.setFloat(5, startNodeLat);
+		pStmt.setFloat(6, h);
+		pStmt.setFloat(7, a);
+		pStmt.setFloat(8, (startNodeLat - endNodeLat));
+		pStmt.setFloat(9, startNodeLon - endNodeLon);
+		pStmt.setFloat(10, endNodeLon);
+		pStmt.setFloat(11, endNodeLat);
+		pStmt.setFloat(12, h);
+		
 		
 		
 		ResultSet resultSet = pStmt.executeQuery();
@@ -90,22 +97,30 @@ public class DBAdapterParabel{
 	private void initEdges() throws SQLException{
 		int tableLength;
 		PreparedStatement pStmt = DBConnector.getConnection().prepareStatement(EDGE_SELECT);
-		pStmt.setFloat(1, (endNodeLat - startNodeLat));
-		pStmt.setFloat(2, endNodeLon - startNodeLon);
-		pStmt.setFloat(3, startNodeLon);
-		pStmt.setFloat(4, startNodeLat);
-		pStmt.setFloat(5, (startNodeLat - endNodeLat));
-		pStmt.setFloat(6, startNodeLon - endNodeLon);
-		pStmt.setFloat(7, endNodeLon);
-		pStmt.setFloat(8, endNodeLat);
-		pStmt.setFloat(9, (endNodeLat - startNodeLat));
-		pStmt.setFloat(10, endNodeLon - startNodeLon);
-		pStmt.setFloat(11, startNodeLon);
-		pStmt.setFloat(12, startNodeLat);
-		pStmt.setFloat(13, (startNodeLat - endNodeLat));
-		pStmt.setFloat(14, startNodeLon - endNodeLon);
-		pStmt.setFloat(15, endNodeLon);
-		pStmt.setFloat(16, endNodeLat);
+		pStmt.setFloat(1, a);
+		pStmt.setFloat(2, (endNodeLat - startNodeLat));
+		pStmt.setFloat(3, endNodeLon - startNodeLon);
+		pStmt.setFloat(4, startNodeLon);
+		pStmt.setFloat(5, startNodeLat);
+		pStmt.setFloat(6, h);
+		pStmt.setFloat(7, a);
+		pStmt.setFloat(8, (startNodeLat - endNodeLat));
+		pStmt.setFloat(9, startNodeLon - endNodeLon);
+		pStmt.setFloat(10, endNodeLon);
+		pStmt.setFloat(11, endNodeLat);
+		pStmt.setFloat(12, h);
+		pStmt.setFloat(13, a);
+		pStmt.setFloat(14, (endNodeLat - startNodeLat));
+		pStmt.setFloat(15, endNodeLon - startNodeLon);
+		pStmt.setFloat(16, startNodeLon);
+		pStmt.setFloat(17, startNodeLat);
+		pStmt.setFloat(18, h);
+		pStmt.setFloat(19, a);
+		pStmt.setFloat(20, (startNodeLat - endNodeLat));
+		pStmt.setFloat(21, startNodeLon - endNodeLon);
+		pStmt.setFloat(22, endNodeLon);
+		pStmt.setFloat(23, endNodeLat);
+		pStmt.setFloat(24, h);
 		ResultSet resultSet = pStmt.executeQuery();
 		pStmt = null;
 		resultSet.last();
@@ -132,37 +147,37 @@ public class DBAdapterParabel{
 			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey + k
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes varNodes "
 				+ " where "
-				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - 0.009 <= varNodes.lat "
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - ? <= varNodes.lat "
 				+ " and "
-				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + 0.009 >= varNodes.lat "
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
 			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID from saarland.edges2"
 				+ " where" 
-				+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - 0.009 <= node1lat"
+				+ " ?((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
 				+ " and"
-				+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ? + 0.009 >= node1lat"
+				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ? + ? >= node1lat"
 				+ " and"
-				+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  - 0.009 <= node2lat"
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  - ? <= node2lat"
 				+ " and"
-				+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + 0.009 >= node2lat";
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + ? >= node2lat";
 		} else {
 			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy + k
 			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey - k
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes varNodes "
 				+ " where "
-				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + 0.009 >= varNodes.lat "
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + ? >= varNodes.lat "
 				+ " and "
-				+ " 0.7 *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - 0.009 <= varNodes.lat "
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
 			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID from saarland.edges2"
 				+ " where" 
-				+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + 0.009 >= node1lat"
+				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + ? >= node1lat"
 				+ " and"
-				+ " 0.7*((?)/POW((?),2))*POW((node1lon - ?),2) + ? - 0.009 <= node1lat"
+				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ? - ? <= node1lat"
 				+ " and"
-				+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  + 0.009 >= node2lat"
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  + ? >= node2lat"
 				+ " and"
-				+ " 0.7*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - 0.009 <= node2lat";
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - ? <= node2lat";
 		}
 	}
 
@@ -197,4 +212,7 @@ public class DBAdapterParabel{
 	public int[] getHighwayTypes() {
 		return highwayTypes;
 	}
+	
+	
+	
 }
