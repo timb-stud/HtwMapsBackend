@@ -135,9 +135,9 @@ public class DBAdapterParabel{
 		for (int i = 0; resultSet.next(); i++){
 			fromNodeIDs[i] = resultSet.getInt(1);
 			toNodeIDs[i] = resultSet.getInt(2);
-			distances[i] = 0.0;
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
+			distances[i] = resultSet.getInt(5);
 		}
 	}
 
@@ -151,7 +151,7 @@ public class DBAdapterParabel{
 				+ " and "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
-			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID from saarland.edges2"
+			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID, length from saarland.edges2"
 				+ " where" 
 				+ " ?((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
 				+ " and"
@@ -169,7 +169,7 @@ public class DBAdapterParabel{
 				+ " and "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
-			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID from saarland.edges2"
+			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID, length from saarland.edges2"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + ? >= node1lat"
 				+ " and"
