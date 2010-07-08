@@ -54,15 +54,4 @@ public class DBUtils {
 		}
 		return result;
 	}
-	
-	public static void main(String[] args) {
-		try {
-			String[] cities = getStreetsStartsWith("Saarbrücken","L");
-			for(String s:cities)
-				System.out.println(s);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }
