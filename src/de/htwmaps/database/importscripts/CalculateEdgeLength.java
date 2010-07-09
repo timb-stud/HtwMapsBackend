@@ -3,12 +3,9 @@
  */
 package de.htwmaps.database.importscripts;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import de.htwmaps.database.DBConnector;
 
@@ -20,17 +17,17 @@ import de.htwmaps.database.DBConnector;
 
 
 public class CalculateEdgeLength {
-	
+
 	int node1ID = 0;
 	int node2ID = 0;
 	int edgeID 	= 0;
 	int restEdge = 0;
 	float node1lat, node1lon, node2lat, node2lon;
 	float length;
-	
+
 	ResultSet rsNode1 = null;
 	ResultSet rsNode2 = null;
-	
+
 	public CalculateEdgeLength() {
 		start();
 	}
@@ -50,13 +47,13 @@ public class CalculateEdgeLength {
     	float dy 	= (float) 111.3 * (lat1 - lat2);
     	double length = Math.sqrt(dx * dx + dy * dy);
     	length = length * 1000;
-    	// es gibt Edges mit einer Länge von 0, diese werden zur Übersicht mit -1 gefüllt
+    	// es gibt Edges mit einer Laenge von 0, diese werden zur uebersicht mit -1 gefuellt
     	if (length == 0.0) {
         	length = -1.0;
         }
     	return length;
     }
-	
+
 	private void start() {
 		boolean moreResults = true;
 		ResultSet allEdges 	= null;
@@ -94,7 +91,7 @@ public class CalculateEdgeLength {
 					psNode2.setInt(1, node2ID);
 					rsNode2 = psNode2.executeQuery();
 					//System.out.println("Node2 Daten geladen");
-		
+
 					if (rsNode2.next()) {
 						node2lat = rsNode2.getFloat(1);
 						node2lon = rsNode2.getFloat(2);
@@ -106,11 +103,11 @@ public class CalculateEdgeLength {
 					psLength.execute();
 				}
 	        }
-	        
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 }

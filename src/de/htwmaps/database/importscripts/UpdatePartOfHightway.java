@@ -19,8 +19,11 @@ public class UpdatePartOfHightway {
 			PreparedStatement ps2 = con.prepareStatement("UPDATE nodes SET partOfHighway = 1 WHERE ID IN (SELECT fromNodeID FROM edges WHERE partOfHighway = 1)");
 			PreparedStatement ps3 = con.prepareStatement("UPDATE nodes SET partOfHighway = 1 WHERE ID IN (SELECT toNodeID FROM edges WHERE partOfHighway = 1)");
 			ps1.executeUpdate();
+			ps1.close();
 			ps2.executeUpdate();
+			ps2.close();
 			ps3.executeUpdate();
+			ps3.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
