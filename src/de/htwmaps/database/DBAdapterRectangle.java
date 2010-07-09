@@ -3,9 +3,11 @@ package de.htwmaps.database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
 public class DBAdapterRectangle {
+	private final static  float h = 0.009f;
 	private float rectStartNodeLon;
 	private float rectStartNodeLat;
 	private float rectEndNodeLon;
@@ -21,8 +23,9 @@ public class DBAdapterRectangle {
 	private boolean[] oneways;
 	private int[] highwayTypes;
 	
-	private final static String NODE_SELECT = "select ID, lon, lat from nodes where partofhighway = 1";
-	private final static String EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from edges, nodes n1, nodes n2 where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID AND n1.partofhighway = 1 AND n2.partofhighway = 1";
+	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes WHERE partofhighway = 1";
+	private final static String NODE_SELECT = "SELECT id, lon, lat FROM nodes WHERE partofhighway = 1";
+	private final static String EDGE_SELECT = "SELECT node1ID, node2ID, oneway, speedID, node1lon, node1lat, node2lon, node2lat FROM edges2";
 	
 	public DBAdapterRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {
 		setRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
@@ -30,26 +33,49 @@ public class DBAdapterRectangle {
 		initEdges();
 	}
 	
+	public DBAdapterRectangle(int node1Id, int node2Id) throws SQLException{
+		setRectangle(node1Id, node2Id);
+		expandRectangle(h);
+		initNodes();
+		initEdges();
+	}
+	
+	
+	private void expandRectangle(float value){
+		this.rectStartNodeLat -= value;
+		this.rectStartNodeLon -= value;
+		this.rectEndNodeLat += value;
+		this.rectEndNodeLon += value;
+	}
+	
+	private String buildCoordSelectStatement(int node1Id, int node2Id){
+		StringBuilder sb = new StringBuilder(COORD_SELECT);
+		sb.append(" AND (id = ").append(node1Id)
+		.append(" OR id = ").append(node2Id).append(")");
+		
+		return sb.toString();
+	}
+
 	private String buildNodeSelectStatement(){
 		StringBuilder sb = new StringBuilder(NODE_SELECT);
-		sb.append(" AND lon > ").append(rectStartNodeLon)
-			.append(" AND lat > ").append(rectStartNodeLat)
-			.append(" AND lon  < ").append(rectEndNodeLon)
-			.append(" AND lat < ").append(rectEndNodeLat);
+		sb.append(" AND lon >= ").append(rectStartNodeLon)
+			.append(" AND lat >= ").append(rectStartNodeLat)
+			.append(" AND lon  <= ").append(rectEndNodeLon)
+			.append(" AND lat <= ").append(rectEndNodeLat);
 		
 		return sb.toString();
 	}
 	
 	private String buildEdgeSelectStatement(){
 		StringBuilder sb = new StringBuilder(EDGE_SELECT);
-		sb.append(" AND n1.lon > ").append(rectStartNodeLon)
-		.append(" AND n1.lat > ").append(rectStartNodeLat)
-		.append(" AND n1.lon  < ").append(rectEndNodeLon)
-		.append(" AND n1.lat < ").append(rectEndNodeLat)
-		.append(" AND n2.lon > ").append(rectStartNodeLon)
-		.append(" AND n2.lat > ").append(rectStartNodeLat)
-		.append(" AND n2.lon  < ").append(rectEndNodeLon)
-		.append(" AND n2.lat < ").append(rectEndNodeLat);
+		sb.append(" WHERE node1lon >= ").append(rectStartNodeLon)
+		.append(" AND node1lat >= ").append(rectStartNodeLat)
+		.append(" AND node1lon  <= ").append(rectEndNodeLon)
+		.append(" AND node1lat <= ").append(rectEndNodeLat)
+		.append(" AND node2lon >= ").append(rectStartNodeLon)
+		.append(" AND node2lat >= ").append(rectStartNodeLat)
+		.append(" AND node2lon  <= ").append(rectEndNodeLon)
+		.append(" AND node2lat <= ").append(rectEndNodeLat);
 		
 		return sb.toString();
 	}
@@ -60,6 +86,7 @@ public class DBAdapterRectangle {
 		ResultSet resultSet = pStmt.executeQuery();
 		resultSet.last();
 		tableLength = resultSet.getRow();
+		System.out.println("Nodes: " + tableLength);
 		resultSet.beforeFirst();
 		nodeIDs = new int[tableLength];
 		nodeLons = new float[tableLength];
@@ -79,6 +106,7 @@ public class DBAdapterRectangle {
 		pStmt = null;
 		resultSet.last();
 		tableLength = resultSet.getRow();
+		System.out.println("Edges: " + tableLength);
 		resultSet.beforeFirst();
 		fromNodeIDs = new int[tableLength];
 		toNodeIDs = new int[tableLength];
@@ -93,6 +121,18 @@ public class DBAdapterRectangle {
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
 		}
+	}
+	
+	private void setRectangle(int node1Id, int node2Id) throws SQLException{
+		Statement select = DBConnector.getConnection().createStatement();
+		ResultSet resultSet = select.executeQuery(buildCoordSelectStatement(node1Id, node2Id));
+		resultSet.next();
+		float n1Lat = resultSet.getFloat(1);
+		float n1Lon = resultSet.getFloat(2);
+		resultSet.next();
+		float n2Lat = resultSet.getFloat(1);
+		float n2Lon = resultSet.getFloat(2);
+		setRectangle(n1Lon, n1Lat, n2Lon, n2Lat);
 	}
 	
 	private void setRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) {

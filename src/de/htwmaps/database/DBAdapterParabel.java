@@ -3,11 +3,13 @@ package de.htwmaps.database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import de.htwmaps.algorithm.Node;
+import java.sql.Statement;
 
 
 public class DBAdapterParabel{
+	private float startNodeLon, startNodeLat, endNodeLon, endNodeLat;
+	private final static float h = 0.009f;
+	private final static float a = 0.7f; 
 	//Nodes
 	private int[] nodeIDs;
 	private float[] nodeLons; //x
@@ -21,17 +23,59 @@ public class DBAdapterParabel{
 	
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
+
+	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes WHERE partofhighway = 1";
 		
-	public DBAdapterParabel(int startID, int endID, float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {	
-		setRectangle(startID, endID, startNodeLon, startNodeLat, endNodeLon, endNodeLat);
+	public DBAdapterParabel(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {	
+		this.startNodeLat = startNodeLat;
+		this.startNodeLon = startNodeLon;
+		this.endNodeLat = endNodeLat;
+		this.endNodeLon = endNodeLon;
+		setRectangle();
 		initNodes();
 		initEdges();
 	}
 	
+	public DBAdapterParabel(int node1Id, int node2Id) throws SQLException{
+		Statement select = DBConnector.getConnection().createStatement();
+		ResultSet resultSet = select.executeQuery(buildCoordSelectStatement(node1Id, node2Id));
+		resultSet.next();
+		startNodeLat = resultSet.getFloat(1);
+		startNodeLon = resultSet.getFloat(2);
+		resultSet.next();
+		endNodeLat = resultSet.getFloat(1);
+		endNodeLon = resultSet.getFloat(2);
+		setRectangle();
+		initNodes();
+		initEdges();
+	}
+
+	private String buildCoordSelectStatement(int node1Id, int node2Id) {
+		StringBuilder sb = new StringBuilder(COORD_SELECT);
+		sb.append(" AND (id = ").append(node1Id)
+		.append(" OR id = ").append(node2Id).append(")");
+		
+		return sb.toString();
+	}
 
 	private void initNodes() throws SQLException{
 		int tableLength;
 		PreparedStatement pStmt = DBConnector.getConnection().prepareStatement(NODE_SELECT);
+		pStmt.setFloat(1, a);
+		pStmt.setFloat(2, (endNodeLat - startNodeLat));
+		pStmt.setFloat(3, endNodeLon - startNodeLon);
+		pStmt.setFloat(4, startNodeLon);
+		pStmt.setFloat(5, startNodeLat);
+		pStmt.setFloat(6, h);
+		pStmt.setFloat(7, a);
+		pStmt.setFloat(8, (startNodeLat - endNodeLat));
+		pStmt.setFloat(9, startNodeLon - endNodeLon);
+		pStmt.setFloat(10, endNodeLon);
+		pStmt.setFloat(11, endNodeLat);
+		pStmt.setFloat(12, h);
+		
+		
+		
 		ResultSet resultSet = pStmt.executeQuery();
 //		while (resultSet.next()) {
 //			System.out.println(resultSet.getFloat(3)+"\t"+resultSet.getFloat(2)+"\t"+"title\t"+"descr\t"+"rosa_punkt.png\t"+"8,8\t"+"0,0");
@@ -53,6 +97,30 @@ public class DBAdapterParabel{
 	private void initEdges() throws SQLException{
 		int tableLength;
 		PreparedStatement pStmt = DBConnector.getConnection().prepareStatement(EDGE_SELECT);
+		pStmt.setFloat(1, a);
+		pStmt.setFloat(2, (endNodeLat - startNodeLat));
+		pStmt.setFloat(3, endNodeLon - startNodeLon);
+		pStmt.setFloat(4, startNodeLon);
+		pStmt.setFloat(5, startNodeLat);
+		pStmt.setFloat(6, h);
+		pStmt.setFloat(7, a);
+		pStmt.setFloat(8, (startNodeLat - endNodeLat));
+		pStmt.setFloat(9, startNodeLon - endNodeLon);
+		pStmt.setFloat(10, endNodeLon);
+		pStmt.setFloat(11, endNodeLat);
+		pStmt.setFloat(12, h);
+		pStmt.setFloat(13, a);
+		pStmt.setFloat(14, (endNodeLat - startNodeLat));
+		pStmt.setFloat(15, endNodeLon - startNodeLon);
+		pStmt.setFloat(16, startNodeLon);
+		pStmt.setFloat(17, startNodeLat);
+		pStmt.setFloat(18, h);
+		pStmt.setFloat(19, a);
+		pStmt.setFloat(20, (startNodeLat - endNodeLat));
+		pStmt.setFloat(21, startNodeLon - endNodeLon);
+		pStmt.setFloat(22, endNodeLon);
+		pStmt.setFloat(23, endNodeLat);
+		pStmt.setFloat(24, h);
 		ResultSet resultSet = pStmt.executeQuery();
 		pStmt = null;
 		resultSet.last();
@@ -67,75 +135,49 @@ public class DBAdapterParabel{
 		for (int i = 0; resultSet.next(); i++){
 			fromNodeIDs[i] = resultSet.getInt(1);
 			toNodeIDs[i] = resultSet.getInt(2);
-			distances[i] = 0.0;
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
+			distances[i] = resultSet.getInt(5);
 		}
 	}
 
-	private void setRectangle(int startID, int endID, float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) {
-		float h = 0.9f;
-		float k = 0.02f;
+	private void setRectangle() {
 		if(startNodeLon < endNodeLon && startNodeLat < endNodeLat || startNodeLon > endNodeLon && startNodeLat < endNodeLat){
 			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy - k
 			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey + k
-			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
-				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
+			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes varNodes "
+				+ " where "
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - ? <= varNodes.lat "
 				+ " and "
-				+ " " + h + " *((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  - " + k + " <= varNodes.lat "
-				+ " and "
-				+ " " + h + " *((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat + " + k + " >= varNodes.lat "
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
-			EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from saarland.edges, saarland.nodes n1, saarland.nodes n2 "
-				+ " where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID " 
-				+ " and  fromNodeID in ("
-				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
-				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
-				+ " and "
-				+ " " + h + "*((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  - " + k + " <= varNodes.lat "
-				+ " and "
-				+ " " + h + "*((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat + " + k + " >= varNodes.lat "
-				+ " and varNodes.partofhighway = 1"
-				+ ")"
-				+ " and toNodeID in ("
-				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
-				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
-				+ " and "
-				+ " " + h + " *((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  - " + k + " <= varNodes.lat "
-				+ " and "
-				+ " " + h + " *((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat + " + k + " >= varNodes.lat "
-				+ " and varNodes.partofhighway = 1"
-				+ ")";
+			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID, length from saarland.edges2"
+				+ " where" 
+				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
+				+ " and"
+				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ? + ? >= node1lat"
+				+ " and"
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  - ? <= node2lat"
+				+ " and"
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + ? >= node2lat";
 		} else {
 			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy + k
 			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey - k
-			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
-				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
+			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes varNodes "
+				+ " where "
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + ? >= varNodes.lat "
 				+ " and "
-				+ " " + h + " *((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  + " + k + " >= varNodes.lat "
-				+ " and "
-				+ " " + h + " *((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat - " + k + " <= varNodes.lat "
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat "
 				+ " and varNodes.partofhighway = 1";
-			EDGE_SELECT = "select fromNodeID, toNodeID, oneway, k_highwayspeedID, n1.lon, n1.lat, n2.lon, n2.lat from saarland.edges, saarland.nodes n1, saarland.nodes n2 "
-				+ " where edges.fromNodeID = n1.ID AND edges.toNodeID = n2.ID " 
-				+ " and  fromNodeID in ("
-				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
-				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
-				+ " and "
-				+ " " + h + "*((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  + " + k + " >= varNodes.lat "
-				+ " and "
-				+ " " + h + "*((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat - " + k + " <= varNodes.lat "
-				+ " and varNodes.partofhighway = 1"
-				+ ")"
-				+ " and toNodeID in ("
-				+ " select varNodes.id from saarland.nodes startNodes, saarland.nodes endNodes, saarland.nodes varNodes "
-				+ " where startNodes.id = " + startID + "  and endNodes.id = " + endID + " "
-				+ " and "
-				+ " " + h + " *((endNodes.lat - startNodes.lat)/POW((endNodes.lon - startNodes.lon),2))*POW((varNodes.lon - startNodes.lon),2) + startNodes.lat  + " + k + " >= varNodes.lat "
-				+ " and "
-				+ " " + h + " *((startNodes.lat - endNodes.lat)/POW((startNodes.lon - endNodes.lon),2))*POW((varNodes.lon - endNodes.lon),2) + endNodes.lat - " + k + " <= varNodes.lat "
-				+ " and varNodes.partofhighway = 1"
-				+ ")";
+			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID, length from saarland.edges2"
+				+ " where" 
+				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + ? >= node1lat"
+				+ " and"
+				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ? - ? <= node1lat"
+				+ " and"
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  + ? >= node2lat"
+				+ " and"
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - ? <= node2lat";
 		}
 	}
 
@@ -169,8 +211,5 @@ public class DBAdapterParabel{
 
 	public int[] getHighwayTypes() {
 		return highwayTypes;
-	}
-	
-	
-	
+	}	
 }
