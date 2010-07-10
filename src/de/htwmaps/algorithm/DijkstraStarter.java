@@ -2,17 +2,12 @@ package de.htwmaps.algorithm;
 
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import de.htwmaps.algorithm.util.RouteByLetter;
-import de.htwmaps.database.DBConnector;
-import de.htwmaps.util.FibonacciHeap;
 import java.util.HashMap;
+
+import de.htwmaps.database.DBConnector;
 
 
 
@@ -25,15 +20,16 @@ import java.util.HashMap;
 public class DijkstraStarter implements ShortestPathAlgorithm {
 	/**
 	 * knotenobjekte miteinander referenzieren
+	 * @param fromToDistances 
 	 */
-	private void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways) {
+	private void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
 			DijkstraNode fromNode = Q.get(fromNodeIDs[i]), toNode = Q.get(toNodeIDs[i]);
-			Edge onewayEdge = new Edge(toNode, 0.0);
+			Edge onewayEdge = new Edge(toNode, fromNode.getDistanceTo(toNode));
 			fromNode.addEdge(onewayEdge);
+			toNode.addEdge(onewayEdge);
 			if(!oneways[i]) {
 				onewayEdge.setPredecessor(fromNode);
-				toNode.addEdge(onewayEdge);
 			}
 		}
 	}
@@ -52,7 +48,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	 */
 	public Node[] nodeToArray(DijkstraNode startNode, DijkstraNode endNode) {
 		DijkstraNode tmp = startNode.getPredecessor() != null ? startNode : endNode;
-		ArrayList<DijkstraNode> nodesContainer = new ArrayList<DijkstraNode>();
+		ArrayList<DijkstraNode> nodesContainer = new ArrayList<DijkstraNode>(150);
 		while (tmp != null) {
 			nodesContainer.add(tmp);
 			tmp = tmp.getPredecessor();
@@ -74,7 +70,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode>(allNodesIDs.length);
 
 		generateNodes(Q, allNodesIDs, x, y);
-		generateReferences(Q, fromNodeIDs, toNodeIDs, oneways);
+		generateReferences(Q, fromNodeIDs, toNodeIDs, oneways, fromToDistances);
 
 		
 		DijkstraNode startNode = Q.get(startNodeID); 
@@ -91,14 +87,20 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		
 		synchronized(getClass()) {
 			try {
-				while (!Dijkstra.isFinished()) {
+				while (!Dijkstra.finished) {
 					this.getClass().wait();
 				}
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException e) {
+				System.out.println("fatal error.");
+			}
 		}
+		d0.interrupt();
+		d1.interrupt();
 		Node[] result = nodeToArray(startNode, endNode);
+		Dijkstra.count.set(0);
+		Dijkstra.finished = false;
 		if (result.length == 1) {
-			throw new PathNotFoundException();
+			throw new PathNotFoundException("Weg nicht gefunden.");
 		}
 		return result;
 	}
@@ -165,7 +167,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 			
 			
 		}
-		StringBuilder res = new StringBuilder("fahren sie auf die erste straße: " + streets.get(0) + "\n");
+		StringBuilder res = new StringBuilder("fahren sie auf die erste straÃŸe: " + streets.get(0) + "\n");
 		for (int i = 1; i < streets.size(); i++) {
 			res.append(streets.get(i) + "\n");
 		}
