@@ -1,10 +1,9 @@
-package de.htwmaps.algorithm;
+package de.htwmaps.server.algorithm;
 
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.htwmaps.util.FibonacciHeap;
-import de.htwmaps.util.InitLogger;
+import de.htwmaps.server.util.FibonacciHeap;
 
 /**
  * @author Stanislaw Tartakowski
@@ -16,9 +15,9 @@ import de.htwmaps.util.InitLogger;
  * remains sleeping until this class awakens him when the work is done.
  */
 public class Dijkstra extends Thread {
-	private volatile static boolean finished;								
-	private volatile static AtomicInteger count = new AtomicInteger();		
-	private volatile Dijkstra dij;
+	protected volatile static boolean finished;								
+	protected volatile static AtomicInteger count = new AtomicInteger();		
+	private Dijkstra dij;
 	private boolean thread;
 	private DijkstraNode startNode, endNode;
 	private Object caller;
@@ -47,10 +46,10 @@ public class Dijkstra extends Thread {
 		FibonacciHeap Q = new FibonacciHeap();
 		startNode.setDist(0.0);
 		touch(startNode);
-		Q.add(startNode, 0.0);
+		Q.add(startNode, potential(startNode));
 		nodesVisited++;
 		while (Q.size() > 0) {
-			if (finished) {
+			if (finished || isInterrupted()) {
 				return;
 			}
 			DijkstraNode currentNode = (DijkstraNode) Q.popMin();
@@ -62,39 +61,44 @@ public class Dijkstra extends Thread {
 			LinkedList<Edge> edges = currentNode.getEdgeList();
 			for (Edge edge : edges) {
 				DijkstraNode successor = edge.getSuccessor() != currentNode ? (DijkstraNode)edge.getSuccessor() : (DijkstraNode)edge.getPredecessor();
-				if (thread || (!thread && edge.getPredecessor() != null)) {
+				if ((thread && successor != null) || (!thread && edge.getPredecessor() != null)) {
 					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ()) {
 						synchronized(getClass()) {
 							if (checkForCommonNode(currentNode, successor)) {
 								return;
 							}
 							if (!successor.isRemovedFromQ()) {
-								updateSuccDist(Q, currentNode, successor);
+								updateSuccDist(Q, currentNode, successor, edge.getDistance());
 							}
 						}
 					}
 				}
 			}
 		}
-		InitLogger.INSTANCE.getLogger().warn(this + ": no path found. Terminates");
 		if (count.incrementAndGet() == 2) {
 			reactivateCaller();
 			return;
 		}
 	}
 
-	private void updateSuccDist(FibonacciHeap Q, DijkstraNode currentNode, DijkstraNode successor) {
-		double alternative = currentNode.getDist() + currentNode.getDistanceTo(successor);
+	private void updateSuccDist(FibonacciHeap Q, DijkstraNode currentNode, DijkstraNode successor, double dist) {
+		double alternative = currentNode.getDist() + dist;
 
 		if (alternative < successor.getDist()) {	
 			successor.setDist(alternative);
 			successor.setPredecessor(currentNode);
 			touch(successor);
 			nodesVisited++;
-			if (!Q.contains(successor)) { 
-				Q.add(successor, alternative + successor.getDistanceTo(endNode));
+			if (Q.contains(successor)) { 
+				Q.decreaseKey(successor, alternative + potential(successor));
+			} else {
+				Q.add(successor, alternative + potential(successor));
 			}
 		}
+	}
+
+	private double potential(DijkstraNode node) {
+		return node.getDistanceTo(endNode);
 	}
 
 	/**
@@ -144,8 +148,10 @@ public class Dijkstra extends Thread {
 	 */
 	private void reactivateCaller() {
 		synchronized(caller.getClass()) {	
-			finished = true;
-			caller.getClass().notifyAll();
+			if (!finished && !isInterrupted()) {
+				finished = true;
+				caller.getClass().notifyAll();
+			}
 		}
 	}
 	
@@ -153,15 +159,7 @@ public class Dijkstra extends Thread {
 	public String toString() {
 		return getName();
 	}
-
-	/**
-	 * 
-	 * @return indicator that says whether the algorithm has finished
-	 */
-	public static boolean isFinished() {
-		return finished;
-	}
-
+	
 	public void setDijkstra(Dijkstra dij) {
 		this.setDij(dij);
 	}
@@ -177,4 +175,5 @@ public class Dijkstra extends Thread {
 	public Dijkstra getDij() {
 		return dij;
 	}
+
 }
