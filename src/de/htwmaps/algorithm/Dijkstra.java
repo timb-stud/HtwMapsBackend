@@ -49,9 +49,6 @@ public class Dijkstra extends Thread {
 		Q.add(startNode, potential(startNode));
 		nodesVisited++;
 		while (Q.size() > 0) {
-			if (finished || isInterrupted()) {
-				return;
-			}
 			DijkstraNode currentNode = (DijkstraNode) Q.popMin();
 			if (currentNode == endNode) {
 				reactivateCaller();
@@ -62,8 +59,11 @@ public class Dijkstra extends Thread {
 			for (Edge edge : edges) {
 				DijkstraNode successor = edge.getSuccessor() != currentNode ? (DijkstraNode)edge.getSuccessor() : (DijkstraNode)edge.getPredecessor();
 				if ((thread && successor != null) || (!thread && edge.getPredecessor() != null)) {
-					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ()) {
+					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ() || finished || isInterrupted()) {
 						synchronized(getClass()) {
+							if (finished || isInterrupted()) {
+								return;
+							}
 							if (checkForCommonNode(currentNode, successor)) {
 								return;
 							}
@@ -132,15 +132,13 @@ public class Dijkstra extends Thread {
 	 */
 	private void concantenate(DijkstraNode currentNode, DijkstraNode successor) {
 		DijkstraNode tmp;
-		if (!finished) {
-			while (successor != null) {
-				tmp = successor.getPredecessor();
-				successor.setPredecessor(currentNode);
-				currentNode = successor;
-				successor = tmp;
-			}
-			reactivateCaller();
+		while (successor != null) {
+			tmp = successor.getPredecessor();
+			successor.setPredecessor(currentNode);
+			currentNode = successor;
+			successor = tmp;
 		}
+		reactivateCaller();
 	}
 	
 	/**
