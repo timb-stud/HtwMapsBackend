@@ -3,13 +3,20 @@ package de.htwmaps.database;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-
+/**
+ * 
+ * @author Stanislaw Tartakowski
+ * 
+ * Diese Klasse stellt dem Suchalgorithmus Knoten aus der Datenbank bereit, 
+ * die in einer von 2 Parabeln begrenzter Fläche liegen. Die Form aehnelt einer Ellipse, die Implementierung
+ * ist jedoch performanter 
+ *
+ */
 public class DBAdapterParabel{
 	private float startNodeLon, startNodeLat, endNodeLon, endNodeLat;
-	private final static float h = 0.009f;
-	private final static float a = 0.7f; 
+	private float h;
+	private float a; 
 	//Nodes
 	private int[] nodeIDs;
 	private float[] nodeLons; //x
@@ -25,20 +32,11 @@ public class DBAdapterParabel{
 	private String EDGE_SELECT;
 
 	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes WHERE partofhighway = 1";
-		
-	public DBAdapterParabel(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {	
-		this.startNodeLat = startNodeLat;
-		this.startNodeLon = startNodeLon;
-		this.endNodeLat = endNodeLat;
-		this.endNodeLon = endNodeLon;
-		setRectangle();
-		initNodes();
-		initEdges();
-	}
 	
-	public DBAdapterParabel(int node1Id, int node2Id) throws SQLException{
-		Statement select = DBConnector.getConnection().createStatement();
-		ResultSet resultSet = select.executeQuery(buildCoordSelectStatement(node1Id, node2Id));
+	public void prepareGraph(int node1Id, int node2Id, float a, float h) throws SQLException{
+		this.a = a;
+		this.h = h;
+		ResultSet resultSet = DBConnector.getConnection().createStatement().executeQuery(buildCoordSelectStatement(node1Id, node2Id));
 		resultSet.next();
 		startNodeLat = resultSet.getFloat(1);
 		startNodeLon = resultSet.getFloat(2);
@@ -211,5 +209,8 @@ public class DBAdapterParabel{
 
 	public int[] getHighwayTypes() {
 		return highwayTypes;
-	}	
+	}
+	
+	
+	
 }
