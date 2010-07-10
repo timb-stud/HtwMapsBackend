@@ -1,19 +1,30 @@
 package de.htwmaps.algorithm.tests;
 
+import java.sql.SQLException;
+import java.util.Arrays;
+
+import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.DijkstraStarter;
 import de.htwmaps.algorithm.Node;
+import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.database.DBAdapterParabel;
 import de.htwmaps.util.InitLogger;
 
 public class DijkstraStarterTest {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws SQLException, PathNotFoundException  {
 		InitLogger.INSTANCE.initLogger();
-		DijkstraStarter ds = new DijkstraStarter();
 
 		long time = System.currentTimeMillis();
-		int startNodeID = 403500108;
-		int goalNodeID =  262529904;
+//		int startNodeID = 403500108;
+//		int goalNodeID =  262529904;
+		
+		int startNodeID = 492621932;
+		int goalNodeID = 587836344;
+		
+//		int startNodeID = 580665431;
+//		int goalNodeID = 279565843;
+		
 //		float startNodeLon = 7.3093605f;
 //		float startNodeLat = 49.1737379f;
 //		float endNodeLon = 6.3849224f;
@@ -45,24 +56,33 @@ public class DijkstraStarterTest {
 		
 		
 		
+		DijkstraStarter ds = new DijkstraStarter();
+		float a = 0.7f;
+		float h = 0.02f;
 		DBAdapterParabel dbar;
-		//dbar = new DBAdapterParabel(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
-		dbar = new DBAdapterParabel(startNodeID, goalNodeID);
-		int[] nodeIDs = dbar.getNodeIDs();
-		float[] nodeLons = dbar.getNodeLons(); //x
-		float[] nodeLats = dbar.getNodeLats(); //y
-		
-		int[] fromNodeIDs = dbar.getFromNodeIDs();
-		int[] toNodeIDs = dbar.getToNodeIDs();
-		double[] distances = dbar.getDistances();
-		boolean[] oneways = dbar.getOneways();
-		int[] highwayTypes = dbar.getHighwayTypes();
-		Node[] result = ds.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
-		System.out.println("insgesamt: " + (System.currentTimeMillis() - time));
-		System.out.println(ds.generateTrack(result));
-		//System.out.println(ds.writeRoute(result));
-		
-		
+		dbar = new DBAdapterParabel();
+		while(true) {
+			dbar.prepareGraph(startNodeID, goalNodeID, a, h);
+			int[] nodeIDs = dbar.getNodeIDs();
+			float[] nodeLons = dbar.getNodeLons(); //x
+			float[] nodeLats = dbar.getNodeLats(); //y
+			
+			int[] fromNodeIDs = dbar.getFromNodeIDs();
+			int[] toNodeIDs = dbar.getToNodeIDs();
+			double[] distances = dbar.getDistances();
+			boolean[] oneways = dbar.getOneways();
+			int[] highwayTypes = dbar.getHighwayTypes();
+			try {
+				Node[] result = ds.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
+				break;
+			} catch (PathNotFoundException e) {
+				a -= 0.05f;
+				h += 0.01;
+				if (a < 0.1) {
+					throw new PathNotFoundException("Weg nicht gefunden");
+				}
+			}
+		}
 		
 //		Node[] result;
 //		DijkstraStarter as = new DijkstraStarter();
@@ -75,7 +95,7 @@ public class DijkstraStarterTest {
 //		int[] fromNodeIDs = {1,1,2,3,4,4,5,6};
 //		int[] toNodeIDs =   {2,3,4,5,5,6,7,7};
 //		double[] fromToDistances = {8.49, 7.21, 11.66, 10, 12, 6, 4, 7.21};
-//		boolean[] oneways = {false, false, false, false, false, false, false, false};
+//		boolean[] oneways = {false, true, false, false, false, false, false, false};
 //		int[] highwayTypes = {0,0,0,0,0,0,0,0};
 //		
 //		try{
