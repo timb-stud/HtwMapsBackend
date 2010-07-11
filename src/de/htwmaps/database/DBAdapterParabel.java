@@ -140,7 +140,7 @@ public class DBAdapterParabel{
 	}
 
 	private void setRectangle() {
-		if(startNodeLon < endNodeLon && startNodeLat < endNodeLat || startNodeLon > endNodeLon && startNodeLat < endNodeLat){
+		if(startNodeLat < endNodeLat){
 			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy - k
 			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey + k
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes varNodes "
