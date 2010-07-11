@@ -59,9 +59,9 @@ public class Dijkstra extends Thread {
 			for (Edge edge : edges) {
 				DijkstraNode successor = edge.getSuccessor() != currentNode ? (DijkstraNode)edge.getSuccessor() : (DijkstraNode)edge.getPredecessor();
 				if ((thread && successor != null) || (!thread && edge.getPredecessor() != null)) {
-					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ() || finished || isInterrupted()) {
+					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ() || finished) {
 						synchronized(getClass()) {
-							if (finished || isInterrupted()) {
+							if (finished) {
 								return;
 							}
 							if (checkForCommonNode(currentNode, successor)) {
@@ -146,10 +146,8 @@ public class Dijkstra extends Thread {
 	 */
 	private void reactivateCaller() {
 		synchronized(caller.getClass()) {	
-			if (!finished && !isInterrupted()) {
-				finished = true;
-				caller.getClass().notifyAll();
-			}
+			finished = true;
+			caller.getClass().notifyAll();
 		}
 	}
 	
