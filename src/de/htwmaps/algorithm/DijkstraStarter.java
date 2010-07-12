@@ -60,7 +60,6 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	 * This method is the interface to this class
 	 * @return result node array
 	 */
-        @SuppressWarnings("deprecation")
 	@Override
 	public Node[] findShortestPath(int[] allNodesIDs, float[] x, float[] y, int startNodeID, int goalNodeID, int[] fromNodeIDs,
 			int[] toNodeIDs,
@@ -95,8 +94,8 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 				System.out.println("fatal error.");
 			}
 		}
-		d0.stop();
-		d1.stop();
+		d0.interrupt();
+		d1.interrupt();
 		Node[] result = nodeToArray(startNode, endNode);
 		Dijkstra.count.set(0);
 		Dijkstra.finished = false;
