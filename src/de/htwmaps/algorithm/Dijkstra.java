@@ -1,43 +1,52 @@
-package de.htwmaps.server.algorithm;
+package de.htwmaps.algorithm;
 
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.htwmaps.server.util.FibonacciHeap;
+import de.htwmaps.util.FibonacciHeap;
 
 /**
  * @author Stanislaw Tartakowski
  * 
- * This is a concurrent implementation of an graph search algorithm based on Dijkstra's.
- * Depart from classic implementations this algorithm has a goal oriented heuristic similar to A*'s 
- * and is optimized for maximal speed performance. Though, this algorithm doesn't guarantee
- * best possible solution, but a relatively good one. This class can only be reasonably used if the caller of this class
- * remains sleeping until this class awakens him when the work is done.
+ *         This is a concurrent implementation of an graph search algorithm
+ *         based on Dijkstra's. Depart from classic implementations this
+ *         algorithm has a goal oriented heuristic similar to A*'s and is
+ *         optimized for maximal speed performance. Though, this algorithm
+ *         doesn't guarantee best possible solution, but a relatively good one.
+ *         This class can only be reasonably used if the caller of this class
+ *         remains sleeping until this class awakens him when the work is done.
  */
 public class Dijkstra extends Thread {
-	protected volatile static boolean finished;								
-	protected volatile static AtomicInteger count = new AtomicInteger();		
+	protected volatile static boolean finished;
+	protected volatile static AtomicInteger count = new AtomicInteger();
 	private Dijkstra dij;
 	private boolean thread;
 	private DijkstraNode startNode, endNode;
 	private Object caller;
 	private int nodesVisited;
-	
+
 	/**
 	 * 
-	 * @param Q the container of all nodes of the graph
-	 * @param startNode destination
-	 * @param endNode goal
-	 * @param thread flags the threads to run from destination to goal (true) or reverse (false)
-	 * @param caller the object who started this class and waits for its completion 
+	 * @param Q
+	 *            the container of all nodes of the graph
+	 * @param startNode
+	 *            destination
+	 * @param endNode
+	 *            goal
+	 * @param thread
+	 *            flags the threads to run from destination to goal (true) or
+	 *            reverse (false)
+	 * @param caller
+	 *            the object who started this class and waits for its completion
 	 */
-	public Dijkstra(DijkstraNode startNode, DijkstraNode endNode, boolean thread, Object caller) {
+	public Dijkstra(DijkstraNode startNode, DijkstraNode endNode,
+			boolean thread, Object caller) {
 		this.startNode = startNode;
 		this.endNode = endNode;
 		this.thread = thread;
 		this.caller = caller;
 	}
-	
+
 	/**
 	 * thread entrance
 	 */
@@ -52,23 +61,24 @@ public class Dijkstra extends Thread {
 			DijkstraNode currentNode = (DijkstraNode) Q.popMin();
 			if (currentNode == endNode) {
 				reactivateCaller();
-				return;					
+				return;
 			}
 			currentNode.setRemovedFromQ(true);
 			LinkedList<Edge> edges = currentNode.getEdgeList();
 			for (Edge edge : edges) {
-				DijkstraNode successor = edge.getSuccessor() != currentNode ? (DijkstraNode)edge.getSuccessor() : (DijkstraNode)edge.getPredecessor();
+				DijkstraNode successor = edge.getSuccessor() != currentNode ? (DijkstraNode) edge.getSuccessor() : (DijkstraNode) edge.getPredecessor();
 				if ((thread && successor != null) || (!thread && edge.getPredecessor() != null)) {
-					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ() || finished) {
-						synchronized(getClass()) {
-							if (finished) {
+					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ() || finished || isInterrupted()) {
+						synchronized (getClass()) {
+							if (finished || isInterrupted()) {
 								return;
 							}
 							if (checkForCommonNode(currentNode, successor)) {
 								return;
 							}
 							if (!successor.isRemovedFromQ()) {
-								updateSuccDist(Q, currentNode, successor, edge.getDistance());
+								updateSuccDist(Q, currentNode, successor,
+										edge.getDistance());
 							}
 						}
 					}
@@ -84,12 +94,12 @@ public class Dijkstra extends Thread {
 	private void updateSuccDist(FibonacciHeap Q, DijkstraNode currentNode, DijkstraNode successor, double dist) {
 		double alternative = currentNode.getDist() + dist;
 
-		if (alternative < successor.getDist()) {	
+		if (alternative < successor.getDist()) {
 			successor.setDist(alternative);
 			successor.setPredecessor(currentNode);
 			touch(successor);
 			nodesVisited++;
-			if (Q.contains(successor)) { 
+			if (Q.contains(successor)) {
 				Q.decreaseKey(successor, alternative + potential(successor));
 			} else {
 				Q.add(successor, alternative + potential(successor));
@@ -102,7 +112,8 @@ public class Dijkstra extends Thread {
 	}
 
 	/**
-	 * Sets a touched mark on the current node as a hint for the threads whether the node has been analyzed before
+	 * Sets a touched mark on the current node as a hint for the threads whether
+	 * the node has been analyzed before
 	 */
 	private void touch(DijkstraNode node) {
 		if (thread) {
@@ -113,7 +124,8 @@ public class Dijkstra extends Thread {
 	}
 
 	/**
-	 * Checks whether the current thread may build the result and finish the algorithm
+	 * Checks whether the current thread may build the result and finish the
+	 * algorithm
 	 */
 	private boolean checkForCommonNode(DijkstraNode currentNode, DijkstraNode successor) {
 		if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2()) {
@@ -140,22 +152,24 @@ public class Dijkstra extends Thread {
 		}
 		reactivateCaller();
 	}
-	
+
 	/**
 	 * wakes up every thread thread, waiting on caller's class
 	 */
 	private void reactivateCaller() {
-		synchronized(caller.getClass()) {	
-			finished = true;
-			caller.getClass().notifyAll();
+		synchronized (caller.getClass()) {
+			if (!finished && !isInterrupted()) {
+				finished = true;
+				caller.getClass().notifyAll();
+			}
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return getName();
 	}
-	
+
 	public void setDijkstra(Dijkstra dij) {
 		this.setDij(dij);
 	}
