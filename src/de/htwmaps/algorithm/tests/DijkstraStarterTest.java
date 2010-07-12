@@ -19,8 +19,8 @@ public class DijkstraStarterTest {
 //		int startNodeID = 403500108;
 //		int goalNodeID =  262529904;
 		
-		int startNodeID = 492621932;
-		int goalNodeID = 587836344;
+//		int startNodeID = 492621932;
+//		int goalNodeID = 587836344;
 		
 //		int startNodeID = 580665431;
 //		int goalNodeID = 279565843;
@@ -47,6 +47,9 @@ public class DijkstraStarterTest {
 
 //		int startNodeID = 587836344;
 //		int goalNodeID =  317518403;
+		
+		int startNodeID = 587836344;
+		int goalNodeID = 492621932;
 //		float startNodeLon = 7.1199603f;
 //		float startNodeLat = 49.3599494f;
 //		float endNodeLon = 6.95033f;
@@ -74,6 +77,8 @@ public class DijkstraStarterTest {
 			int[] highwayTypes = dbar.getHighwayTypes();
 			try {
 				Node[] result = ds.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
+				System.out.println(System.currentTimeMillis() - time);
+				System.out.println(ds.generateTrack(result));
 				break;
 			} catch (PathNotFoundException e) {
 				a -= 0.05f;
