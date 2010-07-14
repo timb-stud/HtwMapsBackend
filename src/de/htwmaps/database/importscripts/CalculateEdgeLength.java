@@ -48,9 +48,9 @@ public class CalculateEdgeLength {
     	double length = Math.sqrt(dx * dx + dy * dy);
     	length = length * 1000;
     	// es gibt Edges mit einer Laenge von 0, diese werden zur uebersicht mit -1 gefuellt
-    	if (length == 0.0) {
-        	length = -1.0;
-        }
+//    	if (length == 0.0) {
+//        	length = -1.0;
+//        }
     	return length;
     }
 
@@ -62,13 +62,13 @@ public class CalculateEdgeLength {
 		try {
 	        PreparedStatement psNode1 	= DBConnector.getConnection().prepareStatement("SELECT lat, lon FROM `nodes` WHERE `ID` = ?");
 	        PreparedStatement psNode2 	= DBConnector.getConnection().prepareStatement("SELECT lat, lon FROM `nodes` WHERE `ID` = ?");
-	        PreparedStatement psLength 	= DBConnector.getConnection().prepareStatement("UPDATE `edges` SET `length` = ? WHERE `ID`= ?");
+	        PreparedStatement psLength 	= DBConnector.getConnection().prepareStatement("UPDATE `edges_all` SET `length` = ? WHERE `ID`= ?");
 	        while (moreResults) {
 	        	//System.out.println("Lade Edges");
-	        	allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, fromNodeID, toNodeID FROM edges WHERE length = 0 LIMIT 0, 100000");
+	        	allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, node1ID, node2ID FROM edges_all WHERE length IN (0,1) LIMIT 0, 100000");
 	        	System.out.println("100000 Edges geladen");
 		        //System.out.println("Setze Edgecount");
-		        restEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT COUNT(*) FROM edges WHERE length = 0");
+		        restEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT COUNT(*) FROM edges_all WHERE length IN (0,1)");
 	        	restEdges.next();
 	        	restEdge = restEdges.getInt(1);
 		        System.out.println("noch " + restEdge + " Edges");
