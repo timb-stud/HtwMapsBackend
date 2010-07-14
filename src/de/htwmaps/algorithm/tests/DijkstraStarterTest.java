@@ -60,7 +60,7 @@ public class DijkstraStarterTest {
 		
 		
 		DijkstraStarter ds = new DijkstraStarter();
-		float a = 0.7f;
+		float a = 0.8f;
 		float h = 0.02f;
 		DBAdapterParabel dbar;
 		dbar = new DBAdapterParabel();
@@ -81,9 +81,9 @@ public class DijkstraStarterTest {
 				System.out.println(ds.generateTrack(result));
 				break;
 			} catch (PathNotFoundException e) {
-				a -= 0.05f;
+				a *= 0.5f;
 				h += 0.01;
-				if (a < 0.1) {
+				if (a < 0.001) {
 					throw new PathNotFoundException("Weg nicht gefunden");
 				}
 			}
