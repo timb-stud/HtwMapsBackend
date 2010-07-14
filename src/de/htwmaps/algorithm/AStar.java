@@ -63,7 +63,6 @@ public class AStar implements ShortestPathAlgorithm {
 					if (tentativeG < successor.getG()) {
 						successor.setPredeccessor(current);
 						successor.setG(tentativeG);
-						successor.setF(successor.getG() + successor.getDistanceTo(goal));
 					}
 				}
 			}
