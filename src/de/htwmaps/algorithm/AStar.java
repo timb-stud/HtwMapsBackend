@@ -50,7 +50,7 @@ public class AStar implements ShortestPathAlgorithm {
 			closedSet.put(current.getId(), current);
 			for (Edge edge : current.getEdgeList()) {
 				AStarNode successor = (AStarNode)edge.getSuccessor();
-				if (closedSet.containsKey(successor.id)) // TODO contains key or value !?!??!
+				if (closedSet.containsKey(successor.id))
 					continue;
 				double tentativeG = current.getG() + edge.getDistance();
 				
