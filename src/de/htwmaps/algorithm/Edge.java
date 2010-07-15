@@ -8,13 +8,14 @@ package de.htwmaps.algorithm;
 public class Edge {
 	private Node successor, predecessor;
 	private double distance;
+	private int type;
 
 	/**
 	 * 
 	 * @param successor der Knoten auf den die Kante gerichtet ist
 	 * @param distance laenge der Kante
 	 */
-	public Edge(Node successor, double distance) {
+	public Edge(Node successor, double distance, int type) {
 		this.successor = successor;
 		this.distance = distance;
 	}
@@ -52,5 +53,17 @@ public class Edge {
 	@Override
 	public String toString() {
 		return "[" + successor + "; " + distance + "]";
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public int getType() {
+		return type;
+	}
+	
+	public double getPrioDist() {
+		return type * distance;
 	}
 }
