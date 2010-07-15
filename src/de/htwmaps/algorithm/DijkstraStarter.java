@@ -25,7 +25,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	private void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
 			DijkstraNode fromNode = Q.get(fromNodeIDs[i]), toNode = Q.get(toNodeIDs[i]);
-			Edge onewayEdge = new Edge(toNode, fromNode.getDistanceTo(toNode));
+			Edge onewayEdge = new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]);
 			fromNode.addEdge(onewayEdge);
 			toNode.addEdge(onewayEdge);
 			if(!oneways[i]) {
