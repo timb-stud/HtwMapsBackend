@@ -22,7 +22,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	 * knotenobjekte miteinander referenzieren
 	 * @param fromToDistances 
 	 */
-	private void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances) {
+	private void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances, int[] highwayTypes) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
 			DijkstraNode fromNode = Q.get(fromNodeIDs[i]), toNode = Q.get(toNodeIDs[i]);
 			Edge onewayEdge = new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]);
@@ -70,7 +70,8 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode>(allNodesIDs.length);
 
 		generateNodes(Q, allNodesIDs, x, y);
-		generateReferences(Q, fromNodeIDs, toNodeIDs, oneways, fromToDistances);
+		generateReferences(Q, fromNodeIDs, toNodeIDs, oneways, fromToDistances, highwayTypes);
+
 
 		
 		DijkstraNode startNode = Q.get(startNodeID); 
