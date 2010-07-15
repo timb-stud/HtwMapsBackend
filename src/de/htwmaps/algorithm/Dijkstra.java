@@ -78,7 +78,7 @@ public class Dijkstra extends Thread {
 							}
 							if (!successor.isRemovedFromQ()) {
 								updateSuccDist(Q, currentNode, successor,
-										edge.getDistance());
+										 edge.getPrioDist());
 							}
 						}
 					}
