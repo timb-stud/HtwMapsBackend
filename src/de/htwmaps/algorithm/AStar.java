@@ -52,7 +52,7 @@ public class AStar implements ShortestPathAlgorithm {
 				AStarNode successor = (AStarNode)edge.getSuccessor();
 				if (closedSet.containsKey(successor.id))
 					continue;
-				double tentativeG = current.getG() + edge.getDistance();
+				double tentativeG = current.getG() + edge.getPrioDist();
 				
 				if (!openSet.contains(successor)) {
 					successor.setPredeccessor(current);
@@ -106,7 +106,6 @@ public class AStar implements ShortestPathAlgorithm {
 	 *            HighwayType of this edge.
 	 * @return a HashTable containing all inserted nodes.
 	 */
-	//TODO multiplicate highwaytypes with distance
 	private void buildEdges(HashMap<Integer, AStarNode> allNodes,
 			int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances,
 			boolean[] oneways, int[] highwayTypes) {
@@ -114,9 +113,9 @@ public class AStar implements ShortestPathAlgorithm {
 		for (int i = 0; i < fromNodeIDs.length; i++) {
 			AStarNode fromNode = allNodes.get(fromNodeIDs[i]);
 			AStarNode toNode = allNodes.get(toNodeIDs[i]);
-			fromNode.addEdge(new Edge(toNode, fromNode.getDistanceTo(toNode)));
+			fromNode.addEdge(new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]));
 			if(!oneways[i]){
-				toNode.addEdge(new Edge(fromNode, fromNode.getDistanceTo(toNode)));
+				toNode.addEdge(new Edge(fromNode, fromNode.getDistanceTo(toNode), highwayTypes[i]));
 			}
 		}
 	}
