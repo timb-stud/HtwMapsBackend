@@ -1,92 +1,97 @@
 package de.htwmaps.database.importscripts;
 
 import java.awt.geom.Arc2D;
-import java.sql.PreparedStatement;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+
+import org.apache.batik.ext.awt.geom.Polygon2D;
 
 import de.htwmaps.database.DBConnector;
 
-/**
- * @author Stanislaw Tartakowski
- * @coAuthor Yassir Klos (Strassen werden jetzt direkt in die DB geschrieben, und nicht erst in eine Datei)
- * Hilfsklasse zum Befuellen der Datenbank
- *
- * Diese Klasse markiert alle Strassen auf der Datenbank mit ihrem zugehoerigen Ort. Der Ort wird ueber einen Kreisradius und einen zentralen Punkt definiert.
-*/ 
 public class UpdateStreets {
-	private double diameter;
-	private Statement cityNodeStatement, everyWayStartNodeStatement, everyCityNodeStatement;
-	private String place;
-	
-	/*
-	 * diameter ist der Durchmesser (in km) des Kreises(Ortes) in dem alle Wege erfasst werden sollen
-	 */
-	public UpdateStreets(String place, double diameter) throws Exception {
-		this.place = place;
-		this.diameter = 0.0099 * diameter;
-		cityNodeStatement = DBConnector.getConnection().createStatement();
-		everyWayStartNodeStatement = DBConnector.getConnection().createStatement();
-		everyCityNodeStatement = DBConnector.getConnection().createStatement();
-	}
-	
-	/*
-	 * Diese Methode prüft alle Ways die es in der DB gibt, ob diese in einem bestimmten Kreis(Ort) liegen und schreibt das ergebnis in eine datei.
-	 */
-	public void writeEveryWayToFile() throws Exception {
-		PreparedStatement ps = DBConnector.getConnection().prepareStatement("INSERT INTO streets (ID, wayID, streetname, nodeID, cityname) VALUES (null, ?, ?, ?, ?)");
-		Arc2D arc = new Arc2D.Double();
-		ResultSet everyCityNode = everyCityNodeStatement.executeQuery("select nodes.id from"
-																	+ " nodes, r_node_tag, k_tags"
-																	+ " where nodes.id = r_node_tag.nodeID and"
-																	+ " r_node_tag.tagID = k_tags.id and"
-																	+ " k_tags.key = 'place' and k_tags.value = '" + place + "'");
-		while (everyCityNode.next()) {
-			try {
-				ResultSet cityNode = cityNodeStatement.executeQuery("select lon, lat, value"
-																+ " from nodes, r_node_tag, k_tags"
-																+ " where nodes.id = " + everyCityNode.getInt(1)
-																+ " and nodes.id = r_node_tag.nodeID and"
-																+ " r_node_tag.tagID = k_tags.ID and k_tags.key = 'name'");
-				cityNode.next();
-				double centerX = cityNode.getFloat(1) - (diameter / 2.0);
-				double centerY = cityNode.getFloat(2) - (diameter / 2.0);
-				arc.setArc(centerX, centerY, diameter, diameter, 0, 360, 0);
-				/*
-				 * alle nicht geschloßenen wege mit namen.
-				 */
-				ResultSet everyWayStartNode = everyWayStartNodeStatement.executeQuery("select lon, lat, ways.id, k_tags.value from `db1057229-2`.nodes, `db1057229-2`.ways, `db1057229-2`.r_way_tag, k_tags where ways.id in (SELECT ways.ID FROM ways, r_way_tag, k_tags WHERE ways.ID = r_way_tag.wayID AND k_tags.ID = r_way_tag.tagID AND k_tags.key = 'highway' AND k_tags.value IN ('motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link','tertiary','unclassified','road','residential','living_street')) and nodes.id = ways.startNodeID and ways.id = r_way_tag.wayID and r_way_tag.tagID = k_tags.ID and k_tags.key = 'name' and ways.startNodeID != ways.endNodeID");
 
-				while (everyWayStartNode.next()) {
-					if (arc.contains(everyWayStartNode.getFloat(1), everyWayStartNode.getFloat(2))) {
-						ps.setInt(1, everyWayStartNode.getInt(3));
-						ps.setString(2, everyWayStartNode.getString(4));
-						ps.setInt(3, everyCityNode.getInt(1));
-						ps.setString(4, cityNode.getString(3));
-						ps.executeUpdate();
-					}
+	
+	public void updateStreets(String place, double diameter) throws SQLException, IOException {
+		diameter *= 0.001;
+		ArrayList<Integer> cityNodes = new ArrayList<Integer>();
+		
+		ResultSet allWaysStartNodes = DBConnector.getConnection().createStatement().executeQuery("SELECT node1lon, node1lat, nameValue, ways.id FROM ways, edges_all" +
+																								" where startEdgeID = edges_all.id");
+		ResultSet allPolyWays = DBConnector.getConnection().createStatement().executeQuery("SELECT distinct wayID FROM edges_borders");
+		ResultSet allCities = DBConnector.getConnection().createStatement().executeQuery("SELECT lon, lat, name, id FROM cities");
+		Statement allEdgesInPolyWayStatement = DBConnector.getConnection().createStatement();
+		//---------Polygon
+		while (allPolyWays.next()) {
+			ResultSet allEdgesInPolyWay = allEdgesInPolyWayStatement.executeQuery("SELECT fromNode.lon, fromNode.lat, toNode.lon, toNode.lat from nodes fromNode, nodes toNode, edges_borders where wayID = " + allPolyWays.getInt(1) +
+																										" and fromNode.id = edges_borders.node1ID and toNode.id = edges_borders.node2ID");
+			ArrayList<Float> x = new ArrayList<Float>();
+			ArrayList<Float> y = new ArrayList<Float>();
+			while (allEdgesInPolyWay.next()) {
+				x.add(allEdgesInPolyWay.getFloat(1));
+				y.add(allEdgesInPolyWay.getFloat(2));
+				
+				x.add(allEdgesInPolyWay.getFloat(3));
+				y.add(allEdgesInPolyWay.getFloat(4));
+			}
+			float[] xx = new float[x.size()];
+			float[] yy = new float[x.size()];
+			for (int i = 0; i < x.size(); i++) {
+				xx[i] = x.get(i);
+				yy[i] = y.get(i);
+			}
+			Polygon2D polygon = new Polygon2D(xx, yy, x.size());
+			String city = "";
+			while (allCities.next()) {
+				if (polygon.contains(allCities.getFloat(1), allCities.getFloat(2))) {
+					city = allCities.getString(3);
+					cityNodes.add(allCities.getInt(4));
+					break;
 				}
-			} catch (Exception e) {
-				System.out.println("fehler");
+			}
+			allCities.beforeFirst();
+			while(allWaysStartNodes.next()) {
+				if (polygon.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
+					System.out.println("way id = " + allWaysStartNodes.getInt(4) + " name = " + allWaysStartNodes.getString(3) + " ort = " + city + " ort_node_ID = " + cityNodes.get(cityNodes.size() - 1));
+				}
+			}
+			allWaysStartNodes.beforeFirst();
+		}  
+		//----------Kreis
+		Arc2D arc = new Arc2D.Double();
+		while (allCities.next()) {
+			if (cityNodes.contains(allCities.getInt(4))) {
 				continue;
 			}
+			String city = allCities.getString(3);
+			double centerX = allCities.getFloat(1) - (diameter / 2.0);
+			double centerY = allCities.getFloat(2) - (diameter / 2.0);
+			arc.setArc(centerX, centerY, diameter, diameter, 0, 360, 0);
+			while(allWaysStartNodes.next()) {
+				if (arc.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
+					System.out.println("way id = " + allWaysStartNodes.getInt(4) + " name = " + allWaysStartNodes.getString(3) + " ort = " + city + " ort_node_ID = " + cityNodes.get(cityNodes.size() - 1));
+				}
+			}
+			allWaysStartNodes.beforeFirst();
 		}
-		ps.close();
 	}
 	
-	public static void main() throws Exception {
+	public static void main(String[] args) throws SQLException, IOException {
 		/*
 		 * 
-			place=city 		Node 	10km
-			place=town 		Node 	5km
-			place=village 	Node 	2km
-			place=hamlet 	Node 	0.7km
-			place=suburb 	Node 	1km
+			place=city 		 	10km
+			place=town 		 	5km
+			place=village 	 	2.3km
+			place=hamlet 	 	1km
+			place=suburb 	 	1.5km
 		 */
 		String typ = "suburb";
 		double diameter = 1;
-		
-		UpdateStreets w = new UpdateStreets(typ, diameter);
-		w.writeEveryWayToFile();
+		new UpdateStreets().updateStreets(typ, diameter);
 	}
 }
