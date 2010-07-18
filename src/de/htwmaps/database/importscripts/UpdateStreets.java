@@ -18,7 +18,6 @@ public class UpdateStreets {
 
 	
 	public void updateStreets(String place, double diameter) throws SQLException, IOException {
-		BufferedWriter bfw = new BufferedWriter(new FileWriter(new File("qqq")));
 		diameter *= 0.001;
 		ArrayList<Integer> cityNodes = new ArrayList<Integer>();
 		
@@ -58,7 +57,6 @@ public class UpdateStreets {
 			allCities.beforeFirst();
 			while(allWaysStartNodes.next()) {
 				if (polygon.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
-					bfw.write("way id = " + allWaysStartNodes.getInt(4) + " name = " + allWaysStartNodes.getString(3) + " ort = " + city + " ort_node_ID = " + cityNodes.get(cityNodes.size() - 1) + "\r\n");
 					System.out.println("way id = " + allWaysStartNodes.getInt(4) + " name = " + allWaysStartNodes.getString(3) + " ort = " + city + " ort_node_ID = " + cityNodes.get(cityNodes.size() - 1));
 				}
 			}
@@ -76,7 +74,6 @@ public class UpdateStreets {
 			arc.setArc(centerX, centerY, diameter, diameter, 0, 360, 0);
 			while(allWaysStartNodes.next()) {
 				if (arc.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
-					bfw.write("way id = " + allWaysStartNodes.getInt(4) + " name = " + allWaysStartNodes.getString(3) + " ort = " + city + " ort_node_ID = " + cityNodes.get(cityNodes.size() - 1) + "\r\n");
 					System.out.println("way id = " + allWaysStartNodes.getInt(4) + " name = " + allWaysStartNodes.getString(3) + " ort = " + city + " ort_node_ID = " + cityNodes.get(cityNodes.size() - 1));
 				}
 			}
