@@ -13,9 +13,14 @@ import de.htwmaps.database.DBConnector;
 
 public class EdgeOptimizer {
 	
-	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways WHERE ID BETWEEN 0 AND 1000000;";
+//	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways WHERE ID BETWEEN 0 AND 1000000;";
+//	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways WHERE ID BETWEEN 1000001 AND 2000000;";
+//	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways WHERE ID BETWEEN 2000001 AND 3000000;";
+//	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways WHERE ID BETWEEN 3000001 AND 4000000;";
+//	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways WHERE ID BETWEEN 4000001 AND 5000000;";
+//	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways WHERE ID > 5000000;";
 //	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways WHERE ID = 27057142;";
-//	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways;";
+	String sql1 = "SELECT ID, startEdgeID, endEdgeID FROM ways;";
 	String sql2 = "SELECT ID, node1ID, node2ID, length FROM edges_all WHERE wayID = ?;";
 	String sql30 = "SELECT COUNT(*) FROM edges_all WHERE node1ID = ? AND wayID <> ?;";
 	String sql31 = "SELECT COUNT(*) FROM edges_all WHERE node1ID = ? AND wayID <> ?;";
