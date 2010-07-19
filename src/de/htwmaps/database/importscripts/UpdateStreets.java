@@ -23,6 +23,7 @@ public class UpdateStreets {
 	
 	public void updateStreets() throws SQLException, IOException {
 		BufferedWriter bfw = new BufferedWriter(new FileWriter(new File("qqq")));
+		ArrayList<Polygon2D> polygons = new ArrayList<Polygon2D>();
 		ArrayList<Integer> cityNodes = new ArrayList<Integer>();
 		
 		ResultSet allWaysStartNodes = DBConnector.getConnection().createStatement().executeQuery("SELECT node1lon, node1lat, nameValue, ways.id FROM ways, edges_all" +
@@ -50,6 +51,7 @@ public class UpdateStreets {
 				yy[i] = y.get(i);
 			}
 			Polygon2D polygon = new Polygon2D(xx, yy, x.size());
+			polygons.add(polygon);
 			String city = "";
 			String is_in = "";
 			while (allCities.next()) {
@@ -78,15 +80,17 @@ public class UpdateStreets {
 		}  
 		//----------Kreis
 		double diameterHamlet = 0.01;
-		double diameterSuburb = 0.015;
-		double diameterVillage = 0.025;
+		double diameterSuburb = 0.017;
+		double diameterVillage = 0.021;
 		double diameterTown = 0.05;
 		double diameterCity = 0.1;
 		double diameter = 0.0;
 		Arc2D arc = new Arc2D.Double();
 		while (allCities.next()) {
-			if (cityNodes.contains(allCities.getInt(4))) {
-				continue;
+			for (Polygon2D polygon : polygons) {
+				if (polygon.contains(allCities.getFloat(1), allCities.getFloat(2))) {
+					continue;
+				}
 			}
 			String is_in = allCities.getString(5);
 			String city = allCities.getString(3);
