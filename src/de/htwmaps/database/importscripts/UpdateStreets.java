@@ -22,7 +22,6 @@ public class UpdateStreets {
 
 	
 	public void updateStreets() throws SQLException, IOException {
-		BufferedWriter bfw = new BufferedWriter(new FileWriter(new File("qqq")));
 		ArrayList<Polygon2D> polygons = new ArrayList<Polygon2D>();
 		ArrayList<Integer> cityNodes = new ArrayList<Integer>();
 		
