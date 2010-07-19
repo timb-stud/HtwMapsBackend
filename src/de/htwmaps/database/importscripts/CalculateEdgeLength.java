@@ -65,10 +65,10 @@ public class CalculateEdgeLength {
 	        PreparedStatement psLength 	= DBConnector.getConnection().prepareStatement("UPDATE `edges_all` SET `length` = ? WHERE `ID`= ?");
 	        while (moreResults) {
 	        	//System.out.println("Lade Edges");
-	        	allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, node1ID, node2ID FROM edges_all WHERE length IN (0,1) LIMIT 0, 100000");
-	        	System.out.println("100000 Edges geladen");
+	        	allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, node1ID, node2ID FROM edges_all WHERE length IS NULL LIMIT 0, 10000");
+	        	System.out.println("10000 Edges geladen");
 		        //System.out.println("Setze Edgecount");
-		        restEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT COUNT(*) FROM edges_all WHERE length IN (0,1)");
+		        restEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT COUNT(*) FROM edges_all WHERE length IS NULL");
 	        	restEdges.next();
 	        	restEdge = restEdges.getInt(1);
 		        System.out.println("noch " + restEdge + " Edges");
@@ -109,5 +109,9 @@ public class CalculateEdgeLength {
 			e.printStackTrace();
 		}
 	}
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		new CalculateEdgeLength();
 
+	}
 }
