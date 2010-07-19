@@ -1,9 +1,6 @@
 package de.htwmaps.database.importscripts;
 
 import java.awt.geom.Arc2D;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,26 +48,24 @@ public class UpdateStreets {
 			}
 			Polygon2D polygon = new Polygon2D(xx, yy, x.size());
 			polygons.add(polygon);
-			String city = "";
-			String is_in = "";
 			while (allCities.next()) {
 				if (polygon.contains(allCities.getFloat(1), allCities.getFloat(2))) {
-					city = allCities.getString(3);
-					is_in = allCities.getString(5);
+					String city = allCities.getString(3);
+					String is_in = allCities.getString(5);
 					if (!is_in.isEmpty()) {
 						is_in = removeSillyTag(is_in);
 					}
 					cityNodes.add(allCities.getInt(4));
+					while(allWaysStartNodes.next()) {
+						if (polygon.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
+							System.out.println("UPDATE `ways` SET `cityName` = '" + city + "', `cityNodeID` = " + cityNodes.get(cityNodes.size() - 1) + ", `is_in` = '" + is_in + "' WHERE `ID` = " + allWaysStartNodes.getInt(4));
+						}
+					}
+					allWaysStartNodes.beforeFirst();
 					break;
 				}
 			}
 			allCities.beforeFirst();
-			while(allWaysStartNodes.next()) {
-				if (polygon.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
-					System.out.println("UPDATE `ways` SET `cityName` = '" + city + "', `cityNodeID` = " + cityNodes.get(cityNodes.size() - 1) + ", `is_in` = '" + is_in + "' WHERE `ID` = " + allWaysStartNodes.getInt(4));
-				}
-			}
-			allWaysStartNodes.beforeFirst();
 		}  
 		//----------Kreis
 		double diameterHamlet = 0.01;
