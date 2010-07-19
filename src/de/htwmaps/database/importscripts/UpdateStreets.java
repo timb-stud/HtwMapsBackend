@@ -53,7 +53,7 @@ public class UpdateStreets {
 					String city = allCities.getString(3);
 					String is_in = allCities.getString(5);
 					if (!is_in.isEmpty()) {
-						is_in = removeSillyTag(is_in);
+						is_in = removeSillyTag(is_in, city);
 					}
 					cityNodes.add(allCities.getInt(4));
 					while(allWaysStartNodes.next()) {
@@ -84,7 +84,7 @@ public class UpdateStreets {
 			String is_in = allCities.getString(5);
 			String city = allCities.getString(3);
 			if (!is_in.isEmpty()) {
-				is_in = removeSillyTag(is_in);
+				is_in = removeSillyTag(is_in, city);
 			}
 			if (allCities.getString(6).equals("hamlet")) {
 				diameter = diameterHamlet;
@@ -119,11 +119,19 @@ public class UpdateStreets {
 		}
 	}
 	
-	private String removeSillyTag(String is_in) {
+	private String removeSillyTag(String is_in, String city) {
 		is_in = is_in.trim();
 		is_in = is_in.replace(" ", "");
+		city = is_in.trim();
+		city = is_in.replace(" ", "");
 		StringBuilder sb = new StringBuilder(is_in);
 		int pos = 0;
+		if (city.equals("Neunkirchen (Saar)")) {
+			System.out.println("dd");
+		}
+		while ((pos = sb.indexOf(city)) != -1) {
+			sb.delete(pos, getEndpos(city, pos, sb));
+		}
 		while ((pos = sb.indexOf("Europa")) != -1) {
 			sb.delete(pos, getEndpos("Europa", pos, sb));
 		}
@@ -143,7 +151,10 @@ public class UpdateStreets {
 			sb.delete(pos, getEndpos("Deutschland", pos, sb));
 		}
 		while ((pos = sb.indexOf("Stadtverband")) != -1) {
-				sb.delete(pos, getEndpos("Stadtverband", pos, sb));
+			sb.delete(pos, getEndpos("Stadtverband", pos, sb));
+		}
+		while ((pos = sb.indexOf("Stadtund")) != -1) {
+			sb.delete(pos, getEndpos("Stadtund", pos, sb));
 		}
 		for (int i = 0; i < sb.length(); i++) {
 			if (i == 0 && sb.charAt(i) == ',') {
