@@ -182,7 +182,15 @@ public class UpdateStreets {
 		return sb.length();
 	}
 
-	public static void main(String[] args) throws SQLException, IOException {
-		new UpdateStreets().updateStreets();
+	public static void main(String[] args) {
+		try {
+			new UpdateStreets().updateStreets();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
