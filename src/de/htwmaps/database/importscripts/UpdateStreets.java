@@ -59,12 +59,7 @@ public class UpdateStreets {
 					city = allCities.getString(3);
 					is_in = allCities.getString(5);
 					if (!is_in.isEmpty()) {
-						int pos = is_in.indexOf(',');
-						if (pos > -1) {
-							city = is_in.substring(0, pos) + ", " + city;
-						} else {
-							city = is_in + ", " + city;
-						}
+						is_in = removeSillyTag(is_in);
 					}
 					cityNodes.add(allCities.getInt(4));
 					break;
@@ -73,7 +68,7 @@ public class UpdateStreets {
 			allCities.beforeFirst();
 			while(allWaysStartNodes.next()) {
 				if (polygon.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
-					bfw.write("way id = " + allWaysStartNodes.getInt(4) + " name = " + allWaysStartNodes.getString(3) + " ort = " + city + " ort_node_ID = " + cityNodes.get(cityNodes.size() - 1) + "\r\n");
+					System.out.println("UPDATE `ways` SET `cityName` = '" + city + "', `cityNodeID` = " + cityNodes.get(cityNodes.size() - 1) + ", `is_in` = '" + is_in + "' WHERE `ID` = " + allWaysStartNodes.getInt(4));
 				}
 			}
 			allWaysStartNodes.beforeFirst();
@@ -95,12 +90,7 @@ public class UpdateStreets {
 			String is_in = allCities.getString(5);
 			String city = allCities.getString(3);
 			if (!is_in.isEmpty()) {
-				int pos = is_in.indexOf(',');
-				if (pos > -1) {
-					city = is_in.substring(0, pos) + ", " + city;
-				} else {
-					city = is_in + ", " + city;
-				}
+				is_in = removeSillyTag(is_in);
 			}
 			if (allCities.getString(6).equals("hamlet")) {
 				diameter = diameterHamlet;
@@ -117,7 +107,7 @@ public class UpdateStreets {
 							if (allCities.getString(6).equals("city")) {
 								diameter = diameterCity;
 							} else {
-								diameter = 0.3;
+								diameter = 0.003;
 							}
 						}
 					}
@@ -128,13 +118,65 @@ public class UpdateStreets {
 			arc.setArc(centerX, centerY, diameter, diameter, 0, 360, 0);
 			while(allWaysStartNodes.next()) {
 				if (arc.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
-					bfw.write("way id = " + allWaysStartNodes.getInt(4) + " name = " + allWaysStartNodes.getString(3) + " ort = " + city + " ort_node_ID = " + cityNodes.get(cityNodes.size() - 1) + "\r\n");
+					System.out.println("UPDATE `ways` SET `cityName` = '" + city + "', `cityNodeID` = " + cityNodes.get(cityNodes.size() - 1) + ", `is_in` = '" + is_in + "' WHERE `ID` = " + allWaysStartNodes.getInt(4));
 				}
 			}
 			allWaysStartNodes.beforeFirst();
 		}
 	}
 	
+	private String removeSillyTag(String is_in) {
+		is_in = is_in.trim();
+		is_in = is_in.replace(" ", "");
+		StringBuilder sb = new StringBuilder(is_in);
+		int pos = 0;
+		while ((pos = sb.indexOf("Europa")) != -1) {
+			sb.delete(pos, getEndpos("Europa", pos, sb));
+		}
+		while ((pos = sb.indexOf("Europe")) != -1) {
+			sb.delete(pos, getEndpos("Europe", pos, sb));
+		}
+		while ((pos = sb.indexOf("Germany")) != -1) {
+			sb.delete(pos, getEndpos("Germany", pos, sb));
+		}
+		while ((pos = sb.indexOf("Bundesrepublik")) != -1) {
+			sb.delete(pos, getEndpos("Bundesrepublik", pos, sb));
+		}
+		while ((pos = sb.indexOf("Regionalverband")) != -1) {
+			sb.delete(pos, getEndpos("Regionalverband", pos, sb));
+		}
+		while ((pos = sb.indexOf("Deutschland")) != -1) {
+			sb.delete(pos, getEndpos("Deutschland", pos, sb));
+		}
+		while ((pos = sb.indexOf("Stadtverband")) != -1) {
+				sb.delete(pos, getEndpos("Stadtverband", pos, sb));
+		}
+		for (int i = 0; i < sb.length(); i++) {
+			if (i == 0 && sb.charAt(i) == ',') {
+				sb.delete(0, i + 1);
+				i = 0;
+				continue;
+			}
+			if (i < sb.length() - 1 && sb.charAt(i) == ',' && sb.charAt(i + 1) == ',') {
+				sb.delete(i, i + 1);
+			}
+			if (i == sb.length() - 1 && sb.charAt(i) == ',') {
+				sb.delete(i, i + 1);
+			}
+			
+		}
+		return sb.toString();
+	}
+
+	private int getEndpos(String string, int pos, StringBuilder sb) {
+		for (int i = pos; i < sb.length(); i++) {
+			if (sb.charAt(i) == ',') {
+				return i;
+			}
+		}
+		return sb.length();
+	}
+
 	public static void main(String[] args) throws SQLException, IOException {
 		new UpdateStreets().updateStreets();
 	}
