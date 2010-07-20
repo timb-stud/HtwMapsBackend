@@ -21,8 +21,8 @@ public class UpdateStreets {
 	
 	public void updateStreets() throws SQLException, IOException {
 		PreparedStatement ps = DBConnector.getConnection().prepareStatement("UPDATE `ways` SET `cityName` = ?, `cityNodeID` = ?, `is_in` = ? WHERE `ID` = ?");
-		ResultSet allWaysStartNodes = DBConnector.getConnection().createStatement().executeQuery("SELECT node1lon, node1lat, nameValue, ways.id FROM ways, edges_all" +
-																								" where startEdgeID = edges_all.id");
+		ResultSet allWaysNodes = DBConnector.getConnection().createStatement().executeQuery("SELECT edges_all1.node1lon, edges_all1.node1lat, edges_all2.node2lon, edges_all2.node2lat, ways.id FROM ways, edges_all edges_all1, edges_all edges_all2" +
+																								" where startEdgeID = edges_all1.id and endEdgeID = edges_all2.id");
 		ResultSet allPolyWays = DBConnector.getConnection().createStatement().executeQuery("SELECT distinct wayID FROM edges_borders");
 		ResultSet allCities = DBConnector.getConnection().createStatement().executeQuery("SELECT lon, lat, name, id, is_in, cityCategory FROM cities");
 		Statement allEdgesInPolyWayStatement = DBConnector.getConnection().createStatement();
@@ -64,16 +64,16 @@ public class UpdateStreets {
 			double centerX = allCities.getFloat(1) - (diameter / 2.0);
 			double centerY = allCities.getFloat(2) - (diameter / 2.0);
 			arc.setArc(centerX, centerY, diameter, diameter, 0, 360, 0);
-			while(allWaysStartNodes.next()) {
-				if (arc.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
+			while(allWaysNodes.next()) {
+				if (arc.contains(allWaysNodes.getFloat(1), allWaysNodes.getFloat(2)) || arc.contains(allWaysNodes.getFloat(3), allWaysNodes.getFloat(4))) {
 					ps.setString(1, city);
 					ps.setInt(2, allCities.getInt(4));
 					ps.setString(3, is_in);
-					ps.setInt(4, allWaysStartNodes.getInt(4));
+					ps.setInt(4, allWaysNodes.getInt(5));
 					ps.executeUpdate();
 				}
 			}
-			allWaysStartNodes.beforeFirst();
+			allWaysNodes.beforeFirst();
 		}
 		allCities.beforeFirst();
 		//---------Polygon
@@ -103,16 +103,16 @@ public class UpdateStreets {
 					if (!is_in.isEmpty()) {
 						is_in = removeSillyTag(is_in, city);
 					}
-					while(allWaysStartNodes.next()) {
-						if (polygon.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
+					while(allWaysNodes.next()) {
+						if (polygon.contains(allWaysNodes.getFloat(1), allWaysNodes.getFloat(2)) || polygon.contains(allWaysNodes.getFloat(3), allWaysNodes.getFloat(4))) {
 							ps.setString(1, city);
 							ps.setInt(2, allCities.getInt(4));
 							ps.setString(3, is_in);
-							ps.setInt(4, allWaysStartNodes.getInt(4));
+							ps.setInt(4, allWaysNodes.getInt(5));
 							ps.executeUpdate();
 						}
 					}
-					allWaysStartNodes.beforeFirst();
+					allWaysNodes.beforeFirst();
 					break;
 				}
 			}
