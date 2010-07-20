@@ -2,6 +2,7 @@ package de.htwmaps.database.importscripts;
 
 import java.awt.geom.Arc2D;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,54 +20,12 @@ public class UpdateStreets {
 
 	
 	public void updateStreets() throws SQLException, IOException {
-		ArrayList<Polygon2D> polygons = new ArrayList<Polygon2D>();
-		ArrayList<Integer> cityNodes = new ArrayList<Integer>();
-		
+		PreparedStatement ps = DBConnector.getConnection().prepareStatement("UPDATE `ways` SET `cityName` = ?, `cityNodeID` = ?, `is_in` = ? WHERE `ID` = ?");
 		ResultSet allWaysStartNodes = DBConnector.getConnection().createStatement().executeQuery("SELECT node1lon, node1lat, nameValue, ways.id FROM ways, edges_all" +
 																								" where startEdgeID = edges_all.id");
 		ResultSet allPolyWays = DBConnector.getConnection().createStatement().executeQuery("SELECT distinct wayID FROM edges_borders");
 		ResultSet allCities = DBConnector.getConnection().createStatement().executeQuery("SELECT lon, lat, name, id, is_in, cityCategory FROM cities");
 		Statement allEdgesInPolyWayStatement = DBConnector.getConnection().createStatement();
-		//---------Polygon
-		while (allPolyWays.next()) {
-			ResultSet allEdgesInPolyWay = allEdgesInPolyWayStatement.executeQuery("SELECT fromNode.lon, fromNode.lat, toNode.lon, toNode.lat from nodes fromNode, nodes toNode, edges_borders where wayID = " + allPolyWays.getInt(1) +
-																										" and fromNode.id = edges_borders.node1ID and toNode.id = edges_borders.node2ID");
-			ArrayList<Float> x = new ArrayList<Float>();
-			ArrayList<Float> y = new ArrayList<Float>();
-			while (allEdgesInPolyWay.next()) {
-				x.add(allEdgesInPolyWay.getFloat(1));
-				y.add(allEdgesInPolyWay.getFloat(2));
-				
-				x.add(allEdgesInPolyWay.getFloat(3));
-				y.add(allEdgesInPolyWay.getFloat(4));
-			}
-			float[] xx = new float[x.size()];
-			float[] yy = new float[x.size()];
-			for (int i = 0; i < x.size(); i++) {
-				xx[i] = x.get(i);
-				yy[i] = y.get(i);
-			}
-			Polygon2D polygon = new Polygon2D(xx, yy, x.size());
-			polygons.add(polygon);
-			while (allCities.next()) {
-				if (polygon.contains(allCities.getFloat(1), allCities.getFloat(2))) {
-					String city = allCities.getString(3);
-					String is_in = allCities.getString(5);
-					if (!is_in.isEmpty()) {
-						is_in = removeSillyTag(is_in, city);
-					}
-					cityNodes.add(allCities.getInt(4));
-					while(allWaysStartNodes.next()) {
-						if (polygon.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
-							System.out.println("UPDATE `ways` SET `cityName` = '" + city + "', `cityNodeID` = " + cityNodes.get(cityNodes.size() - 1) + ", `is_in` = '" + is_in + "' WHERE `ID` = " + allWaysStartNodes.getInt(4));
-						}
-					}
-					allWaysStartNodes.beforeFirst();
-					break;
-				}
-			}
-			allCities.beforeFirst();
-		}  
 		//----------Kreis
 		double diameterHamlet = 0.01;
 		double diameterSuburb = 0.017;
@@ -76,11 +35,6 @@ public class UpdateStreets {
 		double diameter = 0.0;
 		Arc2D arc = new Arc2D.Double();
 		while (allCities.next()) {
-			for (Polygon2D polygon : polygons) {
-				if (polygon.contains(allCities.getFloat(1), allCities.getFloat(2))) {
-					continue;
-				}
-			}
 			String is_in = allCities.getString(5);
 			String city = allCities.getString(3);
 			if (!is_in.isEmpty()) {
@@ -112,65 +66,113 @@ public class UpdateStreets {
 			arc.setArc(centerX, centerY, diameter, diameter, 0, 360, 0);
 			while(allWaysStartNodes.next()) {
 				if (arc.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
-					System.out.println("UPDATE `ways` SET `cityName` = '" + city + "', `cityNodeID` = " + cityNodes.get(cityNodes.size() - 1) + ", `is_in` = '" + is_in + "' WHERE `ID` = " + allWaysStartNodes.getInt(4));
+					ps.setString(1, city);
+					ps.setInt(2, allCities.getInt(4));
+					ps.setString(3, is_in);
+					ps.setInt(4, allWaysStartNodes.getInt(4));
+					ps.executeUpdate();
 				}
 			}
 			allWaysStartNodes.beforeFirst();
 		}
+		allCities.beforeFirst();
+		//---------Polygon
+		while (allPolyWays.next()) {
+			ResultSet allEdgesInPolyWay = allEdgesInPolyWayStatement.executeQuery("SELECT fromNode.lon, fromNode.lat, toNode.lon, toNode.lat from nodes fromNode, nodes toNode, edges_borders where wayID = " + allPolyWays.getInt(1) +
+																										" and fromNode.id = edges_borders.node1ID and toNode.id = edges_borders.node2ID");
+			ArrayList<Float> x = new ArrayList<Float>();
+			ArrayList<Float> y = new ArrayList<Float>();
+			while (allEdgesInPolyWay.next()) {
+				x.add(allEdgesInPolyWay.getFloat(1));
+				y.add(allEdgesInPolyWay.getFloat(2));
+				
+				x.add(allEdgesInPolyWay.getFloat(3));
+				y.add(allEdgesInPolyWay.getFloat(4));
+			}
+			float[] xx = new float[x.size()];
+			float[] yy = new float[x.size()];
+			for (int i = 0; i < x.size(); i++) {
+				xx[i] = x.get(i);
+				yy[i] = y.get(i);
+			}
+			Polygon2D polygon = new Polygon2D(xx, yy, x.size());
+			while (allCities.next()) {
+				if (polygon.contains(allCities.getFloat(1), allCities.getFloat(2))) {
+					String city = allCities.getString(3);
+					String is_in = allCities.getString(5);
+					if (!is_in.isEmpty()) {
+						is_in = removeSillyTag(is_in, city);
+					}
+					while(allWaysStartNodes.next()) {
+						if (polygon.contains(allWaysStartNodes.getFloat(1), allWaysStartNodes.getFloat(2))) {
+							ps.setString(1, city);
+							ps.setInt(2, allCities.getInt(4));
+							ps.setString(3, is_in);
+							ps.setInt(4, allWaysStartNodes.getInt(4));
+							ps.executeUpdate();
+						}
+					}
+					allWaysStartNodes.beforeFirst();
+					break;
+				}
+			}
+			allCities.beforeFirst();
+		}  
 	}
 	
-	private String removeSillyTag(String is_in, String city) {
-		is_in = is_in.trim();
-		is_in = is_in.replace(" ", "");
-		city = is_in.trim();
-		city = is_in.replace(" ", "");
+	public String removeSillyTag(String is_in, String city) {
+		is_in = is_in.replace(", ", ",");
 		StringBuilder sb = new StringBuilder(is_in);
 		int pos = 0;
-		if (city.equals("Neunkirchen (Saar)")) {
-			System.out.println("dd");
-		}
+		
 		while ((pos = sb.indexOf(city)) != -1) {
-			sb.delete(pos, getEndpos(city, pos, sb));
+			sb.delete(getStartPos(city, pos, sb), getEndpos(city, pos, sb));
 		}
 		while ((pos = sb.indexOf("Europa")) != -1) {
-			sb.delete(pos, getEndpos("Europa", pos, sb));
+			sb.delete(getStartPos("Europa", pos, sb), getEndpos("Europa", pos, sb));
 		}
 		while ((pos = sb.indexOf("Europe")) != -1) {
-			sb.delete(pos, getEndpos("Europe", pos, sb));
+			sb.delete(getStartPos("Europe", pos, sb), getEndpos("Europe", pos, sb));
 		}
 		while ((pos = sb.indexOf("Germany")) != -1) {
-			sb.delete(pos, getEndpos("Germany", pos, sb));
+			sb.delete(getStartPos("Germany", pos, sb), getEndpos("Germany", pos, sb));
 		}
 		while ((pos = sb.indexOf("Bundesrepublik")) != -1) {
-			sb.delete(pos, getEndpos("Bundesrepublik", pos, sb));
+			sb.delete(getStartPos("Bundesrepublik", pos, sb), getEndpos("Bundesrepublik", pos, sb));
 		}
 		while ((pos = sb.indexOf("Regionalverband")) != -1) {
-			sb.delete(pos, getEndpos("Regionalverband", pos, sb));
+			sb.delete(getStartPos("Regionalverband", pos, sb), getEndpos("Regionalverband", pos, sb));
 		}
 		while ((pos = sb.indexOf("Deutschland")) != -1) {
-			sb.delete(pos, getEndpos("Deutschland", pos, sb));
+			sb.delete(getStartPos("Deutschland", pos, sb), getEndpos("Deutschland", pos, sb));
 		}
 		while ((pos = sb.indexOf("Stadtverband")) != -1) {
-			sb.delete(pos, getEndpos("Stadtverband", pos, sb));
-		}
-		while ((pos = sb.indexOf("Stadtund")) != -1) {
-			sb.delete(pos, getEndpos("Stadtund", pos, sb));
+			sb.delete(getStartPos("Stadtverband", pos, sb), getEndpos("Stadtverband", pos, sb));
 		}
 		for (int i = 0; i < sb.length(); i++) {
 			if (i == 0 && sb.charAt(i) == ',') {
 				sb.delete(0, i + 1);
-				i = 0;
+				i = -1;
 				continue;
 			}
 			if (i < sb.length() - 1 && sb.charAt(i) == ',' && sb.charAt(i + 1) == ',') {
 				sb.delete(i, i + 1);
+				i--;
 			}
 			if (i == sb.length() - 1 && sb.charAt(i) == ',') {
 				sb.delete(i, i + 1);
 			}
-			
 		}
 		return sb.toString();
+	}
+
+	private int getStartPos(String city, int pos, StringBuilder sb) {
+		for (int i = pos; i > -1; i--) {
+			if (sb.charAt(i) == ',') {
+				return i + 1;
+			}
+		}
+		return 0;
 	}
 
 	private int getEndpos(String string, int pos, StringBuilder sb) {
@@ -185,11 +187,7 @@ public class UpdateStreets {
 	public static void main(String[] args) {
 		try {
 			new UpdateStreets().updateStreets();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
