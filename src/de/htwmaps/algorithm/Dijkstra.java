@@ -1,5 +1,7 @@
 package de.htwmaps.algorithm;
 
+
+
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -66,8 +68,11 @@ public class Dijkstra extends Thread {
 			currentNode.setRemovedFromQ(true);
 			LinkedList<Edge> edges = currentNode.getEdgeList();
 			for (Edge edge : edges) {
-				DijkstraNode successor = edge.getSuccessor() != currentNode ? (DijkstraNode) edge.getSuccessor() : (DijkstraNode) edge.getPredecessor();
-				if ((thread && successor != null) || (!thread && edge.getPredecessor() != null)) {
+				DijkstraNode successor = (DijkstraNode) edge.getSuccessor();
+				if (!thread && successor == currentNode || thread && successor != currentNode || !edge.isOneway()) {
+					if (successor == currentNode) {
+						successor = (DijkstraNode) edge.getPredecessor();
+					}
 					if (!thread && successor.isTouchedByTh1() || thread && successor.isTouchedByTh2() || !successor.isRemovedFromQ() || finished || isInterrupted()) {
 						synchronized (getClass()) {
 							if (finished || isInterrupted()) {
@@ -77,8 +82,7 @@ public class Dijkstra extends Thread {
 								return;
 							}
 							if (!successor.isRemovedFromQ()) {
-								updateSuccDist(Q, currentNode, successor,
-										 edge.getPrioDist());
+								updateSuccDist(Q, currentNode, successor, edge.getPrioDist());
 							}
 						}
 					}
