@@ -30,6 +30,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 			edge.setPredecessor(fromNode);
 			fromNode.addEdge(edge);
 			toNode.addEdge(edge);
+			edge.setOneway(true);
 			if (oneways[i] == false) {
 				edge.setOneway(false);
 			}
