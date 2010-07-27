@@ -9,6 +9,7 @@ public class Edge {
 	private Node successor, predecessor;
 	private double distance;
 	private int type;
+	private boolean oneway;
 
 	/**
 	 * 
@@ -20,6 +21,10 @@ public class Edge {
 		this.distance = distance;
 	}
 	
+	public void setOneway(boolean oneway) {
+		this.oneway = oneway;
+	}
+
 	/**
 	 * @return der Knoten, vom dem aus die Kante ausgeht. Ein Indiz fuer beidseitiges Betreten der Kante
 	 */
@@ -65,5 +70,9 @@ public class Edge {
 	
 	public double getPrioDist() {
 		return type * distance;
+	}
+
+	public boolean isOneway() {
+		return oneway;
 	}
 }
