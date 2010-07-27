@@ -21,15 +21,18 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 	/**
 	 * knotenobjekte miteinander referenzieren
 	 * @param fromToDistances 
+	 * @param highwayTypes 
 	 */
 	private void generateReferences(HashMap<Integer, DijkstraNode> Q, int[] fromNodeIDs, int[] toNodeIDs, boolean[] oneways, double[] fromToDistances, int[] highwayTypes) {
 		for (int i = 0 ; i < fromNodeIDs.length; i++) {
 			DijkstraNode fromNode = Q.get(fromNodeIDs[i]), toNode = Q.get(toNodeIDs[i]);
-			Edge onewayEdge = new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]);
-			fromNode.addEdge(onewayEdge);
-			toNode.addEdge(onewayEdge);
-			if(!oneways[i]) {
-				onewayEdge.setPredecessor(fromNode);
+			Edge edge = new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]);
+			edge.setPredecessor(fromNode);
+			fromNode.addEdge(edge);
+			toNode.addEdge(edge);
+			edge.setOneway(true);
+			if (oneways[i] == false) {
+				edge.setOneway(false);
 			}
 		}
 	}
@@ -69,9 +72,12 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		
 		HashMap<Integer, DijkstraNode> Q = new HashMap<Integer, DijkstraNode>(allNodesIDs.length);
 
+		long time = System.currentTimeMillis();
 		generateNodes(Q, allNodesIDs, x, y);
+		System.out.println(System.currentTimeMillis() - time + "ms knoten");
+		time = System.currentTimeMillis();
 		generateReferences(Q, fromNodeIDs, toNodeIDs, oneways, fromToDistances, highwayTypes);
-
+		System.out.println(System.currentTimeMillis() - time + "ms kanten");
 
 		
 		DijkstraNode startNode = Q.get(startNodeID); 
@@ -82,7 +88,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		
 		d0.setDijkstra(d1);
 		d1.setDijkstra(d0);
-		
+		time = System.currentTimeMillis();
 		d0.start();
 		d1.start();
 		
@@ -97,6 +103,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 		}
 		d0.interrupt();
 		d1.interrupt();
+		System.out.println(System.currentTimeMillis() - time + " reiner algo");
 		Node[] result = nodeToArray(startNode, endNode);
 		Dijkstra.count.set(0);
 		Dijkstra.finished = false;
@@ -168,7 +175,7 @@ public class DijkstraStarter implements ShortestPathAlgorithm {
 			
 			
 		}
-		StringBuilder res = new StringBuilder("fahren sie auf die erste straÃŸe: " + streets.get(0) + "\n");
+		StringBuilder res = new StringBuilder("fahren sie auf die erste straÃƒÅ¸e: " + streets.get(0) + "\n");
 		for (int i = 1; i < streets.size(); i++) {
 			res.append(streets.get(i) + "\n");
 		}

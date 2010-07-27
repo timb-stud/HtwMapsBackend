@@ -9,6 +9,7 @@ public class Edge {
 	private Node successor, predecessor;
 	private double distance;
 	private int type;
+	private boolean oneway;
 
 	/**
 	 * 
@@ -18,8 +19,13 @@ public class Edge {
 	public Edge(Node successor, double distance, int type) {
 		this.successor = successor;
 		this.distance = distance;
+		setType(type);
 	}
 	
+	public void setOneway(boolean oneway) {
+		this.oneway = oneway;
+	}
+
 	/**
 	 * @return der Knoten, vom dem aus die Kante ausgeht. Ein Indiz fuer beidseitiges Betreten der Kante
 	 */
@@ -56,6 +62,9 @@ public class Edge {
 	}
 
 	public void setType(int type) {
+		if (type <= 0) {
+			throw new RuntimeException("Straßentyp darf nicht 0 oder kleiner sein");
+		}
 		this.type = type;
 	}
 
@@ -65,5 +74,9 @@ public class Edge {
 	
 	public double getPrioDist() {
 		return type * distance;
+	}
+
+	public boolean isOneway() {
+		return oneway;
 	}
 }
