@@ -9,7 +9,7 @@ import java.sql.SQLException;
  * @author Stanislaw Tartakowski
  * 
  * Diese Klasse stellt dem Suchalgorithmus Knoten aus der Datenbank bereit, 
- * die in einer von 2 Parabeln begrenzter Fläche liegen. Die Form aehnelt einer Ellipse, die Implementierung
+ * die in einer von 2 Parabeln begrenzter FlÃ¤che liegen. Die Form aehnelt einer Ellipse, die Implementierung
  * ist jedoch performanter 
  *
  */
@@ -31,7 +31,7 @@ public class DBAdapterParabel{
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
 
-	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes WHERE partofhighway = 1";
+	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes_opt WHERE ";
 	
 	public void prepareGraph(int node1Id, int node2Id, float a, float h) throws SQLException{
 		this.a = a;
@@ -50,7 +50,7 @@ public class DBAdapterParabel{
 
 	private String buildCoordSelectStatement(int node1Id, int node2Id) {
 		StringBuilder sb = new StringBuilder(COORD_SELECT);
-		sb.append(" AND (id = ").append(node1Id)
+		sb.append(" (id = ").append(node1Id)
 		.append(" OR id = ").append(node2Id).append(")");
 		
 		return sb.toString();
@@ -141,15 +141,14 @@ public class DBAdapterParabel{
 
 	private void setRectangle() {
 		if(startNodeLat < endNodeLat){
-			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy - k
-			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey + k
-			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes varNodes "
+			//ps(x) = a (ey - sy) / (ex - sx)Ã‚Â² (x - sx)Ã‚Â² + sy - h
+			//pe(x) = a (sy - ey) / (sx - ex)Ã‚Â² (x - ex)Ã‚Â² + ey + h
+			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from nodes_opt varNodes "
 				+ " where "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - ? <= varNodes.lat "
 				+ " and "
-				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat "
-				+ " and varNodes.partofhighway = 1";
-			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID, length from saarland.edges2"
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat ";
+			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
 				+ " and"
@@ -159,15 +158,14 @@ public class DBAdapterParabel{
 				+ " and"
 				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + ? >= node2lat";
 		} else {
-			//ps(x) = h (ey - sy) / (ex - sx)Â² (x - sx)Â² + sy + k
-			//pe(x) = h (sy - ey) / (sx - ex)Â² (x - ex)Â² + ey - k
-			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from saarland.nodes varNodes "
+			//ps(x) = a (ey - sy) / (ex - sx)Ã‚Â² (x - sx)Ã‚Â² + sy + h
+			//pe(x) = a (sy - ey) / (sx - ex)Ã‚Â² (x - ex)Ã‚Â² + ey - h
+			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from nodes_opt varNodes "
 				+ " where "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + ? >= varNodes.lat "
 				+ " and "
-				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat "
-				+ " and varNodes.partofhighway = 1";
-			EDGE_SELECT = "select node1ID, node2ID, oneway, speedID, length from saarland.edges2"
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat ";
+			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + ? >= node1lat"
 				+ " and"
