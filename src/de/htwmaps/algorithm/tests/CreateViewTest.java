@@ -135,16 +135,16 @@ public class CreateViewTest {
 					"from edges_opt, nodesView " +
 					"where " +
 					"((edges_opt.node1ID = " + route[i] +
-					"and " +
+					" and " +
 					"edges_opt.node2ID = " + route[i+1] + ") " +
-					"or " +
+					" or " +
 					"(edges_opt.node2ID = " + route[i+1] +
-					"and " +
+					" and " +
 					"edges_opt.node1ID = " + route[i] + ")); ";
 			
 			try {
 				pStmt = DBConnector.getConnection().prepareStatement(query);
-				pStmt.executeUpdate();
+				pStmt.executeQuery();
 				pStmt = null;
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
