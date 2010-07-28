@@ -82,14 +82,14 @@ public class DijkstraStarterTest {
 			float[] nodeLons = dbar.getNodeLons(); //x
 			float[] nodeLats = dbar.getNodeLats(); //y
 			
-			int[] edgeStartNodeIDs = dbar.getFromNodeIDs();
-			int[] edgeEndNodeIDs = dbar.getToNodeIDs();
-			double[] distances = dbar.getDistances();
+			int[] edgeStartNodeIDs = dbar.getEdgeStartNodeIDs();
+			int[] edgeEndNodeIDs = dbar.getEdgeEndNodeIDs();
+			double[] lengths = dbar.getEdgeLengths();
 			boolean[] oneways = dbar.getOneways();
 			int[] highwayTypes = dbar.getHighwayTypes();
 			int[] edgeIDs = dbar.getEdgesIDs();
 			try {
-				Node[] result = as.findShortestPath(allNodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, distances, oneways, highwayTypes, searchOption);
+				Node[] result = as.findShortestPath(allNodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, lengths, oneways, highwayTypes, searchOption);
 				System.out.println(System.currentTimeMillis() - time);
 				System.out.println(new AStarBidirectionalStarter().generateTrack(result));
 				break;
