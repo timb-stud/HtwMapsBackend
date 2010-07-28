@@ -92,13 +92,13 @@ public class AStar implements ShortestPathAlgorithm {
 	 * The parameters fromNodeIDs, toNodeIDs, fromToDistances, oneways and
 	 * highwayTypes must have the same order.
 	 * 
-	 * @param allNodes
+	 * @param allNodesIDs
 	 *            HashMap containing all Nodes.
-	 * @param fromNodeIDs
+	 * @param edgeStartNodeIDs
 	 *            First nodeID that will be connected by the edge.
-	 * @param toNodeIDs
+	 * @param edgeEndNodeIDs
 	 *            Second nodeID that will be connected by the edge.
-	 * @param fromToDistances
+	 * @param edgeLengths
 	 *            Distance between first and second Node.
 	 * @param oneways
 	 *            Is this edge a oneway?
@@ -106,13 +106,13 @@ public class AStar implements ShortestPathAlgorithm {
 	 *            HighwayType of this edge.
 	 * @return a HashTable containing all inserted nodes.
 	 */
-	private void buildEdges(HashMap<Integer, AStarNode> allNodes,
-			int[] fromNodeIDs, int[] toNodeIDs, double[] fromToDistances,
+	private void buildEdges(HashMap<Integer, AStarNode> allNodesIDs,
+			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
 			boolean[] oneways, int[] highwayTypes) {
 		
-		for (int i = 0; i < fromNodeIDs.length; i++) {
-			AStarNode fromNode = allNodes.get(fromNodeIDs[i]);
-			AStarNode toNode = allNodes.get(toNodeIDs[i]);
+		for (int i = 0; i < edgeStartNodeIDs.length; i++) {
+			AStarNode fromNode = allNodesIDs.get(edgeStartNodeIDs[i]);
+			AStarNode toNode = allNodesIDs.get(edgeEndNodeIDs[i]);
 			fromNode.addEdge(new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]));
 			if(!oneways[i]){
 				toNode.addEdge(new Edge(fromNode, fromNode.getDistanceTo(toNode), highwayTypes[i]));
@@ -120,10 +120,10 @@ public class AStar implements ShortestPathAlgorithm {
 		}
 	}
 	
-	private HashMap<Integer, AStarNode> buildNodes(int[] allNodeIDs, float[] x, float[] y){
+	private HashMap<Integer, AStarNode> buildNodes(int[] allNodeIDs, float[] lon, float[] lat){
 		HashMap<Integer, AStarNode> allNodes = new HashMap<Integer, AStarNode>(allNodeIDs.length, 1.0f);
 		for (int i = 0; i < allNodeIDs.length; i++) {
-			allNodes.put(allNodeIDs[i], new AStarNode(allNodeIDs[i], x[i], y[i]));
+			allNodes.put(allNodeIDs[i], new AStarNode(allNodeIDs[i], lon[i], lat[i]));
 		}
 		return allNodes;
 	}
@@ -133,15 +133,15 @@ public class AStar implements ShortestPathAlgorithm {
 	 * 
 	 */
 	@Override
-	public Node[] findShortestPath(int[] allNodeIDs, float[] x, float[] y,
-			int startNodeID, int goalNodeID, int[] fromNodeIDs,
-			int[] toNodeIDs, double[] fromToDistances, boolean[] oneways,
-			int[] highwayTypes) throws PathNotFoundException {
+	public Node[] findShortestPath(int[] allNodeIDs, float[] lon, float[] lat,
+			int startNodeID, int goalNodeID, int[] edgeIDs,
+			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
+			boolean[] oneways, int[] highwayTypes, int searchOption) throws PathNotFoundException {
 		long time = System.currentTimeMillis();
-		HashMap<Integer, AStarNode> allNodes = buildNodes(allNodeIDs, x, y);
+		HashMap<Integer, AStarNode> allNodes = buildNodes(allNodeIDs, lon, lat);
 		System.out.println("HashMap bauen:" + (System.currentTimeMillis() - time) + "ms");
 		time = System.currentTimeMillis();
-		buildEdges(allNodes, fromNodeIDs, toNodeIDs, fromToDistances, oneways, highwayTypes);
+		buildEdges(allNodes, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes);
 		System.out.println("Edges bauen: " + (System.currentTimeMillis() - time) + "ms");
 		time = System.currentTimeMillis();
 		Node[] result = aStar(allNodes, startNodeID, goalNodeID).toArray(new Node[0]);

@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 import de.htwmaps.algorithm.AStar;
-import de.htwmaps.algorithm.DijkstraStarter;
+import de.htwmaps.algorithm.AStarBidirectionalStarter;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.database.DBAdapterParabel;
@@ -13,25 +13,34 @@ import de.htwmaps.util.InitLogger;
 public class DijkstraStarterTest {
 
 	public static void main(String[] args) throws SQLException, PathNotFoundException  {
-		InitLogger.INSTANCE.initLogger();
+
 
 		long time = System.currentTimeMillis();
 //		int startNodeID = 403500108;
 //		int goalNodeID =  262529904;
 		
-//		int startNodeID = 492621932;
+		int startNodeID = 29221535;
+		int goalNodeID = 587836344;
+		
+//		int startNodeID = 245901690; //köln
+//		int goalNodeID = 587836344;
+		
+//		int startNodeID = 245901690; //köln
+//		int goalNodeID = 269319503; //riegelsberg
+//		
+//		int startNodeID = 248556824; //Kassel
 //		int goalNodeID = 587836344;
 		
 //		int startNodeID = 580665431;
-//		int goalNodeID = 279565843;
+//		int goalNodeID = 279565843; //Ormesheim
 		
 //		float startNodeLon = 7.3093605f;
 //		float startNodeLat = 49.1737379f;
 //		float endNodeLon = 6.3849224f;
 //		float endNodeLat = 49.5321632f;
 ////		
-//		int startNodeID = 587836344;
-//		int goalNodeID =  272349340;
+//		int startNodeID = 321992397; //mannheim
+//		int goalNodeID =  587836344;
 //		float startNodeLon = 7.1199603f;
 //		float startNodeLat = 49.3599494f;
 //		float endNodeLon = 7.0751071f;
@@ -48,8 +57,8 @@ public class DijkstraStarterTest {
 //		int startNodeID = 587836344;
 //		int goalNodeID =  317518403;
 		
-		int startNodeID = 587836344;
-		int goalNodeID = 492621932;
+//		int startNodeID = 587836344;
+//		int goalNodeID = 492621932;
 //		float startNodeLon = 7.1199603f;
 //		float startNodeLat = 49.3599494f;
 //		float endNodeLon = 6.95033f;
@@ -59,31 +68,34 @@ public class DijkstraStarterTest {
 		
 		
 		
-		DijkstraStarter ds = new DijkstraStarter();
+		AStarBidirectionalStarter ds = new AStarBidirectionalStarter();
 		float a = 0.8f;
-		float h = 0.02f;
+		float h = 0.01f;
+		int searchOption = 0;
 		DBAdapterParabel dbar;
 		dbar = new DBAdapterParabel();
 		while(true) {
 			dbar.prepareGraph(startNodeID, goalNodeID, a, h);
-			int[] nodeIDs = dbar.getNodeIDs();
+			int[] allNodeIDs = dbar.getNodeIDs();
 			float[] nodeLons = dbar.getNodeLons(); //x
 			float[] nodeLats = dbar.getNodeLats(); //y
 			
-			int[] fromNodeIDs = dbar.getFromNodeIDs();
-			int[] toNodeIDs = dbar.getToNodeIDs();
+			int[] edgeStartNodeIDs = dbar.getFromNodeIDs();
+			int[] edgeEndNodeIDs = dbar.getToNodeIDs();
 			double[] distances = dbar.getDistances();
 			boolean[] oneways = dbar.getOneways();
 			int[] highwayTypes = dbar.getHighwayTypes();
+			int[] edgeIDs = dbar.getEdgesIDs();
 			try {
-				Node[] result = ds.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
+				Node[] result = ds.findShortestPath(allNodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, distances, oneways, highwayTypes, searchOption);
 				System.out.println(System.currentTimeMillis() - time);
-				System.out.println(ds.generateTrack(result));
+				System.out.println(new AStarBidirectionalStarter().generateTrack(result));
 				break;
 			} catch (PathNotFoundException e) {
 				a *= 0.5f;
-				h += 0.01;
-				if (a < 0.001) {
+				h += 0.01f;
+				System.out.println(a);
+				if (a <= 0.001) {
 					throw new PathNotFoundException("Weg nicht gefunden");
 				}
 			}
@@ -100,7 +112,7 @@ public class DijkstraStarterTest {
 //		int[] fromNodeIDs = {1,1,2,3,4,4,5,6};
 //		int[] toNodeIDs =   {2,3,4,5,5,6,7,7};
 //		double[] fromToDistances = {8.49, 7.21, 11.66, 10, 12, 6, 4, 7.21};
-//		boolean[] oneways = {false, true, false, false, false, false, false, false};
+//		boolean[] oneways = {false, false, false, false, false, false, false, false};
 //		int[] highwayTypes = {0,0,0,0,0,0,0,0};
 //		
 //		try{

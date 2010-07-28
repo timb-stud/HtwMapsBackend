@@ -9,7 +9,7 @@ import java.sql.SQLException;
  * @author Stanislaw Tartakowski
  * 
  * Diese Klasse stellt dem Suchalgorithmus Knoten aus der Datenbank bereit, 
- * die in einer von 2 Parabeln begrenzter FlÃ¤che liegen. Die Form aehnelt einer Ellipse, die Implementierung
+ * die in einer von 2 Parabeln begrenzter Fläche liegen. Die Form aehnelt einer Ellipse, die Implementierung
  * ist jedoch performanter 
  *
  */
@@ -27,6 +27,7 @@ public class DBAdapterParabel{
 	private double[] distances;
 	private boolean[] oneways;
 	private int[] highwayTypes;
+	private int[] edgeIDs;
 	
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
@@ -43,6 +44,7 @@ public class DBAdapterParabel{
 		resultSet.next();
 		endNodeLat = resultSet.getFloat(1);
 		endNodeLon = resultSet.getFloat(2);
+
 		setRectangle();
 		initNodes();
 		initEdges();
@@ -136,13 +138,14 @@ public class DBAdapterParabel{
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
 			distances[i] = resultSet.getInt(5);
+			edgeIDs[i] = 0;						//TODO
 		}
 	}
 
 	private void setRectangle() {
 		if(startNodeLat < endNodeLat){
-			//ps(x) = a (ey - sy) / (ex - sx)Ã‚Â² (x - sx)Ã‚Â² + sy - h
-			//pe(x) = a (sy - ey) / (sx - ex)Ã‚Â² (x - ex)Ã‚Â² + ey + h
+			//ps(x) = a (ey - sy) / (ex - sx)² (x - sx)² + sy - h
+			//pe(x) = a (sy - ey) / (sx - ex)² (x - ex)² + ey + h
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from nodes_opt varNodes "
 				+ " where "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - ? <= varNodes.lat "
@@ -158,8 +161,8 @@ public class DBAdapterParabel{
 				+ " and"
 				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + ? >= node2lat";
 		} else {
-			//ps(x) = a (ey - sy) / (ex - sx)Ã‚Â² (x - sx)Ã‚Â² + sy + h
-			//pe(x) = a (sy - ey) / (sx - ex)Ã‚Â² (x - ex)Ã‚Â² + ey - h
+			//ps(x) = a (ey - sy) / (ex - sx)² (x - sx)² + sy + h
+			//pe(x) = a (sy - ey) / (sx - ex)² (x - ex)² + ey - h
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from nodes_opt varNodes "
 				+ " where "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + ? >= varNodes.lat "
@@ -209,6 +212,9 @@ public class DBAdapterParabel{
 		return highwayTypes;
 	}
 	
+	public int[] getEdgesIDs() {
+		return edgeIDs;
+	}
 	
 	
 }

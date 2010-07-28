@@ -8,14 +8,14 @@ import java.util.LinkedList;
  *	Allgemeine Knotendefinition
  */
 public abstract class Node {
-	float x, y;
+	float lon, lat;
 	int id;
 	LinkedList<Edge> edgeList;
 	
-	Node(float x, float y, int id) {
+	Node(float lon, float lat, int id) {
 		edgeList = new LinkedList<Edge>();
-		this.x = x;
-		this.y = y;
+		this.lon = lon;
+		this.lat = lat;
 		this.id = id;
 	}
 	
@@ -47,16 +47,16 @@ public abstract class Node {
 	 * 
 	 * @return Longitude
 	 */
-	public float getX() {
-		return x;
+	public float getLon() {
+		return lon;
 	}
 
 	/**
 	 * 
 	 * @return Latitude
 	 */
-	public float getY() {
-		return y;
+	public float getLat() {
+		return lat;
 	}
 	
 	/**
@@ -65,10 +65,10 @@ public abstract class Node {
 	 * @return Laenge in km
 	 */
 	public double getDistanceTo(Node n) {
-		double lat = (this.y + n.y) / 2 * 0.01745;
-		double dx = 111.3 * Math.cos(lat) * (this.x - n.x);
-		double dy = 111.3 * (this.y - n.y);
-		return Math.sqrt(dx * dx + dy * dy);
+		double lat = (this.lat + n.lat) / 2 * 0.01745;
+		double dlon = 111.3 * Math.cos(lat) * (this.lon - n.lon);
+		double dlat = 111.3 * (this.lat - n.lat);
+		return Math.sqrt(dlon * dlon + dlat * dlat);
 	}
 
 	/**

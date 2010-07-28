@@ -13,11 +13,11 @@ public class AStarNode extends Node{
 	/**
 	 * Constructs a Node with the given parameters.
 	 * @param id an unique identification number
-	 * @param x latitude
-	 * @param y longitude
+	 * @param lon latitude
+	 * @param lat longitude
 	 */
-	public AStarNode(int id, float x, float y) {
-		super(x, y, id);
+	public AStarNode(int id, float lon, float lat) {
+		super(lon, lat, id);
 		this.f = -1;
 		this.g = -1;
 	}

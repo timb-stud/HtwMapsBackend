@@ -1,11 +1,10 @@
-package de.htwmaps.algorithm.tests;
+
 
 
 
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
 import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;

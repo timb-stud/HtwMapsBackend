@@ -72,11 +72,7 @@ private FibonacciHeapNode min;
       this.degree= 0;
       this.mark= false;
     }
-    
-    public Node getUserObject() {
-    	return userObject;
-    }
-    
+
     public String toString() {
       return userObject.getId() + "";
     }
