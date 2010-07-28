@@ -62,9 +62,6 @@ public class Edge {
 	}
 
 	public void setType(int type) {
-		if (type <= 0) {
-			throw new RuntimeException("Straßentyp darf nicht 0 oder kleiner sein");
-		}
 		this.type = type;
 	}
 
