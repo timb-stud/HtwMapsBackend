@@ -4,12 +4,14 @@ package de.htwmaps.algorithm.tests;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+
 import junit.framework.TestCase;
 import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.database.DBAdapterRectangle;
+import de.htwmaps.algorithm.ShortestPathAlgorithm.Option;
 
 public class AStarTest extends TestCase {
 
@@ -28,7 +30,7 @@ public class AStarTest extends TestCase {
 		double[] edgeLengths = {8.49, 7.21, 11.66, 10, 12, 6, 4, 7.21};
 		boolean[] oneways = {false, false, false, false, false, false, false, false};
 		int[] highwayTypes = {0,0,0,0,0,0,0,0};
-		int searchOption = ShortestPathAlgorithm.SHORTEST_ROUTE;
+		Option searchOption = ShortestPathAlgorithm.Option.SHORTEST_ROUTE;
 		
 		try{
 			result = as.findShortestPath(allNodeIDs, lon, lat, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, searchOption);
@@ -55,7 +57,7 @@ public class AStarTest extends TestCase {
 		double[] edgeLengths = {1.01,2.5,2.33,3.88,2.56,1.92,3.65,2.79,2.73,2.59,1.94,3.45,3.18,1.8,2.16,2.55,2.84,3.37,2.76,2.88,3.07,2.3};
 		boolean[] oneways = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,false,false,false,false,false,false};
 		int[] highwayTypes = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-		int searchOption = ShortestPathAlgorithm.SHORTEST_ROUTE;
+		Option searchOption = ShortestPathAlgorithm.Option.SHORTEST_ROUTE;
 		
 		try{
 			result = as.findShortestPath(	allNodeIDs, 
@@ -86,32 +88,23 @@ public class AStarTest extends TestCase {
 	 */
 	public void testFindShortestPath3() throws SQLException, PathNotFoundException{
 		AStar as = new AStar();
-//		float h = 0.001f;
-		 int startNodeID = 274026832;
-		 int goalNodeID = 587836344;
-//		 float startNodeLon = 7.0478f - h;
-//		 float startNodeLat = 49.3745f + h;
-//		 float endNodeLon = 7.11996f + h;
-//		 float endNodeLat = 49.36f - h;
-		 float startNodeLon = 7.0213f;
-		 float startNodeLat = 49.3431f;
-		 float endNodeLon = 7.1549f;
-		 float endNodeLat = 49.391f;
-		
-		
+		int startNodeID = 274026832;
+		int goalNodeID = 587836344;
 		DBAdapterRectangle dbar;
 		dbar = new DBAdapterRectangle(startNodeID, goalNodeID);
-		int[] nodeIDs = dbar.getNodeIDs();
-		float[] nodeLons = dbar.getNodeLons(); //x
-		float[] nodeLats = dbar.getNodeLats(); //y
+		int[] allNodeIDs = dbar.getNodeIDs();
+		float[] lon = dbar.getNodeLons(); //x
+		float[] lat = dbar.getNodeLats(); //y
 		
-		int[] fromNodeIDs = dbar.getFromNodeIDs();
-		int[] toNodeIDs = dbar.getToNodeIDs();
-		double[] distances = dbar.getDistances();
+		int[] edgeIDs = {};
+		int[] edgeStartNodeIDs = dbar.getFromNodeIDs();
+		int[] edgeEndNodeIDs = dbar.getToNodeIDs();
+		double[] edgeLengths = dbar.getDistances();
 		boolean[] oneways = dbar.getOneways();
 		int[] highwayTypes = dbar.getHighwayTypes();
-		long time = System.currentTimeMillis();
+		Option searchOption = ShortestPathAlgorithm.Option.SHORTEST_ROUTE;
 		
+		long time = System.currentTimeMillis();
 		Node[] result = as.findShortestPath(allNodeIDs, lon, lat, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, searchOption);
 		System.out.println("insgesamt: " + (System.currentTimeMillis() - time));
 		System.out.println(Arrays.toString(result));
@@ -134,48 +127,22 @@ public class AStarTest extends TestCase {
 		
 		DBAdapterRectangle dbar;
 		dbar = new DBAdapterRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
-		int[] nodeIDs = dbar.getNodeIDs();
-		float[] nodeLons = dbar.getNodeLons(); //x
-		float[] nodeLats = dbar.getNodeLats(); //y
+		int[] allNodeIDs = dbar.getNodeIDs();
+		float[] lon = dbar.getNodeLons(); //x
+		float[] lat = dbar.getNodeLats(); //y
 		
-		int[] fromNodeIDs = dbar.getFromNodeIDs();
-		int[] toNodeIDs = dbar.getToNodeIDs();
-		double[] distances = dbar.getDistances();
+		int[] edgeIDs = {};
+		int[] edgeStartNodeIDs = dbar.getFromNodeIDs();
+		int[] edgeEndNodeIDs = dbar.getToNodeIDs();
+		double[] edgeLengths = dbar.getDistances();
 		boolean[] oneways = dbar.getOneways();
 		int[] highwayTypes = dbar.getHighwayTypes();
 		long time = System.currentTimeMillis();
-		Node[] result = as.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
+		Option searchOption = ShortestPathAlgorithm.Option.SHORTEST_ROUTE;
+		
+		Node[] result = as.findShortestPath(allNodeIDs, lon, lat, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, searchOption);
 		System.out.println("insgesamt: " + (System.currentTimeMillis() - time));
 		System.out.println(Arrays.toString(result));
 	}
-
-	
-//	public void testFindShortestPath3() throws SQLException, PathNotFoundException{
-//		AStar as = new AStar();
-//		int startNodeID = 334539268;
-//		int goalNodeID = 307999903;
-//		float startNodeLon = 7.0004f;
-//		float startNodeLat = 49.3496f;
-//		float endNodeLon = 7.0998f;
-//		float endNodeLat = 49.4037f;
-//		
-//		DBAdapterRectangle dbar;
-//		
-//		long startTime = System.currentTimeMillis();
-//		dbar = new DBAdapterRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
-//		int[] nodeIDs = dbar.getNodeIDs();
-//		float[] nodeLons = dbar.getNodeLons(); //x
-//		float[] nodeLats = dbar.getNodeLats(); //y
-//		
-//		int[] fromNodeIDs = dbar.getFromNodeIDs();
-//		int[] toNodeIDs = dbar.getToNodeIDs();
-//		double[] distances = dbar.getDistances();
-//		boolean[] oneways = dbar.getOneways();
-//		int[] highwayTypes = dbar.getHighwayTypes();
-//		System.out.println("Laden: " + (System.currentTimeMillis() - startTime) + "ms");
-//		startTime = System.currentTimeMillis();
-//		Node[] result = as.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
-//		System.out.println("Weg finden: " + (System.currentTimeMillis() - startTime) + "ms");
-//	}
 	
 }
