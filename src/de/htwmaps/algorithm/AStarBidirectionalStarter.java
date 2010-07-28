@@ -21,17 +21,34 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 	 * @param edgeLengths 
 	 * @param highwayTypes 
 	 */
-	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes) {
-		for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
-			AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
-			Edge edge = new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]);
-			edge.setPredecessor(fromNode);
-			fromNode.addEdge(edge);
-			toNode.addEdge(edge);
-			edge.setOneway(true);
-			if (oneways[i] == false) {
-				edge.setOneway(false);
+	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, int searchOption) {
+		switch (searchOption) {
+		case FASTEST_ROUTE:
+			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
+				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
+				Edge edge = new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]);
+				edge.setPredecessor(fromNode);
+				fromNode.addEdge(edge);
+				toNode.addEdge(edge);
+				edge.setOneway(true);
+				if (oneways[i] == false) {
+					edge.setOneway(false);
+				}
 			}
+			break;
+		case SHORTEST_ROUTE:
+			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
+				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
+				Edge edge = new Edge(toNode, fromNode.getDistanceTo(toNode), 1);
+				edge.setPredecessor(fromNode);
+				fromNode.addEdge(edge);
+				toNode.addEdge(edge);
+				edge.setOneway(true);
+				if (oneways[i] == false) {
+					edge.setOneway(false);
+				}
+			}
+			break;
 		}
 	}
 	
@@ -144,7 +161,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 		generateNodes(Q, allNodeIDs, lon, lat);
 		System.out.println(System.currentTimeMillis() - time + "ms knoten");
 		time = System.currentTimeMillis();
-		generateReferences(Q, edgeStartNodeIDs, edgeEndNodeIDs, oneways, edgeLengths, highwayTypes);
+		generateReferences(Q, edgeStartNodeIDs, edgeEndNodeIDs, oneways, edgeLengths, highwayTypes, searchOption);
 		System.out.println(System.currentTimeMillis() - time + "ms kanten");
 
 		
