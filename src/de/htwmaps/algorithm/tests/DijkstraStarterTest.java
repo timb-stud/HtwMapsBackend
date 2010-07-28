@@ -1,16 +1,14 @@
 package de.htwmaps.algorithm.tests;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 
-import de.htwmaps.algorithm.AStar;
+
 import de.htwmaps.algorithm.AStarBidirectionalStarter;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.algorithm.ShortestPathAlgorithm.Option;
 import de.htwmaps.database.DBAdapterParabel;
-import de.htwmaps.util.InitLogger;
 
 public class DijkstraStarterTest {
 
@@ -21,11 +19,11 @@ public class DijkstraStarterTest {
 //		int startNodeID = 403500108;
 //		int goalNodeID =  262529904;
 		
-		int startNodeID = 29221535;
-		int goalNodeID = 587836344;
-		
-//		int startNodeID = 245901690; //köln
+//		int startNodeID = 29221535;
 //		int goalNodeID = 587836344;
+		
+		int startNodeID = 245901690; //köln
+		int goalNodeID = 587836344;
 		
 //		int startNodeID = 245901690; //köln
 //		int goalNodeID = 269319503; //riegelsberg
@@ -71,7 +69,7 @@ public class DijkstraStarterTest {
 		
 		
 		AStarBidirectionalStarter as = new AStarBidirectionalStarter();
-		float a = 0.9f;
+		float a = 0.8f;
 		float h = 0.01f;
 		Option searchOption = ShortestPathAlgorithm.Option.FASTEST_ROUTE;
 		DBAdapterParabel dbar;

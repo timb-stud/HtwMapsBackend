@@ -154,7 +154,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 	public Node[] findShortestPath(int[] allNodeIDs, float[] lon, float[] lat,
 			int startNodeID, int goalNodeID, int[] edgeIDs,
 			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
-			boolean[] oneways, int[] highwayTypes, Option searchOption) throws PathNotFoundException {
+			boolean[] oneways, int[] highwayTypes, int searchOption) throws PathNotFoundException {
 		HashMap<Integer, AStarBidirectionalNode> Q = new HashMap<Integer, AStarBidirectionalNode>(allNodeIDs.length);
 
 		long time = System.currentTimeMillis();
