@@ -44,19 +44,18 @@ public class AStarTest extends TestCase {
 		Node[] result;
 		int[] expectedResult = {2,12,10,7,14};
 		AStar as = new AStar();
-		//
 		int startNodeID = 14;
 		int goalNodeID = 2;
 		int[] allNodeIDs = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 		float[] lon = {1.74f,2.76f,4.36f,8f,10.54f,11.52f,10.18f,4.39f,2.33f,7.3f,6.03f,4.39f,9.2f,12.66f,6.62f};
 		float[] lat = {3.73f,5.82f,7.81f,8f,6.83f,4.28f,2.52f,1.57f,2.91f,2.71f,5.17f,4.41f,5.43f,2.75f,0.98f};
-		int[] edgeIDs = {};
+		int[] edgeIDs = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22};
 		int[] edgeStartNodeIDs = {1,14,1,15,2,6,3,4,5,6,5,4,11,11,2,9,8,10,10,7,7,8};
 		int[] edgeEndNodeIDs = {9,7,2,7,3,14,4,5,6,13,13,11,13,12,12,12,12,12,11,10,13,15};
-		System.out.println(edgeStartNodeIDs.length);
-		double[] fromToDistances = {1.01,2.5,2.33,3.88,2.56,1.92,3.65,2.79,2.73,2.59,1.94,3.45,3.18,1.8,2.16,2.55,2.84,3.37,2.76,2.88,3.07,2.3};
+		double[] edgeLengths = {1.01,2.5,2.33,3.88,2.56,1.92,3.65,2.79,2.73,2.59,1.94,3.45,3.18,1.8,2.16,2.55,2.84,3.37,2.76,2.88,3.07,2.3};
 		boolean[] oneways = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,false,false,false,false,false,false};
 		int[] highwayTypes = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+		int searchOption = ShortestPathAlgorithm.SHORTEST_ROUTE;
 		
 		try{
 			result = as.findShortestPath(	allNodeIDs, 
@@ -101,7 +100,6 @@ public class AStarTest extends TestCase {
 		
 		
 		DBAdapterRectangle dbar;
-		//dbar = new DBAdapterRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
 		dbar = new DBAdapterRectangle(startNodeID, goalNodeID);
 		int[] nodeIDs = dbar.getNodeIDs();
 		float[] nodeLons = dbar.getNodeLons(); //x
@@ -113,7 +111,8 @@ public class AStarTest extends TestCase {
 		boolean[] oneways = dbar.getOneways();
 		int[] highwayTypes = dbar.getHighwayTypes();
 		long time = System.currentTimeMillis();
-		Node[] result = as.findShortestPath(nodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, fromNodeIDs, toNodeIDs, distances, oneways, highwayTypes);
+		
+		Node[] result = as.findShortestPath(allNodeIDs, lon, lat, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, searchOption);
 		System.out.println("insgesamt: " + (System.currentTimeMillis() - time));
 		System.out.println(Arrays.toString(result));
 	}
