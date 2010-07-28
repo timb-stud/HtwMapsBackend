@@ -14,11 +14,11 @@ public class Edge {
 	/**
 	 * 
 	 * @param successor der Knoten auf den die Kante gerichtet ist
-	 * @param distance laenge der Kante
+	 * @param length laenge der Kante
 	 */
-	public Edge(Node successor, double distance, int highwayType) {
+	public Edge(Node successor, double length, int highwayType) {
 		this.successor = successor;
-		this.lenght = distance;
+		this.lenght = length;
 		this.highwayType = highwayType;
 	}
 	

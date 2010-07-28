@@ -71,7 +71,7 @@ public class DijkstraStarterTest {
 		
 		
 		AStarBidirectionalStarter as = new AStarBidirectionalStarter();
-		float a = 0.8f;
+		float a = 0.9f;
 		float h = 0.01f;
 		Option searchOption = ShortestPathAlgorithm.Option.FASTEST_ROUTE;
 		DBAdapterParabel dbar;
