@@ -24,7 +24,7 @@ public class DBAdapterRectangle {
 	private boolean[] oneways;
 	private int[] highwayTypes;
 	
-	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes_opt";
+	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes";
 	private final static String NODE_SELECT = "SELECT id, lon, lat FROM nodes_opt";
 	private final static String EDGE_SELECT = "SELECT ID, node1ID, node2ID, isOneway, speedID, length FROM edges_opt";
 	
@@ -51,7 +51,7 @@ public class DBAdapterRectangle {
 	
 	private String buildCoordSelectStatement(int node1Id, int node2Id){
 		StringBuilder sb = new StringBuilder(COORD_SELECT);
-		sb.append(" AND (id = ").append(node1Id)
+		sb.append(" WHERE (id = ").append(node1Id)
 		.append(" OR id = ").append(node2Id).append(")");
 		
 		return sb.toString();
@@ -59,7 +59,7 @@ public class DBAdapterRectangle {
 
 	private String buildNodeSelectStatement(){
 		StringBuilder sb = new StringBuilder(NODE_SELECT);
-		sb.append(" AND lon >= ").append(rectStartNodeLon)
+		sb.append(" WHERE lon >= ").append(rectStartNodeLon)
 			.append(" AND lat >= ").append(rectStartNodeLat)
 			.append(" AND lon  <= ").append(rectEndNodeLon)
 			.append(" AND lat <= ").append(rectEndNodeLat);

@@ -90,16 +90,15 @@ public class AStarTest extends TestCase {
 		AStar as = new AStar();
 		int startNodeID = 274026832;
 		int goalNodeID = 587836344;
-		DBAdapterRectangle dbar;
-		dbar = new DBAdapterRectangle(startNodeID, goalNodeID);
+		DBAdapterRectangle dbar = new DBAdapterRectangle(startNodeID, goalNodeID);
 		int[] allNodeIDs = dbar.getNodeIDs();
 		float[] lon = dbar.getNodeLons(); //x
 		float[] lat = dbar.getNodeLats(); //y
 		
-		int[] edgeIDs = {};
-		int[] edgeStartNodeIDs = dbar.getFromNodeIDs();
-		int[] edgeEndNodeIDs = dbar.getToNodeIDs();
-		double[] edgeLengths = dbar.getDistances();
+		int[] edgeIDs = dbar.getEdgeIDs();
+		int[] edgeStartNodeIDs = dbar.getEdgeStartNodeIDs();
+		int[] edgeEndNodeIDs = dbar.getEdgeEndNodeIDs();
+		double[] edgeLengths = dbar.getEdgeLengths();
 		boolean[] oneways = dbar.getOneways();
 		int[] highwayTypes = dbar.getHighwayTypes();
 		Option searchOption = ShortestPathAlgorithm.Option.SHORTEST_ROUTE;
@@ -131,10 +130,10 @@ public class AStarTest extends TestCase {
 		float[] lon = dbar.getNodeLons(); //x
 		float[] lat = dbar.getNodeLats(); //y
 		
-		int[] edgeIDs = {};
-		int[] edgeStartNodeIDs = dbar.getFromNodeIDs();
-		int[] edgeEndNodeIDs = dbar.getToNodeIDs();
-		double[] edgeLengths = dbar.getDistances();
+		int[] edgeIDs = dbar.getEdgeIDs();
+		int[] edgeStartNodeIDs = dbar.getEdgeStartNodeIDs();
+		int[] edgeEndNodeIDs = dbar.getEdgeEndNodeIDs();
+		double[] edgeLengths = dbar.getEdgeLengths();
 		boolean[] oneways = dbar.getOneways();
 		int[] highwayTypes = dbar.getHighwayTypes();
 		long time = System.currentTimeMillis();
