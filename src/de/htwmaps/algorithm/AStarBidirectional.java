@@ -82,7 +82,7 @@ public class AStarBidirectional extends Thread {
 								return;
 							}
 							if (!successor.isRemovedFromQ()) {
-								updateSuccDist(Q, currentNode, successor, edge.getPrioDist());
+								updateSuccDist(Q, currentNode, successor, edge.getPrioLength());
 							}
 						}
 					}

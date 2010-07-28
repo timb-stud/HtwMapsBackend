@@ -22,9 +22,9 @@ public class DBAdapterParabel{
 	private float[] nodeLons; //x
 	private float[] nodeLats; //y
 	//Edges
-	private int[] fromNodeIDs;
-	private int[] toNodeIDs;
-	private double[] distances;
+	private int[] edgeStartNodeIDs;
+	private int[] edgeEndNodeIDs;
+	private double[] edgeLengths;
 	private boolean[] oneways;
 	private int[] highwayTypes;
 	private int[] edgeIDs;
@@ -45,7 +45,7 @@ public class DBAdapterParabel{
 		endNodeLat = resultSet.getFloat(1);
 		endNodeLon = resultSet.getFloat(2);
 
-		setRectangle();
+		setParabel();
 		initNodes();
 		initEdges();
 	}
@@ -126,24 +126,24 @@ public class DBAdapterParabel{
 		resultSet.last();
 		tableLength = resultSet.getRow();
 		resultSet.beforeFirst();
-		fromNodeIDs = new int[tableLength];
-		toNodeIDs = new int[tableLength];
-		distances = new double[tableLength];
+		edgeStartNodeIDs = new int[tableLength];
+		edgeEndNodeIDs = new int[tableLength];
+		edgeLengths = new double[tableLength];
 		oneways = new boolean[tableLength];
 		highwayTypes = new int[tableLength];
 		edgeIDs = new int[tableLength];
 		
 		for (int i = 0; resultSet.next(); i++){
-			fromNodeIDs[i] = resultSet.getInt(1);
-			toNodeIDs[i] = resultSet.getInt(2);
+			edgeStartNodeIDs[i] = resultSet.getInt(1);
+			edgeEndNodeIDs[i] = resultSet.getInt(2);
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
-			distances[i] = resultSet.getInt(5);
+			edgeLengths[i] = resultSet.getInt(5);
 			edgeIDs[i] = 0;						//TODO
 		}
 	}
 
-	private void setRectangle() {
+	private void setParabel() {
 		if(startNodeLat < endNodeLat){
 			//ps(x) = a (ey - sy) / (ex - sx)² (x - sx)² + sy - h
 			//pe(x) = a (sy - ey) / (sx - ex)² (x - ex)² + ey + h
@@ -193,16 +193,16 @@ public class DBAdapterParabel{
 		return nodeLats;
 	}
 
-	public int[] getFromNodeIDs() {
-		return fromNodeIDs;
+	public int[] getEdgeStartNodeIDs() {
+		return edgeStartNodeIDs;
 	}
 
-	public int[] getToNodeIDs() {
-		return toNodeIDs;
+	public int[] getEdgeEndNodeIDs() {
+		return edgeEndNodeIDs;
 	}
 
-	public double[] getDistances() {
-		return distances;
+	public double[] getEdgeLengths() {
+		return edgeLengths;
 	}
 
 	public boolean[] getOneways() {

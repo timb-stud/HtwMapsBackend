@@ -52,7 +52,7 @@ public class AStar implements ShortestPathAlgorithm {
 				AStarNode successor = (AStarNode)edge.getSuccessor();
 				if (closedSet.containsKey(successor.id))
 					continue;
-				double tentativeG = current.getG() + edge.getPrioDist();
+				double tentativeG = current.getG() + edge.getPrioLength();
 				
 				if (!openSet.contains(successor)) {
 					successor.setPredeccessor(current);

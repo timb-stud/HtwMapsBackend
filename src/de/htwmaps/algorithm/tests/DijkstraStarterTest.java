@@ -1,15 +1,13 @@
 package de.htwmaps.algorithm.tests;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 
-import de.htwmaps.algorithm.AStar;
+
 import de.htwmaps.algorithm.AStarBidirectionalStarter;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.database.DBAdapterParabel;
-import de.htwmaps.util.InitLogger;
 
 public class DijkstraStarterTest {
 
@@ -20,11 +18,11 @@ public class DijkstraStarterTest {
 //		int startNodeID = 403500108;
 //		int goalNodeID =  262529904;
 		
-		int startNodeID = 29221535;
-		int goalNodeID = 587836344;
-		
-//		int startNodeID = 245901690; //köln
+//		int startNodeID = 29221535;
 //		int goalNodeID = 587836344;
+		
+		int startNodeID = 245901690; //köln
+		int goalNodeID = 587836344;
 		
 //		int startNodeID = 245901690; //köln
 //		int goalNodeID = 269319503; //riegelsberg
@@ -69,7 +67,7 @@ public class DijkstraStarterTest {
 		
 		
 		
-		AStarBidirectionalStarter ds = new AStarBidirectionalStarter();
+		AStarBidirectionalStarter as = new AStarBidirectionalStarter();
 		float a = 0.8f;
 		float h = 0.01f;
 		int searchOption = ShortestPathAlgorithm.FASTEST_ROUTE;
@@ -81,14 +79,14 @@ public class DijkstraStarterTest {
 			float[] nodeLons = dbar.getNodeLons(); //x
 			float[] nodeLats = dbar.getNodeLats(); //y
 			
-			int[] edgeStartNodeIDs = dbar.getFromNodeIDs();
-			int[] edgeEndNodeIDs = dbar.getToNodeIDs();
-			double[] distances = dbar.getDistances();
+			int[] edgeStartNodeIDs = dbar.getEdgeStartNodeIDs();
+			int[] edgeEndNodeIDs = dbar.getEdgeEndNodeIDs();
+			double[] lengths = dbar.getEdgeLengths();
 			boolean[] oneways = dbar.getOneways();
 			int[] highwayTypes = dbar.getHighwayTypes();
 			int[] edgeIDs = dbar.getEdgesIDs();
 			try {
-				Node[] result = ds.findShortestPath(allNodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, distances, oneways, highwayTypes, searchOption);
+				Node[] result = as.findShortestPath(allNodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, lengths, oneways, highwayTypes, searchOption);
 				System.out.println(System.currentTimeMillis() - time);
 				System.out.println(new AStarBidirectionalStarter().generateTrack(result));
 				break;
@@ -96,7 +94,7 @@ public class DijkstraStarterTest {
 				a *= 0.5f;
 				h += 0.01f;
 				System.out.println(a);
-				if (a <= 0.001) {
+				if (a <= 0.01) {
 					throw new PathNotFoundException("Weg nicht gefunden");
 				}
 			}

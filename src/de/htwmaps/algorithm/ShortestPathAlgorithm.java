@@ -2,8 +2,8 @@ package de.htwmaps.algorithm;
 
 
 public interface ShortestPathAlgorithm {
-	public static int SHORTEST_ROUTE = 0;
-	public static int FASTEST_ROUTE = 1;
+	public static final int SHORTEST_ROUTE = 0;
+        public static final int FASTEST_ROUTE = 1;
 	
 	Node[] findShortestPath(int[] allNodeIDs,
 							float[] lon,
@@ -16,5 +16,5 @@ public interface ShortestPathAlgorithm {
 							double[] edgeLengths,
 							boolean[] oneways,
 							int[] highwayTypes,
-							int searchType) throws PathNotFoundException;
+							int searchOption) throws PathNotFoundException;
 }
