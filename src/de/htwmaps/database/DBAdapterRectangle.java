@@ -23,9 +23,9 @@ public class DBAdapterRectangle {
 	private boolean[] oneways;
 	private int[] highwayTypes;
 	
-	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes WHERE partofhighway = 1";
-	private final static String NODE_SELECT = "SELECT id, lon, lat FROM nodes WHERE partofhighway = 1";
-	private final static String EDGE_SELECT = "SELECT node1ID, node2ID, oneway, speedID, node1lon, node1lat, node2lon, node2lat FROM edges2";
+	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes_opt";
+	private final static String NODE_SELECT = "SELECT id, lon, lat FROM nodes_opt";
+	private final static String EDGE_SELECT = "SELECT node1ID, node2ID, isOneway, speedID, node1lon, node1lat, node2lon, node2lat FROM edges_opt";
 	
 	public DBAdapterRectangle(float startNodeLon, float startNodeLat, float endNodeLon, float endNodeLat) throws SQLException {
 		setRectangle(startNodeLon, startNodeLat, endNodeLon, endNodeLat);
