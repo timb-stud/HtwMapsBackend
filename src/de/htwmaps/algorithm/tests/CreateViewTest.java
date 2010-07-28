@@ -136,11 +136,11 @@ public class CreateViewTest {
 					"where " +
 					"((edges_opt.node1ID = " + route[i] +
 					"and " +
-					"edges_opt.node2ID = " + route[i+1] + ")" +
+					"edges_opt.node2ID = " + route[i+1] + ") " +
 					"or " +
 					"(edges_opt.node2ID = " + route[i+1] +
 					"and " +
-					"edges_opt.node1ID = " + route[i] + "))";
+					"edges_opt.node1ID = " + route[i] + ")); ";
 			
 			try {
 				pStmt = DBConnector.getConnection().prepareStatement(query);
