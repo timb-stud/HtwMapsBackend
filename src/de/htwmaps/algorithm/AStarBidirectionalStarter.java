@@ -21,7 +21,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 	 * @param edgeLengths 
 	 * @param highwayTypes 
 	 */
-	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, Option searchOption) {
+	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, int searchOption) {
 		switch (searchOption) {
 		case FASTEST_ROUTE:
 			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
