@@ -7,6 +7,7 @@ import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.AStarBidirectionalStarter;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
+import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.database.DBAdapterParabel;
 import de.htwmaps.util.InitLogger;
 
@@ -71,7 +72,7 @@ public class DijkstraStarterTest {
 		AStarBidirectionalStarter ds = new AStarBidirectionalStarter();
 		float a = 0.8f;
 		float h = 0.01f;
-		int searchOption = 0;
+		int searchOption = ShortestPathAlgorithm.FASTEST_ROUTE;
 		DBAdapterParabel dbar;
 		dbar = new DBAdapterParabel();
 		while(true) {
