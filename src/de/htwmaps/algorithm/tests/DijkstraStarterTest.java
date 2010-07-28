@@ -70,7 +70,7 @@ public class DijkstraStarterTest {
 		
 		
 		
-		AStarBidirectionalStarter ds = new AStarBidirectionalStarter();
+		AStarBidirectionalStarter as = new AStarBidirectionalStarter();
 		float a = 0.8f;
 		float h = 0.01f;
 		Option searchOption = ShortestPathAlgorithm.Option.FASTEST_ROUTE;
@@ -89,7 +89,7 @@ public class DijkstraStarterTest {
 			int[] highwayTypes = dbar.getHighwayTypes();
 			int[] edgeIDs = dbar.getEdgesIDs();
 			try {
-				Node[] result = ds.findShortestPath(allNodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, distances, oneways, highwayTypes, searchOption);
+				Node[] result = as.findShortestPath(allNodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, edgeIDs, edgeStartNodeIDs, edgeEndNodeIDs, distances, oneways, highwayTypes, searchOption);
 				System.out.println(System.currentTimeMillis() - time);
 				System.out.println(new AStarBidirectionalStarter().generateTrack(result));
 				break;
@@ -97,7 +97,7 @@ public class DijkstraStarterTest {
 				a *= 0.5f;
 				h += 0.01f;
 				System.out.println(a);
-				if (a <= 0.001) {
+				if (a <= 0.01) {
 					throw new PathNotFoundException("Weg nicht gefunden");
 				}
 			}
