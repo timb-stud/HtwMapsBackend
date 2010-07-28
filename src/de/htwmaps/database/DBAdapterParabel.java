@@ -131,6 +131,7 @@ public class DBAdapterParabel{
 		distances = new double[tableLength];
 		oneways = new boolean[tableLength];
 		highwayTypes = new int[tableLength];
+		edgeIDs = new int[tableLength];
 		
 		for (int i = 0; resultSet.next(); i++){
 			fromNodeIDs[i] = resultSet.getInt(1);
