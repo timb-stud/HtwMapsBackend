@@ -18,11 +18,11 @@ public class DijkstraStarterTest {
 //		int startNodeID = 403500108;
 //		int goalNodeID =  262529904;
 		
-//		int startNodeID = 29221535;
-//		int goalNodeID = 587836344;
-		
-		int startNodeID = 245901690; //köln
+		int startNodeID = 29221535;
 		int goalNodeID = 587836344;
+		
+//		int startNodeID = 245901690; //köln
+//		int goalNodeID = 587836344;
 		
 //		int startNodeID = 245901690; //köln
 //		int goalNodeID = 269319503; //riegelsberg
@@ -70,7 +70,7 @@ public class DijkstraStarterTest {
 		AStarBidirectionalStarter as = new AStarBidirectionalStarter();
 		float a = 0.8f;
 		float h = 0.01f;
-		int searchOption = ShortestPathAlgorithm.FASTEST_ROUTE;
+		int searchOption = ShortestPathAlgorithm.SHORTEST_ROUTE;
 		DBAdapterParabel dbar;
 		dbar = new DBAdapterParabel();
 		while(true) {

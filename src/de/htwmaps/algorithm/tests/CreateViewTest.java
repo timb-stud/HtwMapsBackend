@@ -14,7 +14,6 @@ import de.htwmaps.algorithm.util.RouteToText;
 import de.htwmaps.database.DBAdapterParabel;
 import de.htwmaps.database.DBAdapterRectangle;
 import de.htwmaps.database.DBConnector;
-import junit.framework.TestCase;
 
 public class CreateViewTest {
 
@@ -39,9 +38,9 @@ public class CreateViewTest {
 			float[] nodeLons = dbar.getNodeLons(); //x
 			float[] nodeLats = dbar.getNodeLats(); //y
 			
-			int[] edgeStartNodeIDs = dbar.getFromNodeIDs();
-			int[] edgeEndNodeIDs = dbar.getToNodeIDs();
-			double[] distances = dbar.getDistances();
+			int[] edgeStartNodeIDs = dbar.getEdgeStartNodeIDs();
+			int[] edgeEndNodeIDs = dbar.getEdgeEndNodeIDs();
+			double[] distances = dbar.getEdgeLengths();
 			boolean[] oneways = dbar.getOneways();
 			int[] highwayTypes = dbar.getHighwayTypes();
 			int[] edgeIDs = dbar.getEdgesIDs();
