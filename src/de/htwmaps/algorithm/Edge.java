@@ -7,23 +7,23 @@ package de.htwmaps.algorithm;
  */
 public class Edge {
 	private Node successor, predecessor;
-	private double distance;
-	private int type;
-	private boolean oneway;
+	private double lenght;
+	private int highwayType;
+	private boolean isOneway;
 
 	/**
 	 * 
 	 * @param successor der Knoten auf den die Kante gerichtet ist
 	 * @param distance laenge der Kante
 	 */
-	public Edge(Node successor, double distance, int type) {
+	public Edge(Node successor, double distance, int highwayType) {
 		this.successor = successor;
-		this.distance = distance;
-		setType(type);
+		this.lenght = distance;
+		this.highwayType = highwayType;
 	}
 	
 	public void setOneway(boolean oneway) {
-		this.oneway = oneway;
+		this.isOneway = oneway;
 	}
 
 	/**
@@ -52,28 +52,20 @@ public class Edge {
 	 * 
 	 * @return Laenge der Kante
 	 */
-	public double getDistance() {
-		return distance;
+	public double getLenght() {
+		return lenght;
 	}
 
 	@Override
 	public String toString() {
-		return "[" + successor + "; " + distance + "]";
+		return "[" + successor + "; " + lenght + "]";
 	}
 
-	public void setType(int type) {
-		this.type = type;
-	}
-
-	public int getType() {
-		return type;
-	}
-	
-	public double getPrioDist() {
-		return type * distance;
+	public double getPrioLength() {
+		return highwayType * lenght;
 	}
 
 	public boolean isOneway() {
-		return oneway;
+		return isOneway;
 	}
 }
