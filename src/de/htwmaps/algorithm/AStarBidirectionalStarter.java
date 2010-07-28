@@ -21,7 +21,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 	 * @param edgeLengths 
 	 * @param highwayTypes 
 	 */
-	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, int searchOption) {
+	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, Option searchOption) {
 		switch (searchOption) {
 		case FASTEST_ROUTE:
 			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
@@ -154,7 +154,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 	public Node[] findShortestPath(int[] allNodeIDs, float[] lon, float[] lat,
 			int startNodeID, int goalNodeID, int[] edgeIDs,
 			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
-			boolean[] oneways, int[] highwayTypes, int searchOption) throws PathNotFoundException {
+			boolean[] oneways, int[] highwayTypes, Option searchOption) throws PathNotFoundException {
 		HashMap<Integer, AStarBidirectionalNode> Q = new HashMap<Integer, AStarBidirectionalNode>(allNodeIDs.length);
 
 		long time = System.currentTimeMillis();

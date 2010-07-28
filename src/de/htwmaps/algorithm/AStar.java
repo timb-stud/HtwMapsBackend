@@ -136,7 +136,7 @@ public class AStar implements ShortestPathAlgorithm {
 	public Node[] findShortestPath(int[] allNodeIDs, float[] lon, float[] lat,
 			int startNodeID, int goalNodeID, int[] edgeIDs,
 			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
-			boolean[] oneways, int[] highwayTypes, int searchOption) throws PathNotFoundException {
+			boolean[] oneways, int[] highwayTypes, Option searchOption) throws PathNotFoundException {
 		long time = System.currentTimeMillis();
 		HashMap<Integer, AStarNode> allNodes = buildNodes(allNodeIDs, lon, lat);
 		System.out.println("HashMap bauen:" + (System.currentTimeMillis() - time) + "ms");
