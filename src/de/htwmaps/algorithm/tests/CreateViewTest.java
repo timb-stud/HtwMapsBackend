@@ -3,10 +3,12 @@ package de.htwmaps.algorithm.tests;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.AStarBidirectionalStarter;
+import de.htwmaps.algorithm.Edge;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
@@ -16,11 +18,14 @@ import de.htwmaps.database.DBAdapterRectangle;
 import de.htwmaps.database.DBConnector;
 
 public class CreateViewTest {
-
-
+	
+	private static ArrayList<Double> distance = null;
+	private static ArrayList<Double> typ = null;
 
 	public static void main(String[] args) throws SQLException, PathNotFoundException  {
 		long time;
+		distance = new ArrayList<Double>();
+		typ = new ArrayList<Double>();
 
 		int startNodeID = 29221535;
 		int goalNodeID = 587836344;
@@ -50,11 +55,15 @@ public class CreateViewTest {
 				System.out.println("Start einzelTest\n");
 				time = System.currentTimeMillis();
 				einzelTest(result);
-				System.out.println("\n einzelTest: " + (System.currentTimeMillis() - time) + "ms");
+				System.out.println("einzelTest: " + (System.currentTimeMillis() - time) + "ms");
 				System.out.println("Start viewTest \n");
 				time = System.currentTimeMillis();
 				viewTest(result);
-				System.out.println("\n viewTest: " + (System.currentTimeMillis() - time) + "ms");
+				System.out.println("viewTest: " + (System.currentTimeMillis() - time) + "ms");
+				System.out.println("Intern Edges: ");
+				time = System.currentTimeMillis();
+				internEdges(result);
+				System.out.println("InternEdgesTest: " + (System.currentTimeMillis() - time) + "ms");
 				break;
 			} catch (PathNotFoundException e) {
 				a *= 0.5f;
@@ -68,7 +77,25 @@ public class CreateViewTest {
 		
 	}
 
+	private static void internEdges(Node[] result) {
+		distance = new ArrayList<Double>();
+		typ = new ArrayList<Double>();
+		double length = 0.0;
+		double prio = 0.0;
+		
+		  for(int i=result.length-1; i>0;i--){
+		   for(Edge e: result[i].getEdgeList()){
+		    if(e.getSuccessor().equals(result[i-1])){
+		      length = e.getLenght();
+//			  prio = e.get;
+		    }
+		   }
+		  }
+	}
+
 	private static void viewTest(Node[] route) {
+		distance = new ArrayList<Double>();
+		typ = new ArrayList<Double>();
 		PreparedStatement pStmt;
 		
 		//Sicherstellen, dass kein View bereits existiert
