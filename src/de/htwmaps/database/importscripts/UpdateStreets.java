@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.batik.ext.awt.geom.Polygon2D;
@@ -174,6 +173,15 @@ public class UpdateStreets {
 		}
 		while ((pos = sb.indexOf("Regierungsbezirk")) != -1) {
 			sb.delete(getStartPos("Regierungsbezirk", pos, sb), getEndpos("Regierungsbezirk", pos, sb));
+		}
+		while ((pos = sb.indexOf("Regierungsbezirk")) != -1) {
+			sb.delete(getStartPos("Regierungsbezirk", pos, sb), getEndpos("Regierungsbezirk", pos, sb));
+		}
+		while ((pos = sb.indexOf("VG")) != -1) {
+			sb.delete(getStartPos("VG", pos, sb), getEndpos("VG", pos, sb));
+		}
+		while ((pos = sb.indexOf("LK")) != -1) {
+			sb.delete(getStartPos("LK", pos, sb), getEndpos("LK", pos, sb));
 		}
 		for (int i = 0; i < sb.length(); i++) {
 			if (i == 0 && sb.charAt(i) == ',') {
