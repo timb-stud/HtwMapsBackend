@@ -35,11 +35,12 @@ public class UpdateStreets {
 		double diameterTown = 0.05;
 		double diameterCity = 0.1;
 		double diameter = 0.0;
+		int citiesCounter = 0;
 		Arc2D arc = new Arc2D.Double();
 		while (allCities.next()) {
 			String is_in = allCities.getString(5);
 			String city = allCities.getString(3);
-			System.out.println("bearbeite " + city);
+			System.out.println("bearbeite wege (kreis): " + city);
 			if (allCities.getString(6).equals("hamlet")) {
 				diameter = diameterHamlet;
 			} else {
@@ -64,6 +65,7 @@ public class UpdateStreets {
 			double centerX = allCities.getFloat(1) - (diameter / 2.0);
 			double centerY = allCities.getFloat(2) - (diameter / 2.0);
 			arc.setArc(centerX, centerY, diameter, diameter, 0, 360, 0);
+			int waysCounter = 0;
 			while(allWaysNodes.next()) {
 				if (markedWays.contains(allWaysNodes.getInt(5))) continue;
 				if (arc.contains(allWaysNodes.getFloat(1), allWaysNodes.getFloat(2)) || arc.contains(allWaysNodes.getFloat(3), allWaysNodes.getFloat(4))) {
@@ -76,11 +78,15 @@ public class UpdateStreets {
 					ps.setString(3, is_in);
 					ps.setInt(4, allWaysNodes.getInt(5));
 					ps.executeUpdate();
+					waysCounter++;
 				}
 			}
 			allWaysNodes.beforeFirst();
+			citiesCounter++;
+			System.out.print(". " + waysCounter + " Ways markiert.		Anzahl fertige Orte: " + citiesCounter + "\n");
 		}
 		allCities.beforeFirst();
+		citiesCounter = 0;
 		//---------Polygon
 		HashSet<Integer> markedCities = new HashSet<Integer>();
 		markedWays.clear();
@@ -109,6 +115,8 @@ public class UpdateStreets {
 					markedCities.add(allCities.getInt(4));
 					String city = allCities.getString(3);
 					String is_in = allCities.getString(5);
+					System.out.println("bearbeite wege (polygon): " + city);
+					int waysCounter = 0;
 					while(allWaysNodes.next()) {
 						if (markedWays.contains(allWaysNodes.getInt(5))) continue;
 						if (polygon.contains(allWaysNodes.getFloat(1), allWaysNodes.getFloat(2)) || polygon.contains(allWaysNodes.getFloat(3), allWaysNodes.getFloat(4))) {
@@ -121,9 +129,12 @@ public class UpdateStreets {
 							ps.setString(3, is_in);
 							ps.setInt(4, allWaysNodes.getInt(5));
 							ps.executeUpdate();
+							waysCounter++;
 						}
 					}
 					allWaysNodes.beforeFirst();
+					citiesCounter++;
+					System.out.print(". " + waysCounter + " Ways markiert.		Anzahl fertige Orte: " + citiesCounter + "\n");
 					break;
 				}
 			}
