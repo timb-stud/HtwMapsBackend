@@ -28,6 +28,7 @@ public class UpdateStreets {
 		ResultSet allPolyWays = DBConnector.getConnection().createStatement().executeQuery("SELECT distinct wayID FROM edges_borders");
 		ResultSet allCities = DBConnector.getConnection().createStatement().executeQuery("SELECT lon, lat, name, id, is_in, cityCategory FROM cities");
 		Statement allEdgesInPolyWayStatement = DBConnector.getConnection().createStatement();
+		ArrayList<String> tmpList = new ArrayList<String>(6);
 		//----------Kreis
 		double diameterHamlet = 0.01;
 		double diameterSuburb = 0.017;
@@ -71,7 +72,7 @@ public class UpdateStreets {
 				if (arc.contains(allWaysNodes.getFloat(1), allWaysNodes.getFloat(2)) || arc.contains(allWaysNodes.getFloat(3), allWaysNodes.getFloat(4))) {
 					markedWays.add(allWaysNodes.getInt(5));
 					if (!is_in.isEmpty()) {
-						is_in = removeSillyTag(is_in, city);
+						is_in = removeSillyTag(is_in, city, tmpList);
 					}
 					ps.setString(1, city);
 					ps.setInt(2, allCities.getInt(4));
@@ -83,7 +84,7 @@ public class UpdateStreets {
 			}
 			allWaysNodes.beforeFirst();
 			citiesCounter++;
-			System.out.print(". " + waysCounter + " Ways markiert.		Anzahl fertige Orte: " + citiesCounter + "\n");
+			System.out.print(". " + waysCounter + " Ways markiert.		Anzahl fertiger Orte: " + citiesCounter + "\n");
 		}
 		allCities.beforeFirst();
 		citiesCounter = 0;
@@ -122,7 +123,7 @@ public class UpdateStreets {
 						if (polygon.contains(allWaysNodes.getFloat(1), allWaysNodes.getFloat(2)) || polygon.contains(allWaysNodes.getFloat(3), allWaysNodes.getFloat(4))) {
 							markedWays.add(allWaysNodes.getInt(5));
 							if (!is_in.isEmpty()) {
-								is_in = removeSillyTag(is_in, city);
+								is_in = removeSillyTag(is_in, city, tmpList);
 							}
 							ps.setString(1, city);
 							ps.setInt(2, allCities.getInt(4));
@@ -134,7 +135,7 @@ public class UpdateStreets {
 					}
 					allWaysNodes.beforeFirst();
 					citiesCounter++;
-					System.out.print(". " + waysCounter + " Ways markiert.		Anzahl fertige Orte: " + citiesCounter + "\n");
+					System.out.print(". " + waysCounter + " Ways markiert.		Anzahl fertiger Orte: " + citiesCounter + "\n");
 					break;
 				}
 			}
@@ -142,7 +143,7 @@ public class UpdateStreets {
 		}  
 	}
 	
-	public String removeSillyTag(String is_in, String city) {
+	public String removeSillyTag(String is_in, String city, ArrayList<String> tmpList) {
 		is_in = is_in.replace(", ", ",");
 		StringBuilder sb = new StringBuilder(is_in);
 		int pos = 0;
@@ -189,7 +190,6 @@ public class UpdateStreets {
 			}
 		}
 		
-		ArrayList<String> al = new ArrayList<String>(5);
 		pos = 0;
 		String tmp;
 		for (int i = 0; i < sb.length(); i++) {
@@ -198,15 +198,16 @@ public class UpdateStreets {
 					i++;
 				}
 				tmp = sb.substring(pos == 0 ? pos : pos + 1, i);
-				if (al.contains(tmp)) {
+				if (tmpList.contains(tmp)) {
 					sb.delete(pos, i);
 					i = pos;
 				} else {
-					al.add(tmp);
+					tmpList.add(tmp);
 					pos = i;
 				}
 			}
 		}
+		tmpList.clear();
 		return sb.toString();
 	}
 
