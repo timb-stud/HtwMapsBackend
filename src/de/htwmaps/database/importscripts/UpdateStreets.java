@@ -20,6 +20,7 @@ import de.htwmaps.database.DBConnector;
 public class UpdateStreets {
 	
 	public void updateStreets() throws SQLException, IOException {
+		System.out.println("------UpdateStreets v2------");
 		HashSet<Integer> markedWays = new HashSet<Integer>();
 		PreparedStatement ps = DBConnector.getConnection().prepareStatement("UPDATE `ways` SET `cityName` = ?, `cityNodeID` = ?, `is_in` = ? WHERE `ID` = ?");
 		ResultSet allWaysNodes = DBConnector.getConnection().createStatement().executeQuery("SELECT edges_all1.node1lon, edges_all1.node1lat, edges_all2.node2lon, edges_all2.node2lat, ways.id FROM ways, edges_all edges_all1, edges_all edges_all2" +
@@ -29,18 +30,27 @@ public class UpdateStreets {
 		Statement allEdgesInPolyWayStatement = DBConnector.getConnection().createStatement();
 		ArrayList<String> tmpList = new ArrayList<String>(6);
 		//----------Kreis
-		double diameterHamlet = 0.01;
-		double diameterSuburb = 0.017;
+		double diameterHamlet = 0.015;
+		double diameterSuburb = 0.018;
 		double diameterVillage = 0.021;
 		double diameterTown = 0.05;
 		double diameterCity = 0.1;
-		double diameter = 0.0;
+		double diameter;
 		int citiesCounter = 0;
 		Arc2D arc = new Arc2D.Double();
 		while (allCities.next()) {
 			String is_in = allCities.getString(5);
 			String city = allCities.getString(3);
-			System.out.println("bearbeite wege (kreis): " + city);
+			if (city.isEmpty()) {
+				System.err.println("\nOrt mit Node ID = " + allCities.getInt(4) + " hat keinen Namen und wird daher nicht eingetragen \n");
+				continue;
+			}
+			if (!is_in.isEmpty()) {
+				if ((is_in = removeSillyTag(is_in, city, tmpList)) == null) {
+					continue;
+				}
+			}
+			System.out.print("kreis: " + city);
 			if (allCities.getString(6).equals("hamlet")) {
 				diameter = diameterHamlet;
 			} else {
@@ -70,9 +80,6 @@ public class UpdateStreets {
 				if (markedWays.contains(allWaysNodes.getInt(5))) continue;
 				if (arc.contains(allWaysNodes.getFloat(1), allWaysNodes.getFloat(2)) || arc.contains(allWaysNodes.getFloat(3), allWaysNodes.getFloat(4))) {
 					markedWays.add(allWaysNodes.getInt(5));
-					if (!is_in.isEmpty()) {
-						is_in = removeSillyTag(is_in, city, tmpList);
-					}
 					ps.setString(1, city);
 					ps.setInt(2, allCities.getInt(4));
 					ps.setString(3, is_in);
@@ -83,7 +90,7 @@ public class UpdateStreets {
 			}
 			allWaysNodes.beforeFirst();
 			citiesCounter++;
-			System.out.print(". " + waysCounter + " Ways markiert.		Anzahl fertiger Orte: " + citiesCounter + "\n");
+			System.out.print(". " + waysCounter + " Ways markiert. Node ID = " + allCities.getInt(4) + "		Anzahl fertiger Orte: " + citiesCounter + "\n");
 		}
 		allCities.beforeFirst();
 		citiesCounter = 0;
@@ -115,15 +122,21 @@ public class UpdateStreets {
 					markedCities.add(allCities.getInt(4));
 					String city = allCities.getString(3);
 					String is_in = allCities.getString(5);
-					System.out.println("bearbeite wege (polygon): " + city);
+					if (city.isEmpty()) {
+						System.err.println("\nOrt mit Node ID = " + allCities.getInt(4) + " hat keinen Namen und wird daher nicht eingetragen \n");
+						break;
+					}
+					if (!is_in.isEmpty()) {
+						if ((is_in = removeSillyTag(is_in, city, tmpList)) == null) {
+							break;
+						}
+					}
+					System.out.print("polygon: " + city);
 					int waysCounter = 0;
 					while(allWaysNodes.next()) {
 						if (markedWays.contains(allWaysNodes.getInt(5))) continue;
 						if (polygon.contains(allWaysNodes.getFloat(1), allWaysNodes.getFloat(2)) || polygon.contains(allWaysNodes.getFloat(3), allWaysNodes.getFloat(4))) {
 							markedWays.add(allWaysNodes.getInt(5));
-							if (!is_in.isEmpty()) {
-								is_in = removeSillyTag(is_in, city, tmpList);
-							}
 							ps.setString(1, city);
 							ps.setInt(2, allCities.getInt(4));
 							ps.setString(3, is_in);
@@ -134,7 +147,7 @@ public class UpdateStreets {
 					}
 					allWaysNodes.beforeFirst();
 					citiesCounter++;
-					System.out.print(". " + waysCounter + " Ways markiert.		Anzahl fertiger Orte: " + citiesCounter + "\n");
+					System.out.print(". " + waysCounter + " Ways markiert. Node ID = " + allCities.getInt(4) + "		Anzahl fertiger Orte: " + citiesCounter + "\n");
 					break;
 				}
 			}
@@ -143,80 +156,86 @@ public class UpdateStreets {
 	}
 	
 	public String removeSillyTag(String is_in, String city, ArrayList<String> tmpList) {
-		is_in = is_in.replace(", ", ",");
-		StringBuilder sb = new StringBuilder(is_in);
-		int pos = 0;
-		
-		while ((pos = sb.indexOf(city)) != -1) {
-			sb.delete(getStartPos(city, pos, sb), getEndpos(city, pos, sb));
-		}
-		while ((pos = sb.indexOf("Europa")) != -1) {
-			sb.delete(getStartPos("Europa", pos, sb), getEndpos("Europa", pos, sb));
-		}
-		while ((pos = sb.indexOf("Europe")) != -1) {
-			sb.delete(getStartPos("Europe", pos, sb), getEndpos("Europe", pos, sb));
-		}
-		while ((pos = sb.indexOf("Germany")) != -1) {
-			sb.delete(getStartPos("Germany", pos, sb), getEndpos("Germany", pos, sb));
-		}
-		while ((pos = sb.indexOf("Bundesrepublik")) != -1) {
-			sb.delete(getStartPos("Bundesrepublik", pos, sb), getEndpos("Bundesrepublik", pos, sb));
-		}
-		while ((pos = sb.indexOf("Regionalverband")) != -1) {
-			sb.delete(getStartPos("Regionalverband", pos, sb), getEndpos("Regionalverband", pos, sb));
-		}
-		while ((pos = sb.indexOf("Deutschland")) != -1) {
-			sb.delete(getStartPos("Deutschland", pos, sb), getEndpos("Deutschland", pos, sb));
-		}
-		while ((pos = sb.indexOf("Stadtverband")) != -1) { 
-			sb.delete(getStartPos("Stadtverband", pos, sb), getEndpos("Stadtverband", pos, sb));
-		}
-		while ((pos = sb.indexOf("Regierungsbezirk")) != -1) {
-			sb.delete(getStartPos("Regierungsbezirk", pos, sb), getEndpos("Regierungsbezirk", pos, sb));
-		}
-		while ((pos = sb.indexOf("Regierungsbezirk")) != -1) {
-			sb.delete(getStartPos("Regierungsbezirk", pos, sb), getEndpos("Regierungsbezirk", pos, sb));
-		}
-		while ((pos = sb.indexOf("VG")) != -1) {
-			sb.delete(getStartPos("VG", pos, sb), getEndpos("VG", pos, sb));
-		}
-		while ((pos = sb.indexOf("LK")) != -1) {
-			sb.delete(getStartPos("LK", pos, sb), getEndpos("LK", pos, sb));
-		}
-		for (int i = 0; i < sb.length(); i++) {
-			if (i == 0 && sb.charAt(i) == ',') {
-				sb.delete(0, i + 1);
-				i = -1;
-				continue;
+		try {
+			is_in = is_in.replace(", ", ",");
+			StringBuilder sb = new StringBuilder(is_in);
+			int pos = 0;
+			
+			while ((pos = sb.indexOf(city)) != -1) {
+				sb.delete(getStartPos(city, pos, sb), getEndpos(city, pos, sb));
 			}
-			if (i < sb.length() - 1 && sb.charAt(i) == ',' && sb.charAt(i + 1) == ',') {
-				sb.delete(i, i + 1);
-				i--;
+			while ((pos = sb.indexOf("Europa")) != -1) {
+				sb.delete(getStartPos("Europa", pos, sb), getEndpos("Europa", pos, sb));
 			}
-			if (i == sb.length() - 1 && sb.charAt(i) == ',') {
-				sb.delete(i, i + 1);
+			while ((pos = sb.indexOf("Europe")) != -1) {
+				sb.delete(getStartPos("Europe", pos, sb), getEndpos("Europe", pos, sb));
 			}
-		}
-		
-		pos = 0;
-		String tmp;
-		for (int i = 0; i < sb.length(); i++) {
-			if (sb.charAt(i) == ',' || i + 1 == sb.length()) {
-				if (i + 1 == sb.length()) {
-					i++;
+			while ((pos = sb.indexOf("Germany")) != -1) {
+				sb.delete(getStartPos("Germany", pos, sb), getEndpos("Germany", pos, sb));
+			}
+			while ((pos = sb.indexOf("Bundesrepublik")) != -1) {
+				sb.delete(getStartPos("Bundesrepublik", pos, sb), getEndpos("Bundesrepublik", pos, sb));
+			}
+			while ((pos = sb.indexOf("Regionalverband")) != -1) {
+				sb.delete(getStartPos("Regionalverband", pos, sb), getEndpos("Regionalverband", pos, sb));
+			}
+			while ((pos = sb.indexOf("Deutschland")) != -1) {
+				sb.delete(getStartPos("Deutschland", pos, sb), getEndpos("Deutschland", pos, sb));
+			}
+			while ((pos = sb.indexOf("Stadtverband")) != -1) { 
+				sb.delete(getStartPos("Stadtverband", pos, sb), getEndpos("Stadtverband", pos, sb));
+			}
+			while ((pos = sb.indexOf("Regierungsbezirk")) != -1) {
+				sb.delete(getStartPos("Regierungsbezirk", pos, sb), getEndpos("Regierungsbezirk", pos, sb));
+			}
+			while ((pos = sb.indexOf("Regierungsbezirk")) != -1) {
+				sb.delete(getStartPos("Regierungsbezirk", pos, sb), getEndpos("Regierungsbezirk", pos, sb));
+			}
+			while ((pos = sb.indexOf("VG")) != -1) {
+				sb.delete(getStartPos("VG", pos, sb), getEndpos("VG", pos, sb));
+			}
+			while ((pos = sb.indexOf("LK")) != -1) {
+				sb.delete(getStartPos("LK", pos, sb), getEndpos("LK", pos, sb));
+			}
+			for (int i = 0; i < sb.length(); i++) {
+				if (i == 0 && sb.charAt(i) == ',') {
+					sb.delete(0, i + 1);
+					i = -1;
+					continue;
 				}
-				tmp = sb.substring(pos == 0 ? pos : pos + 1, i);
-				if (tmpList.contains(tmp)) {
-					sb.delete(pos, i);
-					i = pos;
-				} else {
-					tmpList.add(tmp);
-					pos = i;
+				if (i < sb.length() - 1 && sb.charAt(i) == ',' && sb.charAt(i + 1) == ',') {
+					sb.delete(i, i + 1);
+					i--;
+				}
+				if (i == sb.length() - 1 && sb.charAt(i) == ',') {
+					sb.delete(i, i + 1);
 				}
 			}
+			
+			pos = 0;
+			String tmp;
+			for (int i = 0; i < sb.length(); i++) {
+				if (sb.charAt(i) == ',' || i + 1 == sb.length()) {
+					if (i + 1 == sb.length()) {
+						i++;
+					}
+					tmp = sb.substring(pos == 0 ? pos : pos + 1, i);
+					if (tmpList.contains(tmp)) {
+						sb.delete(pos, i);
+						i = pos;
+					} else {
+						tmpList.add(tmp);
+						pos = i;
+					}
+				}
+			}
+			tmpList.clear();
+			return sb.toString();
+		} catch (StringIndexOutOfBoundsException e) {
+			System.err.println("Ein Fehler ist aufgetreten. is_in:[" + is_in + "] city: [" + city + "]\nDer Ort wird nicht eingetragen. Bisher unbekannter Fehler\n");
+			e.printStackTrace();
+			return null;
 		}
-		tmpList.clear();
-		return sb.toString();
 	}
 
 	private int getStartPos(String city, int pos, StringBuilder sb) {
