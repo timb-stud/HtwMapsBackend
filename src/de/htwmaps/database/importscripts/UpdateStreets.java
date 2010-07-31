@@ -21,7 +21,7 @@ public class UpdateStreets {
 	
 	public void updateStreets() throws SQLException, IOException {
 		System.out.println("------UpdateStreets v2------");
-		HashSet<Integer> markedWays = new HashSet<Integer>();
+		HashSet<Integer> markedWays = new HashSet<Integer>(1000000);
 		PreparedStatement ps = DBConnector.getConnection().prepareStatement("UPDATE `ways` SET `cityName` = ?, `cityNodeID` = ?, `is_in` = ? WHERE `ID` = ?");
 		ResultSet allWaysNodes = DBConnector.getConnection().createStatement().executeQuery("SELECT edges_all1.node1lon, edges_all1.node1lat, edges_all2.node2lon, edges_all2.node2lat, ways.id FROM ways, edges_all edges_all1, edges_all edges_all2" +
 																								" where startEdgeID = edges_all1.id and endEdgeID = edges_all2.id");
@@ -94,9 +94,9 @@ public class UpdateStreets {
 		}
 		allCities.beforeFirst();
 		citiesCounter = 0;
-		//---------Polygon
-		HashSet<Integer> markedCities = new HashSet<Integer>();
 		markedWays.clear();
+		//---------Polygon
+		HashSet<Integer> markedCities = new HashSet<Integer>(70000);
 		while (allPolyWays.next()) {
 			ResultSet allEdgesInPolyWay = allEdgesInPolyWayStatement.executeQuery("SELECT fromNode.lon, fromNode.lat, toNode.lon, toNode.lat from nodes fromNode, nodes toNode, edges_borders where wayID = " + allPolyWays.getInt(1) +
 																										" and fromNode.id = edges_borders.node1ID and toNode.id = edges_borders.node2ID");
@@ -196,6 +196,12 @@ public class UpdateStreets {
 			}
 			while ((pos = sb.indexOf("LK")) != -1) {
 				sb.delete(getStartPos("LK", pos, sb), getEndpos("LK", pos, sb));
+			}
+			while ((pos = sb.indexOf("Kreis")) != -1) {
+				sb.delete(getStartPos("Kreis", pos, sb), getEndpos("Kreis", pos, sb));
+			}
+			while ((pos = sb.indexOf("kreis")) != -1) {
+				sb.delete(getStartPos("kreis", pos, sb), getEndpos("kreis", pos, sb));
 			}
 			for (int i = 0; i < sb.length(); i++) {
 				if (i == 0 && sb.charAt(i) == ',') {

@@ -20,13 +20,14 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 	 * knotenobjekte miteinander referenzieren
 	 * @param edgeLengths 
 	 * @param highwayTypes 
+	 * @param edgeIDs 
 	 */
-	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, int searchOption) {
+	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, int searchOption, int[] edgeIDs) {
 		switch (searchOption) {
 		case FASTEST_ROUTE:
 			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
 				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
-				Edge edge = new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]);
+				Edge edge = new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i], edgeIDs[i]);
 				edge.setPredecessor(fromNode);
 				fromNode.addEdge(edge);
 				toNode.addEdge(edge);
@@ -39,7 +40,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 		case SHORTEST_ROUTE:
 			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
 				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
-				Edge edge = new Edge(toNode, fromNode.getDistanceTo(toNode), 1);
+				Edge edge = new Edge(toNode, fromNode.getDistanceTo(toNode), 1, edgeIDs[i]);
 				edge.setPredecessor(fromNode);
 				fromNode.addEdge(edge);
 				toNode.addEdge(edge);
@@ -161,7 +162,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 		generateNodes(Q, allNodeIDs, lon, lat);
 		System.out.println(System.currentTimeMillis() - time + "ms knoten");
 		time = System.currentTimeMillis();
-		generateReferences(Q, edgeStartNodeIDs, edgeEndNodeIDs, oneways, edgeLengths, highwayTypes, searchOption);
+		generateReferences(Q, edgeStartNodeIDs, edgeEndNodeIDs, oneways, edgeLengths, highwayTypes, searchOption, edgeIDs);
 		System.out.println(System.currentTimeMillis() - time + "ms kanten");
 
 		

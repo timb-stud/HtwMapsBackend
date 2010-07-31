@@ -10,16 +10,22 @@ public class Edge {
 	private double lenght;
 	private int highwayType;
 	private boolean isOneway;
+	private int id;
 
 	/**
 	 * 
 	 * @param successor der Knoten auf den die Kante gerichtet ist
 	 * @param length laenge der Kante
 	 */
-	public Edge(Node successor, double length, int highwayType) {
+	public Edge(Node successor, double length, int highwayType, int id) {
 		this.successor = successor;
 		this.lenght = length;
 		this.highwayType = highwayType;
+		this.id = id;
+	}
+	
+	public int getID() {
+		return id;
 	}
 	
 	public void setOneway(boolean oneway) {

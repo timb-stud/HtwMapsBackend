@@ -139,7 +139,7 @@ public class DBAdapterParabel{
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
 			edgeLengths[i] = resultSet.getInt(5);
-			edgeIDs[i] = 0;						//TODO
+			edgeIDs[i] = resultSet.getInt(6);						//TODO
 		}
 	}
 
@@ -152,7 +152,7 @@ public class DBAdapterParabel{
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - ? <= varNodes.lat "
 				+ " and "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat ";
-			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length from edges_opt"
+			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, id from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
 				+ " and"
@@ -169,7 +169,7 @@ public class DBAdapterParabel{
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + ? >= varNodes.lat "
 				+ " and "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat ";
-			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length from edges_opt"
+			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, id from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + ? >= node1lat"
 				+ " and"

@@ -104,18 +104,19 @@ public class AStar implements ShortestPathAlgorithm {
 	 *            Is this edge a oneway?
 	 * @param highwayTypes
 	 *            HighwayType of this edge.
+	 * @param edgeIDs 
 	 * @return a HashTable containing all inserted nodes.
 	 */
 	private void buildEdges(HashMap<Integer, AStarNode> allNodesIDs,
 			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
-			boolean[] oneways, int[] highwayTypes) {
+			boolean[] oneways, int[] highwayTypes, int[] edgeIDs) {
 		
 		for (int i = 0; i < edgeStartNodeIDs.length; i++) {
 			AStarNode fromNode = allNodesIDs.get(edgeStartNodeIDs[i]);
 			AStarNode toNode = allNodesIDs.get(edgeEndNodeIDs[i]);
-			fromNode.addEdge(new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i]));
+			fromNode.addEdge(new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i], edgeIDs[i]));
 			if(!oneways[i]){
-				toNode.addEdge(new Edge(fromNode, fromNode.getDistanceTo(toNode), highwayTypes[i]));
+				toNode.addEdge(new Edge(fromNode, fromNode.getDistanceTo(toNode), highwayTypes[i], edgeIDs[i]));
 			}
 		}
 	}
@@ -141,7 +142,7 @@ public class AStar implements ShortestPathAlgorithm {
 		HashMap<Integer, AStarNode> allNodes = buildNodes(allNodeIDs, lon, lat);
 		System.out.println("HashMap bauen:" + (System.currentTimeMillis() - time) + "ms");
 		time = System.currentTimeMillis();
-		buildEdges(allNodes, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes);
+		buildEdges(allNodes, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, edgeIDs);
 		System.out.println("Edges bauen: " + (System.currentTimeMillis() - time) + "ms");
 		time = System.currentTimeMillis();
 		Node[] result = aStar(allNodes, startNodeID, goalNodeID).toArray(new Node[0]);
