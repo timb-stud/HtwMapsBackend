@@ -28,6 +28,10 @@ public class Edge {
 		return id;
 	}
 	
+	public int getHighwayType() {
+		return highwayType;
+	}
+	
 	public void setOneway(boolean oneway) {
 		this.isOneway = oneway;
 	}
