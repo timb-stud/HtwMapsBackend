@@ -41,6 +41,7 @@ public class UpdateStreets {
 		while (allCities.next()) {
 			String is_in = allCities.getString(5);
 			String city = allCities.getString(3);
+			System.out.print("Bearbeitung Kreis: " + city + " Node ID = " + allCities.getInt(4) + " ");
 			if (city.isEmpty()) {
 				System.err.println("\nOrt mit Node ID = " + allCities.getInt(4) + " hat keinen Namen und wird daher nicht eingetragen \n");
 				continue;
@@ -50,7 +51,6 @@ public class UpdateStreets {
 					continue;
 				}
 			}
-			System.out.print("kreis: " + city);
 			if (allCities.getString(6).equals("hamlet")) {
 				diameter = diameterHamlet;
 			} else {
@@ -90,7 +90,7 @@ public class UpdateStreets {
 			}
 			allWaysNodes.beforeFirst();
 			citiesCounter++;
-			System.out.print(". " + waysCounter + " Ways markiert. Node ID = " + allCities.getInt(4) + "		Anzahl fertiger Orte: " + citiesCounter + "\n");
+			System.out.print(" " + waysCounter + " Ways markiert.		Anzahl fertiger Orte: " + citiesCounter + "\n");
 		}
 		allCities.beforeFirst();
 		citiesCounter = 0;
@@ -122,6 +122,7 @@ public class UpdateStreets {
 					markedCities.add(allCities.getInt(4));
 					String city = allCities.getString(3);
 					String is_in = allCities.getString(5);
+					System.out.print("Bearbeitung Polygon: " + city + " Node ID = " + allCities.getInt(4) + " ");
 					if (city.isEmpty()) {
 						System.err.println("\nOrt mit Node ID = " + allCities.getInt(4) + " hat keinen Namen und wird daher nicht eingetragen \n");
 						break;
@@ -131,7 +132,6 @@ public class UpdateStreets {
 							break;
 						}
 					}
-					System.out.print("polygon: " + city);
 					int waysCounter = 0;
 					while(allWaysNodes.next()) {
 						if (markedWays.contains(allWaysNodes.getInt(5))) continue;
@@ -147,7 +147,7 @@ public class UpdateStreets {
 					}
 					allWaysNodes.beforeFirst();
 					citiesCounter++;
-					System.out.print(". " + waysCounter + " Ways markiert. Node ID = " + allCities.getInt(4) + "		Anzahl fertiger Orte: " + citiesCounter + "\n");
+					System.out.print(" " + waysCounter + " Ways markiert.		Anzahl fertiger Orte: " + citiesCounter + "\n");
 					break;
 				}
 			}
@@ -232,7 +232,7 @@ public class UpdateStreets {
 			tmpList.clear();
 			return sb.toString();
 		} catch (StringIndexOutOfBoundsException e) {
-			System.err.println("Ein Fehler ist aufgetreten. is_in:[" + is_in + "] city: [" + city + "]\nDer Ort wird nicht eingetragen. Bisher unbekannter Fehler\n");
+			System.err.println("\nEin Fehler ist aufgetreten. is_in:[" + is_in + "] city: [" + city + "]\nDer Ort wird nicht eingetragen. Bisher unbekannter Fehler\n");
 			e.printStackTrace();
 			return null;
 		}
