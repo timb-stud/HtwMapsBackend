@@ -109,14 +109,14 @@ public class AStar implements ShortestPathAlgorithm {
 	 */
 	private void buildEdges(HashMap<Integer, AStarNode> allNodesIDs,
 			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
-			boolean[] oneways, int[] highwayTypes, int[] edgeIDs) {
+			boolean[] oneways, int[] highwayTypes, int[] wayIDs) {
 		
 		for (int i = 0; i < edgeStartNodeIDs.length; i++) {
 			AStarNode fromNode = allNodesIDs.get(edgeStartNodeIDs[i]);
 			AStarNode toNode = allNodesIDs.get(edgeEndNodeIDs[i]);
-			fromNode.addEdge(new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i], edgeIDs[i]));
+			fromNode.addEdge(new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i], wayIDs[i]));
 			if(!oneways[i]){
-				toNode.addEdge(new Edge(fromNode, fromNode.getDistanceTo(toNode), highwayTypes[i], edgeIDs[i]));
+				toNode.addEdge(new Edge(fromNode, fromNode.getDistanceTo(toNode), highwayTypes[i], wayIDs[i]));
 			}
 		}
 	}
@@ -135,14 +135,14 @@ public class AStar implements ShortestPathAlgorithm {
 	 */
 	@Override
 	public Node[] findShortestPath(int[] allNodeIDs, float[] lon, float[] lat,
-			int startNodeID, int goalNodeID, int[] edgeIDs,
+			int startNodeID, int goalNodeID, int[] wayIDs,
 			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
 			boolean[] oneways, int[] highwayTypes, int searchOption) throws PathNotFoundException {
 		long time = System.currentTimeMillis();
 		HashMap<Integer, AStarNode> allNodes = buildNodes(allNodeIDs, lon, lat);
 		System.out.println("HashMap bauen:" + (System.currentTimeMillis() - time) + "ms");
 		time = System.currentTimeMillis();
-		buildEdges(allNodes, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, edgeIDs);
+		buildEdges(allNodes, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, wayIDs);
 		System.out.println("Edges bauen: " + (System.currentTimeMillis() - time) + "ms");
 		time = System.currentTimeMillis();
 		Node[] result = aStar(allNodes, startNodeID, goalNodeID).toArray(new Node[0]);

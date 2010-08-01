@@ -27,7 +27,7 @@ public class DBAdapterParabel{
 	private double[] edgeLengths;
 	private boolean[] oneways;
 	private int[] highwayTypes;
-	private int[] edgeIDs;
+	private int[] wayIDs;
 	
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
@@ -131,7 +131,7 @@ public class DBAdapterParabel{
 		edgeLengths = new double[tableLength];
 		oneways = new boolean[tableLength];
 		highwayTypes = new int[tableLength];
-		edgeIDs = new int[tableLength];
+		wayIDs = new int[tableLength];
 		
 		for (int i = 0; resultSet.next(); i++){
 			edgeStartNodeIDs[i] = resultSet.getInt(1);
@@ -139,7 +139,7 @@ public class DBAdapterParabel{
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
 			edgeLengths[i] = resultSet.getInt(5);
-			edgeIDs[i] = resultSet.getInt(6);						//TODO
+			wayIDs[i] = resultSet.getInt(6);						//TODO
 		}
 	}
 
@@ -213,8 +213,8 @@ public class DBAdapterParabel{
 		return highwayTypes;
 	}
 	
-	public int[] getEdgesIDs() {
-		return edgeIDs;
+	public int[] getWayIDs() {
+		return wayIDs;
 	}
 	
 	
