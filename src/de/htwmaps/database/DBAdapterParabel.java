@@ -152,7 +152,7 @@ public class DBAdapterParabel{
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - ? <= varNodes.lat "
 				+ " and "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat ";
-			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, id from edges_opt"
+			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, wayid from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
 				+ " and"
@@ -169,7 +169,7 @@ public class DBAdapterParabel{
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + ? >= varNodes.lat "
 				+ " and "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat ";
-			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, id from edges_opt"
+			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, wayid from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + ? >= node1lat"
 				+ " and"
