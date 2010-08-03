@@ -138,7 +138,7 @@ public class DBAdapterParabel{
 			edgeEndNodeIDs[i] = resultSet.getInt(2);
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
-			edgeLengths[i] = resultSet.getInt(5);
+			edgeLengths[i] = resultSet.getDouble(5);
 			wayIDs[i] = resultSet.getInt(6);						//TODO
 		}
 	}

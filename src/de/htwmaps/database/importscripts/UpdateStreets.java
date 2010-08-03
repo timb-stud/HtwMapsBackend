@@ -20,13 +20,13 @@ import de.htwmaps.database.DBConnector;
 public class UpdateStreets {
 	
 	public void updateStreets() throws SQLException, IOException {
-		System.out.println("------UpdateStreets v2------");
+		System.out.println("------UpdateStreets v3------");
 		HashSet<Integer> markedWays = new HashSet<Integer>(1000000);
 		PreparedStatement ps = DBConnector.getConnection().prepareStatement("UPDATE `ways` SET `cityName` = ?, `cityNodeID` = ?, `is_in` = ? WHERE `ID` = ?");
 		System.out.println("allWayNodes select");
 		ResultSet allWaysNodes = DBConnector.getConnection().createStatement().executeQuery("SELECT edges_all1.node1lon, edges_all1.node1lat, edges_all2.node2lon, edges_all2.node2lat, ways.id FROM ways, edges_all edges_all1, edges_all edges_all2" +
 																								" where startEdgeID = edges_all1.id and endEdgeID = edges_all2.id");
-		ResultSet allPolyWays = DBConnector.getConnection().createStatement().executeQuery("SELECT distinct wayID FROM edges_borders");
+		ResultSet allPolyWays = DBConnector.getConnection().createStatement().executeQuery("SELECT distinct wayID, name FROM edges_borders");
 		System.out.println("allPolyWays select");
 		ResultSet allCities = DBConnector.getConnection().createStatement().executeQuery("SELECT lon, lat, name, id, is_in, cityCategory FROM cities");
 		System.out.println("allCities select");
@@ -128,6 +128,10 @@ public class UpdateStreets {
 					String city = allCities.getString(3);
 					String is_in = allCities.getString(5);
 					System.out.print("Bearbeitung Polygon: " + city + " Node ID = " + allCities.getInt(4) + " ");
+					if (allPolyWays.getString(2).indexOf(city) == -1 && city.indexOf(allPolyWays.getString(2)) == -1) {
+						System.err.println("\nWarnung: Polygon, Wayid = " + allPolyWays.getInt(1) + ". " + city + " ist nicht der Hauptort oder es gibt eine inkonsistente Schreibweise und wird deswegen nicht eingetragen\n");
+						continue;
+					}
 					if (city.isEmpty()) {
 						System.err.println("\nFehler:Polygon:Ort mit Node ID = " + allCities.getInt(4) + " hat keinen Namen und wird daher nicht eingetragen \n");
 						break;
@@ -246,7 +250,7 @@ public class UpdateStreets {
 			tmpList.clear();
 			return sb.toString();
 		} catch (StringIndexOutOfBoundsException e) {
-			System.err.println("\nEin Fehler ist aufgetreten. is_in:[" + is_in + "] city: [" + city + "]\nDer Ort wird nicht eingetragen. Bisher unbekannter Fehler\n");
+			System.err.println("\nFehler: is_in:[" + is_in + "] city: [" + city + "]\nDer Ort wird nicht eingetragen. Bisher unbekannter Fehler\n");
 			e.printStackTrace();
 			tmpList.clear();
 			return null;

@@ -44,29 +44,25 @@ public class CalculateEdgeLength {
     	float dy 	= (float) 111.3 * (lat1 - lat2);
     	double length = Math.sqrt(dx * dx + dy * dy);
     	length = length * 1000;
-    	// es gibt Edges mit einer Laenge von 0, diese werden zur uebersicht mit -1 gefuellt
-//    	if (length == 0.0) {
-//        	length = -1.0;
-//        }
     	return length;
     }
 
 	private void start() {
 		boolean error = false;
 		ResultSet allEdges 	= null;
-		ResultSet restEdges = null;
-
+		int min = 0;
+		int max = 0;
 		try {
 	        PreparedStatement psLength 	= DBConnector.getConnection().prepareStatement("UPDATE `edges_all` SET `length` = ? WHERE `ID`= ?");
-        	//System.out.println("Lade Edges");
-        	while (!error) {
-		        allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, node1ID, node2ID, node1lat, node1lon, node2lat, node2lon FROM edgeview WHERE length IS NULL LIMIT 0, 100000");
-	        	System.out.println("100.000 Edges geladen");
-		        //System.out.println("Setze Edgecount");
-	//	        restEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT COUNT(*) FROM edges_all WHERE length IS NULL");
-	//        	restEdges.next();
-	//        	restEdge = restEdges.getInt(1);
-	//	        System.out.println("noch " + restEdge + " Edges");
+	        PreparedStatement psEdges 	= DBConnector.getConnection().prepareStatement("SELECT ID, node1ID, node2ID, node1lat, node1lon, node2lat, node2lon FROM edgeview WHERE ID BETWEEN ? AND ?");
+	        while (!error) {
+	        	min = max;
+	        	max = min + 100000;
+		        psEdges.setInt(1, min);
+		        psEdges.setInt(2, max);
+		        allEdges = psEdges.executeQuery();
+//	        	allEdges = DBConnector.getConnection().createStatement().executeQuery("SELECT ID, node1ID, node2ID, node1lat, node1lon, node2lat, node2lon FROM edgeview WHERE length IS NULL LIMIT 0, 100000");
+	        	System.out.println("Edges " + min + "-" + max + " geladen");
 				while (allEdges.next()){
 					//System.out.println("Inner");
 					edgeID	= allEdges.getInt(1);
