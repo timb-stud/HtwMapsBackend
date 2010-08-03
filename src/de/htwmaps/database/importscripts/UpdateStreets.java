@@ -23,12 +23,17 @@ public class UpdateStreets {
 		System.out.println("------UpdateStreets v2------");
 		HashSet<Integer> markedWays = new HashSet<Integer>(1000000);
 		PreparedStatement ps = DBConnector.getConnection().prepareStatement("UPDATE `ways` SET `cityName` = ?, `cityNodeID` = ?, `is_in` = ? WHERE `ID` = ?");
+		System.out.println("allWayNodes select");
 		ResultSet allWaysNodes = DBConnector.getConnection().createStatement().executeQuery("SELECT edges_all1.node1lon, edges_all1.node1lat, edges_all2.node2lon, edges_all2.node2lat, ways.id FROM ways, edges_all edges_all1, edges_all edges_all2" +
 																								" where startEdgeID = edges_all1.id and endEdgeID = edges_all2.id");
 		ResultSet allPolyWays = DBConnector.getConnection().createStatement().executeQuery("SELECT distinct wayID FROM edges_borders");
+		System.out.println("allPolyWays select");
 		ResultSet allCities = DBConnector.getConnection().createStatement().executeQuery("SELECT lon, lat, name, id, is_in, cityCategory FROM cities");
+		System.out.println("allCities select");
 		Statement allEdgesInPolyWayStatement = DBConnector.getConnection().createStatement();
 		ArrayList<String> tmpList = new ArrayList<String>(6);
+		int citiesCounter = 0;
+		
 		//----------Kreis
 		double diameterHamlet = 0.015;
 		double diameterSuburb = 0.018;
@@ -36,14 +41,13 @@ public class UpdateStreets {
 		double diameterTown = 0.05;
 		double diameterCity = 0.1;
 		double diameter;
-		int citiesCounter = 0;
 		Arc2D arc = new Arc2D.Double();
 		while (allCities.next()) {
 			String is_in = allCities.getString(5);
 			String city = allCities.getString(3);
 			System.out.print("Bearbeitung Kreis: " + city + " Node ID = " + allCities.getInt(4) + " ");
 			if (city.isEmpty()) {
-				System.err.println("\nOrt mit Node ID = " + allCities.getInt(4) + " hat keinen Namen und wird daher nicht eingetragen \n");
+				System.err.println("\nFehler:Kreis:Ort mit Node ID = " + allCities.getInt(4) + " hat keinen Namen und wird daher nicht eingetragen \n");
 				continue;
 			}
 			if (!is_in.isEmpty()) {
@@ -95,6 +99,7 @@ public class UpdateStreets {
 		allCities.beforeFirst();
 		citiesCounter = 0;
 		markedWays.clear();
+
 		//---------Polygon
 		HashSet<Integer> markedCities = new HashSet<Integer>(70000);
 		while (allPolyWays.next()) {
@@ -124,7 +129,7 @@ public class UpdateStreets {
 					String is_in = allCities.getString(5);
 					System.out.print("Bearbeitung Polygon: " + city + " Node ID = " + allCities.getInt(4) + " ");
 					if (city.isEmpty()) {
-						System.err.println("\nOrt mit Node ID = " + allCities.getInt(4) + " hat keinen Namen und wird daher nicht eingetragen \n");
+						System.err.println("\nFehler:Polygon:Ort mit Node ID = " + allCities.getInt(4) + " hat keinen Namen und wird daher nicht eingetragen \n");
 						break;
 					}
 					if (!is_in.isEmpty()) {
@@ -150,6 +155,9 @@ public class UpdateStreets {
 					System.out.print(" " + waysCounter + " Ways markiert.		Anzahl fertiger Orte: " + citiesCounter + "\n");
 					break;
 				}
+			}
+			if (allCities.isAfterLast()) {
+				System.err.println("Fehler: Polygon mit der wayid = " + allPolyWays.getInt(1) + " konnte kein Ort zugewiesen werden");
 			}
 			allCities.beforeFirst();
 		}  
@@ -240,6 +248,7 @@ public class UpdateStreets {
 		} catch (StringIndexOutOfBoundsException e) {
 			System.err.println("\nEin Fehler ist aufgetreten. is_in:[" + is_in + "] city: [" + city + "]\nDer Ort wird nicht eingetragen. Bisher unbekannter Fehler\n");
 			e.printStackTrace();
+			tmpList.clear();
 			return null;
 		}
 	}
