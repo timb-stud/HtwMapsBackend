@@ -55,20 +55,38 @@ public class RouteToTextNew {
 						if (i == route.length-1){
 							preview = current;
 							wayID.add(e.getWayID() + "");
+							ref = streetRS.getString(5);
+							city = streetRS.getString(2);
+							state = streetRS.getString(3);
 						}
-		
+						
 						if (preview.equals(current)){
 								dist += e.getLenght();
-						} else {
+								time = (long) (dist / 100); //muss noch angepasst werden
+				    	} else {
 //							highwayValue.add(streetRS.getString(4));
 							wayID.add(e.getWayID() + "");
 							
 							//TextInfos streetname, ref, city, state, dist, time
-							TextInfos ti = new TextInfos(preview, ref, city, 
-															state, dist, time);
+							TextInfos ti = 
+								new TextInfos(preview, ref, city, state, dist, time);
 							info.add(ti);
+							ti = null;
 							dist = e.getLenght();
+							time = (long) (dist / 100); //muss noch angepasst werden
 						}
+						
+						if (i == 1) {
+//							highwayValue.add(streetRS.getString(4));
+							wayID.add(e.getWayID() + "");
+							
+							//TextInfos streetname, ref, city, state, dist, time
+							TextInfos ti = 
+								new TextInfos(preview, ref, city, state, dist, time);
+							info.add(ti);
+							ti = null;
+						}
+						
 						preview = current;
 						ref = streetRS.getString(5);
 						city = streetRS.getString(2);
@@ -118,8 +136,25 @@ public class RouteToTextNew {
 		
 	}
 
-	private void fillStreetnames() {
-
+	
+	private String getNextDirectionByConditions(Node fromNode, Node switchNode, Node toNode) {
+		 //von unten nach oben
+		if (fromNode.getLon() < switchNode.getLon())
+			return (switchNode.getLat() < toNode.getLat())?"rechts":"links";
+		
+		//von oben nach unten
+		else if (fromNode.getLon() > switchNode.getLon())
+			return (switchNode.getLat() > toNode.getLat())?"rechts":"links";
+		
+		//von links nach rechts
+		else if (fromNode.getLat() < switchNode.getLat())
+			return (switchNode.getLon() > toNode.getLon())?"rechts":"links";
+		
+		//von rechts nach links
+		else if (fromNode.getLat() > switchNode.getLat())
+			return (switchNode.getLon() < toNode.getLon())?"rechts":"links";
+		
+		return "geradeaus";
 	}
 	
 	@Override
