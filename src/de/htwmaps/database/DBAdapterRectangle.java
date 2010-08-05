@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import de.htwmaps.algorithm.GraphData;
+
 
 public class DBAdapterRectangle {
 	private final static  float h = 0.009f;
@@ -13,9 +15,9 @@ public class DBAdapterRectangle {
 	private float rectEndNodeLon;
 	private float rectEndNodeLat;
 	//Nodes
-	private int[] nodeIDs;
-	private float[] nodeLons; //x
-	private float[] nodeLats; //y
+	private int[] allNodeIDs;
+	private float[] allNodeLons; //x
+	private float[] allNodeLats; //y
 	//Edges
 	private int[] wayIDs;
 	private int[] edgeStartNodeIDs;
@@ -89,14 +91,14 @@ public class DBAdapterRectangle {
 		tableLength = resultSet.getRow();
 		System.out.println("Nodes: " + tableLength);
 		resultSet.beforeFirst();
-		nodeIDs = new int[tableLength];
-		nodeLons = new float[tableLength];
-		nodeLats = new float[tableLength];
+		allNodeIDs = new int[tableLength];
+		allNodeLons = new float[tableLength];
+		allNodeLats = new float[tableLength];
 		
 		for (int i = 0; resultSet.next(); i++){
-			nodeIDs[i] = resultSet.getInt(1);
-			nodeLons[i] = resultSet.getFloat(2);
-			nodeLats[i] = resultSet.getFloat(3);
+			allNodeIDs[i] = resultSet.getInt(1);
+			allNodeLons[i] = resultSet.getFloat(2);
+			allNodeLats[i] = resultSet.getFloat(3);
 		}
 	}
 
@@ -159,17 +161,29 @@ public class DBAdapterRectangle {
 		this.rectEndNodeLon = endNodeLon;
 		this.rectEndNodeLat = endNodeLat;
 	}
-
-	public int[] getNodeIDs() {
-		return nodeIDs;
+	
+	public GraphData getGraphData(){
+		return new GraphData(	allNodeIDs,
+								allNodeLats, 
+								allNodeLons, 
+								wayIDs, 
+								edgeStartNodeIDs, 
+								edgeEndNodeIDs, 
+								edgeLengths, 
+								oneways, 
+								highwayTypes);
 	}
 
-	public float[] getNodeLons() {
-		return nodeLons;
+	public int[] getAllNodeIDs() {
+		return allNodeIDs;
 	}
 
-	public float[] getNodeLats() {
-		return nodeLats;
+	public float[] getAllNodeLons() {
+		return allNodeLons;
+	}
+
+	public float[] getAllNodeLats() {
+		return allNodeLats;
 	}
 
 	public int[] getwayIDs() {
