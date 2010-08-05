@@ -11,6 +11,7 @@ public class Edge {
 	private int highwayType;
 	private boolean isOneway;
 	private int wayID;
+	static final int allowedSpeed = 50; //ersatz für highwayspeed, static final nur zu testzwecken
 
 	/**
 	 * 
@@ -64,6 +65,14 @@ public class Edge {
 	 */
 	public double getLenght() {
 		return lenght;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public int getAllowedSpeed() {
+		return allowedSpeed;
 	}
 
 	@Override
