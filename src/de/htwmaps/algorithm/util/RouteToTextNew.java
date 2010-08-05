@@ -13,15 +13,15 @@ import de.htwmaps.database.DBAdapterRouteToText;
 
 public class RouteToTextNew {
 	
-	private ArrayList<Double> distance = null;
-	private ArrayList<Integer> wayID = null;
-	private ArrayList<String> streetnames = null;
+	private ArrayList<String> wayID = null;
 	private ArrayList<String> highwayValue = null;
-	private ArrayList<String> ref = null;
-	private ArrayList<String> state = null;
-	private ArrayList<String> city = null;
 	private double totallength = 0.0;
+	private double totaltime = 0.0;
+	private double autobahn = 0.0;
+	private double landstrasse = 0.0;
+	private double innerOrts = 0.0;
 	
+	private ArrayList<TextInfos> info = null;
 
 	public RouteToTextNew(Node[] route) {
 		try {
@@ -34,93 +34,88 @@ public class RouteToTextNew {
 	
 	private void createInfo(Node[] route) throws SQLException {
 		double dist = 0;
+		long time = 0;
 		ResultSet streetRS = null;
 		String preview = null, current = null;
+		String city = null, state = null, ref = null;
 		highwayValue = new ArrayList<String>();
-		ref = new ArrayList<String>();
-		streetnames = new ArrayList<String>();
-		state = new ArrayList<String>();
-		city = new ArrayList<String>();
-		wayID = new ArrayList<Integer>();
-		distance = new ArrayList<Double>();
+		wayID = new ArrayList<String>();
 		
-		System.out.println("Anzahl Nodes: " + route.length);
-		int n =0;
+		info = new ArrayList<TextInfos>();
+		
 		  for(int i=route.length-1; i > 0; i--){
-			  System.out.println(route[i] + " Edges Liste: " + route[i].getEdgeList());
 			  for(Edge e : route[i].getEdgeList()){
 				    if(e.getSuccessor().equals(route[i-1]) || e.getPredecessor().equals(route[i-1])){
 				      totallength += e.getLenght();
-				      
-				      n++;
-				      
-				      fillDriveOn(e);
 				      
 				    //Strassennamen + distance dazu ermitteln
 				      streetRS = null;
 				      streetRS = DBAdapterRouteToText.getStreetnameRS(e.getWayID());
 				      streetRS.first();
 				      current = streetRS.getString(1);
+				      
+				      fillDriveOn(e);
 						
-						if (preview == null)
+						if (i == route.length-1){
 							preview = current;
-		
+							wayID.add(e.getWayID() + "");
+							ref = streetRS.getString(5);
+							city = streetRS.getString(2);
+							state = streetRS.getString(3);
+						}
+						
 						if (preview.equals(current)){
 								dist += e.getLenght();
-						} else {
-								streetnames.add(preview);
-								distance.add(dist);
-								city.add(streetRS.getString(2));
-								state.add(streetRS.getString(3));
-								highwayValue.add(streetRS.getString(4));
-								ref.add(streetRS.getString(5));
-								dist = e.getLenght();
-								
-								if (!(streetnames.isEmpty())) //nur zum Test hinzugefuegt
-									wayID.add(e.getWayID());
+								time = (long) (dist / 100); //muss noch angepasst werden
+				    	} else {
+//							highwayValue.add(streetRS.getString(4));
+							wayID.add(e.getWayID() + "");
+							
+							//TextInfos streetname, ref, city, state, dist, time
+							TextInfos ti = 
+								new TextInfos(preview, ref, city, state, dist, time);
+							info.add(ti);
+							ti = null;
+							dist = e.getLenght();
+							time = (long) (dist / 100); //muss noch angepasst werden
 						}
+						
+						if (i == 1) {
+//							highwayValue.add(streetRS.getString(4));
+							wayID.add(e.getWayID() + "");
+							
+							//TextInfos streetname, ref, city, state, dist, time
+							TextInfos ti = 
+								new TextInfos(preview, ref, city, state, dist, time);
+							info.add(ti);
+							ti = null;
+						}
+						
 						preview = current;
-				 } else {
-					 System.out.println(e.getSuccessor().toString() + " " + route[i-1].toString());
-				 }
+						ref = streetRS.getString(5);
+						city = streetRS.getString(2);
+						state = streetRS.getString(3);
+				 } 
 			  }
 		  }
-		  System.out.println("Besuchte Kanten: " + n);
 	}
 	
 	private void fillDriveOn(Edge e) {
-		//motorway 1
-		//motorway_link
-		//trunk 1
+		//Autobahn 1
+		//Landstraße 5 ,7
+		//Innerorts 10,11,13
 		
+//		totallength =+ ;
 		
 		switch (e.getHighwayType()){
 		      case 1:
-		    	  double i =+ e.getLenght();
+		    	  autobahn =+ e.getLenght();
 		    	  break;
-		      case 2:
+		      case 5: case 7:
+		    	  landstrasse =+ e.getLenght();
 		    	  break;
-		      case 3:
-		    	  break;
-		      case 4:
-		    	  break;
-		      case 5:
-		    	  break;
-		      case 6:
-		    	  break;
-		      case 7:
-		    	  break;
-		      case 8:
-		    	  break;
-		      case 9:
-		    	  break;
-		      case 10:
-		    	  break;
-		      case 11:
-		    	  break;
-		      case 12:
-		    	  break;
-		      case 13:
+		      case 10: case 11: case 13:
+		    	  innerOrts =+ e.getLenght();
 		    	  break;
 		      default:
 		    	  break;
@@ -128,52 +123,45 @@ public class RouteToTextNew {
 		
 	}
 
-	private void fillStreetnames() {
-
+	
+	private String getNextDirectionByConditions(Node fromNode, Node switchNode, Node toNode) {
+		 //von unten nach oben
+		if (fromNode.getLon() < switchNode.getLon())
+			return (switchNode.getLat() < toNode.getLat())?"rechts":"links";
+		
+		//von oben nach unten
+		else if (fromNode.getLon() > switchNode.getLon())
+			return (switchNode.getLat() > toNode.getLat())?"rechts":"links";
+		
+		//von links nach rechts
+		else if (fromNode.getLat() < switchNode.getLat())
+			return (switchNode.getLon() > toNode.getLon())?"rechts":"links";
+		
+		//von rechts nach links
+		else if (fromNode.getLat() > switchNode.getLat())
+			return (switchNode.getLon() < toNode.getLon())?"rechts":"links";
+		
+		return "geradeaus";
 	}
 	
 	@Override
 	public String toString() {
 		int i = 0; 
-		
+
 		DecimalFormat df = new DecimalFormat("0.00");
 		StringBuilder sb = new StringBuilder();
-		Iterator<String> sn = streetnames.iterator();
-		Iterator<String> bundeland = state.iterator();
-		Iterator<String> stadt = city.iterator();
-		Iterator<Integer> wID = wayID.iterator();
-		Iterator<Double> dist = distance.iterator();
-		while(sn.hasNext()){
-			sb.append("WayID + 1: " + wID.next() + "\t Distance: " + df.format(dist.next()) + " km " 
-					+ "\t Strasse: " + sn.next() + "\t Ort/Stadt: " + stadt.next() + "\t Bundesland: " + bundeland.next() + "\n");
+		Iterator<String> wID = wayID.iterator();
+		Iterator<TextInfos> tInfo = info.iterator();
+		sb.append("WayID: "  + "\t\t Distance: " +  "\t Strasse: " +  "\t\t ref: " + "\t\t Ort/Stadt: " + "\t\t Bundesland: " + "\n");
+		while(tInfo.hasNext()){
+			sb.append(wID.next() + "\t");
+			sb.append(tInfo.next().toString() + "\n");
 			i++;
 		}
 		
-		sb.append("\nAnzahl Strassen: " + i + " Gesamt Entfernung: " + df.format(totallength) + " km");
+		sb.append("\nAnzahl Strassen: " + i + " Gesamt Entfernung: " + df.format((totallength / 1000)) + " km");
 		
 		return sb.toString();
-	}
-
-	public ArrayList<Double> getDistance() {
-		return distance;
-	}
-	
-	public ArrayList<String> getDistanceText() {
-		DecimalFormat df = new DecimalFormat("0.00");
-		ArrayList<String> distString = new ArrayList();
-		
-		for (double d : distance){
-			if (d > 1)
-				distString.add(df.format(d) + " km");
-			else
-				distString.add(df.format(d * 1000) + " m");
-		}
-		return distString;
-	}
-
-
-	public ArrayList<String> getStreetnames() {
-		return streetnames;
 	}
 
 	public double getTotallength() {

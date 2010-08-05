@@ -11,10 +11,10 @@ import de.htwmaps.algorithm.AStarBidirectionalStarter;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
-import de.htwmaps.algorithm.util.RouteToText;
 import de.htwmaps.algorithm.util.RouteToTextNew;
 import de.htwmaps.database.DBAdapterParabel;
 import de.htwmaps.database.DBAdapterRectangle;
+import de.htwmaps.trash.AlteRouteToText;
 
 public class RbL_AStarTest{
 
@@ -32,16 +32,17 @@ public class RbL_AStarTest{
 //		int startNodeID = 29221535;
 //		int goalNodeID = 587836344;
 		
-		//Riegelberg - B268 Losheim ---> geht nicht
+		//Riegelsberg - B268 Losheim ---> geht nicht
 //		int startNodeID = 270697603;
 //		int goalNodeID = 314037031;
 		
-		//Riegelberg - B268 Losheim
-//		int startNodeID = 270165797;
-//		int goalNodeID = 685103967;
-		
+		//Riegelsberg - B268 Losheim
 		int startNodeID = 270165797;
-		int goalNodeID = 270166141;
+		int goalNodeID = 685103967;
+		
+		//nur ein Strasse
+//		int startNodeID = 270165797;
+//		int goalNodeID = 270166141;
 		
 		AStarBidirectionalStarter as = new AStarBidirectionalStarter();
 		float a = 0.8f;

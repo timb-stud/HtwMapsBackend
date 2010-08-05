@@ -12,10 +12,10 @@ import de.htwmaps.algorithm.Edge;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
-import de.htwmaps.algorithm.util.RouteToText;
 import de.htwmaps.database.DBAdapterParabel;
 import de.htwmaps.database.DBAdapterRectangle;
 import de.htwmaps.database.DBConnector;
+import de.htwmaps.trash.AlteRouteToText;
 
 public class CreateViewTest {
 	
