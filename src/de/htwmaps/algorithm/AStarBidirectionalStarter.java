@@ -103,12 +103,8 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		this.setResidentialSpeed(residentialSpeed);
 		HashMap<Integer, AStarBidirectionalNode> Q = new HashMap<Integer, AStarBidirectionalNode>(graphData.getAllNodeIDs().length);
 
-		long time = System.currentTimeMillis();
 		generateNodes(Q, graphData.getAllNodeIDs(), graphData.getAllNodeLons(), graphData.getAllNodeLats());
-		System.out.println(System.currentTimeMillis() - time + "ms knoten");
-		time = System.currentTimeMillis();
 		generateReferences(Q, graphData.getEdgeStartNodeIDs(), graphData.getEdgeEndNodeIDs(), graphData.getOneways(), graphData.getEdgeLengths(), graphData.getHighwayTypes(), routeOption, graphData.getWayIDs());
-		System.out.println(System.currentTimeMillis() - time + "ms kanten");
 
 		
 		AStarBidirectionalNode start = Q.get(startNodeID); 
@@ -119,7 +115,6 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		
 		d0.setDijkstra(d1);
 		d1.setDijkstra(d0);
-		time = System.currentTimeMillis();
 		d0.start();
 		d1.start();
 		
@@ -134,7 +129,6 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		}
 		d0.interrupt();
 		d1.interrupt();
-		System.out.println(System.currentTimeMillis() - time + " reiner algo");
 		Node[] result = nodeToArray(start, goal);
 		AStarBidirectional.count.set(0);
 		AStarBidirectional.finished = false;
@@ -150,7 +144,6 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 			int motorwaySpeed, int primarySpeed, int secondarySpeed,
 			int residentialSpeed, int roadSpeed, int livingStreetSpeed)
 	throws PathNotFoundException {
-		// TODO Auto-generated method stub
 		return findPath(startNodeID, goalNodeID, routeOption, motorwaySpeed, primarySpeed, residentialSpeed);
 	}
 }

@@ -3,6 +3,7 @@ package de.htwmaps.algorithm.tests;
 import java.sql.SQLException;
 
 
+import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.AStarBidirectionalStarter;
 import de.htwmaps.algorithm.GraphData;
 import de.htwmaps.algorithm.Node;
@@ -15,7 +16,6 @@ public class DijkstraStarterTest {
 	public static void main(String[] args) throws SQLException, PathNotFoundException  {
 
 
-		long time = System.currentTimeMillis();
 //		int startNodeID = 403500108;
 //		int goalNodeID =  262529904;
 		
@@ -77,7 +77,7 @@ public class DijkstraStarterTest {
 		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
 		float a = 0.8f;
 		float h = 0.01f;
-		int searchOption = ShortestPathAlgorithm.ROUTE_OPTION_SHORTEST;
+		int searchOption = ShortestPathAlgorithm.ROUTE_OPTION_FASTEST;
 		int motorwaySpeed = 130,  primarySpeed = 70, residentialSpeed = 35;
 		DBAdapterParabel dbar;
 		dbar = new DBAdapterParabel(gd);
@@ -85,7 +85,6 @@ public class DijkstraStarterTest {
 			dbar.fillGraphData(startNodeID, goalNodeID, a, h);
 			try {
 				Node[] result = as.findPath(startNodeID, goalNodeID, searchOption, motorwaySpeed, primarySpeed, residentialSpeed);
-				System.out.println(System.currentTimeMillis() - time);
 				System.out.println(new AStarBidirectionalStarter(null).generateTrack(result));
 				break;
 			} catch (PathNotFoundException e) {
