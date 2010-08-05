@@ -1,11 +1,7 @@
 package de.htwmaps.algorithm;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import de.htwmaps.database.DBConnector;
 
 
 
@@ -33,12 +29,13 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
 				Edge edge = null;
 				switch (highwayTypes[i]) {
-				case MOTORWAY: edge = new Edge(toNode, edgeLengths[i], MOTORWAY, wayIDs[i], MOTORWAY_SPEED); break;
-				case PRIMARY: edge = new Edge(toNode, edgeLengths[i], PRIMARY, wayIDs[i], PRIMARY_SPEED); break;
-				case SECONDARY: edge = new Edge(toNode, edgeLengths[i], SECONDARY, wayIDs[i], SECONDARY_SPEED); break;
-				case ROAD: edge = new Edge(toNode, edgeLengths[i], ROAD, wayIDs[i], ROAD_SPEED); break;
-				case RESIDENTIAL: edge = new Edge(toNode, edgeLengths[i], RESIDENTIAL, wayIDs[i], RESIDENTIAL_SPEED); break;
-				case LIVING_STREET: edge = new Edge(toNode, edgeLengths[i], LIVING_STREET, wayIDs[i], LIVING_STREET_SPEED); break;
+				case MOTORWAY: edge = new Edge(toNode, edgeLengths[i], MOTORWAY, wayIDs[i], getMotorwaySpeed()); break;
+				case PRIMARY: edge = new Edge(toNode, edgeLengths[i], PRIMARY, wayIDs[i], getPrimarySpeed()); break;
+				case SECONDARY: edge = new Edge(toNode, edgeLengths[i], SECONDARY, wayIDs[i], getSecondarySpeed()); break;
+				case ROAD: edge = new Edge(toNode, edgeLengths[i], ROAD, wayIDs[i], getRoadSpeed()); break;
+				case RESIDENTIAL: edge = new Edge(toNode, edgeLengths[i], RESIDENTIAL, wayIDs[i], getResidentialSpeed()); break;
+				case LIVING_STREET: edge = new Edge(toNode, edgeLengths[i], LIVING_STREET, wayIDs[i], getLivingStreetSpeed()); break;
+				default: throw new IllegalArgumentException();
 				}
 				edge.setPredecessor(fromNode);
 				fromNode.addEdge(edge);
@@ -86,25 +83,6 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		}
 		return nodesContainer.toArray(new Node[0]);
 	}
-
-	public String generateXML(Node[] result) {
-		StringBuilder str = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<osm version=\"0.6\" generator=\"De gute gute Generator 1.0\">\n");
-		StringBuilder way = new StringBuilder(" <way id=\"1\">\n");
-		for (Node tmp: result) {
-			str.append(" <node id=\"").append(tmp.getId()).append("\" lat=\"").append(tmp.getLat()).append("\" lon=\"").append(tmp.getLon()).append("\"/>\n");
-			way.append("  <nd ref=\"").append(tmp.getId()).append("\"/>\n");
-		}
-		str.append(way).append("  <tag k=\"highway\" v=\"secondary\"/>\n </way>\n <relation id=\"1\">\n  <member type=\"way\" ref=\"1\" role=\"\"/>\n  <tag k=\"route\" v=\"bicycle\"/>\n  <tag k=\"type\" v=\"route\"/>\n </relation>\n").append("</osm>");
-		return str.toString();
-	}
-	
-	public String generatePOI(Node[] result) {
-		StringBuilder str = new StringBuilder("lat\tlon\ttitle\tdescription\ticon\ticonoffset\n");
-		for (Node tmp: result) {
-			str.append(tmp.getLat()).append("\t").append(tmp.getLon()).append("\t").append("title\t").append("descr\t").append("rosa_punkt.png\t").append("8,8\t").append("0,0\n");
-		}
-		return str.toString();
-	}
 	
 	public String generateTrack(Node[] result) {	
 		StringBuilder str = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<gpx>\n<trk>\n <trkseg>\n");
@@ -114,68 +92,15 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		str.append(" </trkseg>\n</trk>\n</gpx>");
 		return str.toString();
 	}
-	
-	public String writeRoute(Node[] result) throws Exception {
-		DecimalFormat df = new DecimalFormat("0.00");
-		String street = "";
-		String streetBefore = "";
-		double dist = 0.0;
-		ArrayList<String> streets = new ArrayList<String>();
-		Statement wayStatement = DBConnector.getConnection().createStatement();
-		
-		for (int i = 0; i < result.length; i++) {
-			ResultSet currentNodeRS = wayStatement.executeQuery("select value from edges, r_way_tag, k_tags where r_way_tag.tagID = k_tags.ID and edges.wayID = r_way_tag.wayID and (edges.fromNodeID = " + result[i].getId() + " or edges.toNodeID = " + result[i].getId() + ") and k_tags.key = 'name'");
-			if (currentNodeRS.next()) {
-				street = currentNodeRS.getString(1);
-				if (i > 0) {
-					dist += result[i].getDistanceTo(result[i - 1]);
-				}
-				if (!streets.isEmpty() && !streetBefore.equals(street)) {
-					if (i < result.length - 1) {
-						ResultSet nextNodeRS = wayStatement.executeQuery("select value from edges, r_way_tag, k_tags where r_way_tag.tagID = k_tags.ID and edges.wayID = r_way_tag.wayID and (edges.fromNodeID = " + result[i + 1].getId() + " or edges.toNodeID = " + result[i + 1].getId() + ") and k_tags.key = 'name'");
-						if (nextNodeRS.next() && street.equals(nextNodeRS.getString(1))) {
-							streetBefore = street;
-							streets.add(df.format(dist) + " km " + giveDirection(result[i], result[i + 1]) + street);
-							dist = 0.0;
-						}
-					}
-				} else {
-					if (streets.isEmpty()) {
-						streetBefore = street;
-						streets.add(street);
-					}
-				}
-			}
-			
-			
-		}
-		StringBuilder res = new StringBuilder("fahren sie auf die erste straÃŸe: " + streets.get(0) + "\n");
-		for (int i = 1; i < streets.size(); i++) {
-			res.append(streets.get(i) + "\n");
-		}
-		return res.toString();
-	}
 
-	private String giveDirection(Node from, Node to) {
-		if (from.getLon() < to.getLon()) {
-			return "rechts halten : ";
-		}
-		return "links halten : ";
-	}
-
-	@Override
-	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption,
-			int motorwaySpeed, int primarySpeed, int secondarySpeed,
-			int residentialSpeed, int roadSpeed, int livingStreetSpeed)
-			throws PathNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption,
 			int motorwaySpeed, int primarySpeed, int residentialSpeed)
 			throws PathNotFoundException {
+		this.setMotorwaySpeed(motorwaySpeed);
+		this.setPrimarySpeed(primarySpeed);
+		this.setResidentialSpeed(residentialSpeed);
 		HashMap<Integer, AStarBidirectionalNode> Q = new HashMap<Integer, AStarBidirectionalNode>(graphData.getAllNodeIDs().length);
 
 		long time = System.currentTimeMillis();
@@ -218,5 +143,14 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		}
 		return result;
 
+	}
+	
+	@Override
+	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption,
+			int motorwaySpeed, int primarySpeed, int secondarySpeed,
+			int residentialSpeed, int roadSpeed, int livingStreetSpeed)
+	throws PathNotFoundException {
+		// TODO Auto-generated method stub
+		return findPath(startNodeID, goalNodeID, routeOption, motorwaySpeed, primarySpeed, residentialSpeed);
 	}
 }

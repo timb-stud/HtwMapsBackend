@@ -148,7 +148,7 @@ public class DBAdapterParabel{
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
 			edgeLengths[i] = resultSet.getDouble(5);
-			wayIDs[i] = resultSet.getInt(6);						//TODO
+			wayIDs[i] = resultSet.getInt(6);						
 		}
 	}
 
@@ -189,42 +189,4 @@ public class DBAdapterParabel{
 				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - ? <= node2lat";
 		}
 	}
-
-	public int[] getNodeIDs() {
-		return nodeIDs;
-	}
-
-	public float[] getNodeLons() {
-		return nodeLons;
-	}
-
-	public float[] getNodeLats() {
-		return nodeLats;
-	}
-
-	public int[] getEdgeStartNodeIDs() {
-		return edgeStartNodeIDs;
-	}
-
-	public int[] getEdgeEndNodeIDs() {
-		return edgeEndNodeIDs;
-	}
-
-	public double[] getEdgeLengths() {
-		return edgeLengths;
-	}
-
-	public boolean[] getOneways() {
-		return oneways;
-	}
-
-	public int[] getHighwayTypes() {
-		return highwayTypes;
-	}
-	
-	public int[] getWayIDs() {
-		return wayIDs;
-	}
-	
-	
 }

@@ -77,7 +77,7 @@ public class DijkstraStarterTest {
 		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
 		float a = 0.8f;
 		float h = 0.01f;
-		int searchOption = ShortestPathAlgorithm.ROUTE_OPTION_FASTEST;
+		int searchOption = ShortestPathAlgorithm.ROUTE_OPTION_SHORTEST;
 		int motorwaySpeed = 130,  primarySpeed = 70, residentialSpeed = 35;
 		DBAdapterParabel dbar;
 		dbar = new DBAdapterParabel(gd);

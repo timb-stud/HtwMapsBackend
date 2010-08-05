@@ -12,11 +12,13 @@ public abstract class ShortestPathAlgorithm {
 	public static final int RESIDENTIAL = 10;
 	public static final int ROAD = 11;
 	public static final int LIVING_STREET = 13;
-	public int PRIMARY_SPEED = 80; //Landstraﬂe
-	public int SECONDARY_SPEED = 60; //Ortsverbindung
-	public int RESIDENTIAL_SPEED = 45; //Innerorts
-	public int ROAD_SPEED = 50; //unclassified
-	public int LIVING_STREET_SPEED = 5; //Spielstrasse
+	public int motorwaySpeed = 110; //Autobahn
+	public int primarySpeed = 80; //Landstraﬂe
+	public int secondarySpeed = 60; //Ortsverbindung
+	public int residentialSpeed = 45; //Innerorts
+	public int roadSpeed = 50; //unclassified
+	public int livingStreetSpeed = 5; //Spielstrasse
+	
 	
 	public ShortestPathAlgorithm(GraphData gd) {
 		this.graphData = gd;
@@ -39,5 +41,55 @@ public abstract class ShortestPathAlgorithm {
 									int motorwaySpeed, 
 									int primarySpeed,
 									int residentialSpeed) throws PathNotFoundException;
+
+	public int getMotorwaySpeed() {
+		return motorwaySpeed;
+	}
+
+	public void setMotorwaySpeed(int motorwaySpeed) {
+		this.motorwaySpeed = motorwaySpeed;
+	}
+
+	public int getPrimarySpeed() {
+		return primarySpeed;
+	}
+
+	public void setPrimarySpeed(int primarySpeed) {
+		this.primarySpeed = primarySpeed;
+	}
+
+	public int getSecondarySpeed() {
+		return secondarySpeed;
+	}
+
+	public void setSecondarySpeed(int secondarySpeed) {
+		this.secondarySpeed = secondarySpeed;
+	}
+
+	public int getResidentialSpeed() {
+		return residentialSpeed;
+	}
+
+	public void setResidentialSpeed(int residentialSpeed) {
+		this.residentialSpeed = residentialSpeed;
+	}
+
+	public int getRoadSpeed() {
+		return roadSpeed;
+	}
+
+	public void setRoadSpeed(int roadSpeed) {
+		this.roadSpeed = roadSpeed;
+	}
+
+	public int getLivingStreetSpeed() {
+		return livingStreetSpeed;
+	}
+
+	public void setLivingStreetSpeed(int livingStreetSpeed) {
+		this.livingStreetSpeed = livingStreetSpeed;
+	}
+
+	
 	
 }
