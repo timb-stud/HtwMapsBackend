@@ -52,7 +52,7 @@ public class GraphData {
 		return allNodeLons;
 	}
 
-	public int[] getwayIDs() {
+	public int[] getWayIDs() {
 		return wayIDs;
 	}
 
