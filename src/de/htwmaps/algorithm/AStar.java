@@ -116,13 +116,7 @@ public class AStar extends ShortestPathAlgorithm {
 	 * @param roadSpeed
 	 * @param livingStreetSpeed
 	 */
-	private void buildEdges(int routeOption,
-							int motorwaySpeed, 
-							int primarySpeed, 
-							int secondarySpeed, 
-							int residentialSpeed,
-							int roadSpeed,
-							int livingStreetSpeed) {
+	private void buildEdges(int routeOption) {
 		
 		int[] edgeStartNodeIDs = graphData.getEdgeStartNodeIDs();
 		int[] edgeEndNodeIDs = graphData.getEdgeEndNodeIDs();
@@ -196,16 +190,33 @@ public class AStar extends ShortestPathAlgorithm {
 			int residentialSpeed, int roadSpeed, int livingStreetSpeed)
 			throws PathNotFoundException {
 		
-		int[] speeds= new int[6];
-		speeds[0] = motorwaySpeed;
-		speeds[1] = primarySpeed;
-		speeds[2] = secondarySpeed;
-		speeds[3] = residentialSpeed;
-		speeds[4] = roadSpeed;
-		speeds[5] = livingStreetSpeed;
-		int maxSpeed = getMax(speeds);
+		setMotorwaySpeed(motorwaySpeed);
+		setPrimarySpeed(primarySpeed);
+		setSecondarySpeed(secondarySpeed);
+		setResidentialSpeed(residentialSpeed);
+		setRoadSpeed(roadSpeed);
+		setLivingStreetSpeed(livingStreetSpeed);
+		
+		int maxSpeed;
+		switch (routeOption) {
+		case ShortestPathAlgorithm.ROUTE_OPTION_FASTEST:
+			int[] speeds= new int[6];
+			speeds[0] = motorwaySpeed;
+			speeds[1] = primarySpeed;
+			speeds[2] = secondarySpeed;
+			speeds[3] = residentialSpeed;
+			speeds[4] = roadSpeed;
+			speeds[5] = livingStreetSpeed;
+			maxSpeed = getMax(speeds);
+			break;
+		case ShortestPathAlgorithm.ROUTE_OPTION_SHORTEST:
+			maxSpeed = 1;
+			break;
+		default:
+			throw new IllegalArgumentException();
+		}
 		buildNodes();
-		buildEdges(routeOption, motorwaySpeed, primarySpeed, secondarySpeed, residentialSpeed, roadSpeed, livingStreetSpeed);
+		buildEdges(routeOption);
 		return aStar(startNodeID, goalNodeID, maxSpeed).toArray(new Node[0]);
 	}
 
@@ -222,10 +233,10 @@ public class AStar extends ShortestPathAlgorithm {
 					routeOption,
 					motorwaySpeed,
 					primarySpeed,
-					ShortestPathAlgorithm.SECONDARY_SPEED,
+					getSecondarySpeed(),
 					residentialSpeed,
-					ShortestPathAlgorithm.ROAD_SPEED,
-					ShortestPathAlgorithm.LIVING_STREET_SPEED);
+					getRoadSpeed(),
+					getLivingStreetSpeed());
 	}
 
 	private int getMax(int[] tab){
