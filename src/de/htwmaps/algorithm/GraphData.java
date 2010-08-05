@@ -19,9 +19,9 @@ public class GraphData {
 	private boolean[] oneways;
 	private int[] highwayTypes;
 	
-	public GraphData() {}
+	public GraphData(){ }
 	
-	public GraphData(	int[] allNodeIDs,
+	public void build(int[] allNodeIDs,
 							float[] allNodeLats,
 							float[] allNodeLons,
 							int[] wayIDs,
@@ -42,27 +42,6 @@ public class GraphData {
 		this.highwayTypes = highwayTypes;
 	}
 	
-	public void setGraphData(int[] allNodeIDs,
-							float[] allNodeLats,
-							float[] allNodeLons,
-							int[] wayIDs,
-							int[] edgeStartNodeIDs,
-							int[] edgeEndNodeIDs,
-							double[] edgeLengths,
-							boolean[] oneways,
-							int[] highwayTypes) {
-		
-		this.allNodeIDs = allNodeIDs;
-		this.allNodeLats = allNodeLats;
-		this.allNodeLons = allNodeLons;
-		this.wayIDs = wayIDs;
-		this.edgeStartNodeIDs = edgeStartNodeIDs;
-		this.edgeEndNodeIDs = edgeEndNodeIDs;
-		this.edgeLengths = edgeLengths; 
-		this.oneways = oneways;
-		this.highwayTypes = highwayTypes;
-	}
-
 	public int[] getAllNodeIDs() {
 		return allNodeIDs;
 	}

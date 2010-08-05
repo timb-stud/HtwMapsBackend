@@ -56,7 +56,7 @@ public class DBAdapterParabel{
 		setParabel();
 		initNodes();
 		initEdges();
-		gd.setGraphData(nodeIDs, nodeLats, nodeLons, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes);
+		gd.build(nodeIDs, nodeLats, nodeLons, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes);
 	}
 
 	private String buildCoordSelectStatement(int node1Id, int node2Id) {
