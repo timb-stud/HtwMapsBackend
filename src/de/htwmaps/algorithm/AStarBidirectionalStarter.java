@@ -27,7 +27,18 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 		case FASTEST_ROUTE:
 			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
 				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
-				Edge edge = new Edge(toNode, edgeLengths[i], highwayTypes[i], wayIDs[i]);
+				Edge edge = null;
+				switch (highwayTypes[i]) {
+				case MOTORWAY: edge = new Edge(toNode, edgeLengths[i], MOTORWAY, wayIDs[i], MOTORWAY_SPEED); break;
+				case PRIMARY: edge = new Edge(toNode, edgeLengths[i], PRIMARY, wayIDs[i], PRIMARY_SPEED); break;
+				case SECONDARY: edge = new Edge(toNode, edgeLengths[i], SECONDARY, wayIDs[i], SECONDARY_SPEED); break;
+				case ROAD: edge = new Edge(toNode, edgeLengths[i], ROAD, wayIDs[i], ROAD_SPEED); break;
+				case RESIDENTIAL: edge = new Edge(toNode, edgeLengths[i], RESIDENTIAL, wayIDs[i], RESIDENTIAL_SPEED); break;
+				case LIVING_STREET: edge = new Edge(toNode, edgeLengths[i], LIVING_STREET, wayIDs[i], LIVING_STREET_SPEED); break;
+				}
+				if (edge == null) {
+					throw new RuntimeException("Error in Database. SpeedID inkonsistant");
+				}
 				edge.setPredecessor(fromNode);
 				fromNode.addEdge(edge);
 				toNode.addEdge(edge);
@@ -40,7 +51,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 		case SHORTEST_ROUTE:
 			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
 				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
-				Edge edge = new Edge(toNode, edgeLengths[i], 1, wayIDs[i]);
+				Edge edge = new Edge(toNode, edgeLengths[i], highwayTypes[i], wayIDs[i], 1.0);
 				edge.setPredecessor(fromNode);
 				fromNode.addEdge(edge);
 				toNode.addEdge(edge);

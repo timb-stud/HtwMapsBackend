@@ -11,17 +11,24 @@ public class Edge {
 	private int highwayType;
 	private boolean isOneway;
 	private int wayID;
+	private double speed;
 
 	/**
 	 * 
 	 * @param successor der Knoten auf den die Kante gerichtet ist
 	 * @param length laenge der Kante
+	 * @param speed 
 	 */
-	public Edge(Node successor, double length, int highwayType, int wayID) {
+	public Edge(Node successor, double length, int highwayType, int wayID, double speed) {
 		this.successor = successor;
 		this.lenght = length;
 		this.highwayType = highwayType;
 		this.wayID = wayID;
+		this.speed = speed;
+	}
+	
+	public double getSpeed() {
+		return speed;
 	}
 	
 	public int getWayID() {
@@ -72,7 +79,7 @@ public class Edge {
 	}
 
 	public double getPrioLength() {
-		return highwayType * lenght;
+		return lenght / speed;
 	}
 
 	public boolean isOneway() {

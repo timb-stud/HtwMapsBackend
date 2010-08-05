@@ -18,14 +18,14 @@ public class DijkstraStarterTest {
 //		int startNodeID = 403500108;
 //		int goalNodeID =  262529904;
 		
-//		int startNodeID = 29221535;
-//		int goalNodeID = 587836344;
+		int startNodeID = 29221535;
+		int goalNodeID = 587836344;
 		
 //		int startNodeID = 270697603;
 //		int goalNodeID = 314037031;
 		
-		  int startNodeID = 270165797;
-		  int goalNodeID = 685103967;
+//		int startNodeID = 270165797;
+//		int goalNodeID = 685103967;
 		
 //		int startNodeID = 245901690; //köln
 //		int goalNodeID = 587836344;
