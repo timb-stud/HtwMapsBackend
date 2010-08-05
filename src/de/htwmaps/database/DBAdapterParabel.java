@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import de.htwmaps.algorithm.GraphData;
+
 /**
  * 
  * @author Stanislaw Tartakowski
@@ -31,10 +33,16 @@ public class DBAdapterParabel{
 	
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
+	
+	private GraphData gd;
 
 	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes_opt WHERE ";
 	
-	public void prepareGraph(int node1Id, int node2Id, float a, float h) throws SQLException{
+	public DBAdapterParabel(GraphData gd) {
+		this.gd = gd;
+	}
+	
+	public void fillGraphData(int node1Id, int node2Id, float a, float h) throws SQLException{
 		this.a = a;
 		this.h = h;
 		ResultSet resultSet = DBConnector.getConnection().createStatement().executeQuery(buildCoordSelectStatement(node1Id, node2Id));
@@ -48,6 +56,7 @@ public class DBAdapterParabel{
 		setParabel();
 		initNodes();
 		initEdges();
+		gd.setGraphData(nodeIDs, nodeLats, nodeLons, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes);
 	}
 
 	private String buildCoordSelectStatement(int node1Id, int node2Id) {

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 
 import de.htwmaps.algorithm.AStarBidirectionalStarter;
+import de.htwmaps.algorithm.GraphData;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
@@ -72,29 +73,20 @@ public class DijkstraStarterTest {
 		
 		
 		
-		
-		AStarBidirectionalStarter as = new AStarBidirectionalStarter();
+		GraphData gd = new GraphData();
+		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
 		float a = 0.8f;
 		float h = 0.01f;
-		int searchOption = ShortestPathAlgorithm.FASTEST_ROUTE;
+		int searchOption = ShortestPathAlgorithm.ROUTE_OPTION_FASTEST;
+		int motorwaySpeed = 130,  primarySpeed = 70, residentialSpeed = 35;
 		DBAdapterParabel dbar;
-		dbar = new DBAdapterParabel();
+		dbar = new DBAdapterParabel(gd);
 		while(true) {
-			dbar.prepareGraph(startNodeID, goalNodeID, a, h);
-			int[] allNodeIDs = dbar.getNodeIDs();
-			float[] nodeLons = dbar.getNodeLons(); //x
-			float[] nodeLats = dbar.getNodeLats(); //y
-			
-			int[] edgeStartNodeIDs = dbar.getEdgeStartNodeIDs();
-			int[] edgeEndNodeIDs = dbar.getEdgeEndNodeIDs();
-			double[] lengths = dbar.getEdgeLengths();
-			boolean[] oneways = dbar.getOneways();
-			int[] highwayTypes = dbar.getHighwayTypes();
-			int[] wayIDs = dbar.getWayIDs();
+			dbar.fillGraphData(startNodeID, goalNodeID, a, h);
 			try {
-				Node[] result = as.findShortestPath(allNodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, lengths, oneways, highwayTypes, searchOption);
+				Node[] result = as.findPath(startNodeID, goalNodeID, searchOption, motorwaySpeed, primarySpeed, residentialSpeed);
 				System.out.println(System.currentTimeMillis() - time);
-				System.out.println(new AStarBidirectionalStarter().generateTrack(result));
+				System.out.println(new AStarBidirectionalStarter(null).generateTrack(result));
 				break;
 			} catch (PathNotFoundException e) {
 				a *= 0.5f;

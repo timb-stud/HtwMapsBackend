@@ -15,7 +15,11 @@ import de.htwmaps.database.DBConnector;
  * 
  * This class build a graph, calls the search algorithms, awaits their end and builds result
  */
-public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
+public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
+	public AStarBidirectionalStarter(GraphData gd) {
+		super(gd);
+	}
+
 	/**
 	 * knotenobjekte miteinander referenzieren
 	 * @param edgeLengths 
@@ -24,7 +28,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 	 */
 	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, int searchOption, int[] wayIDs) {
 		switch (searchOption) {
-		case FASTEST_ROUTE:
+		case ROUTE_OPTION_FASTEST:
 			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
 				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
 				Edge edge = null;
@@ -45,7 +49,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 				}
 			}
 			break;
-		case SHORTEST_ROUTE:
+		case ROUTE_OPTION_SHORTEST:
 			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
 				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
 				Edge edge = new Edge(toNode, edgeLengths[i], highwayTypes[i], wayIDs[i], 1);
@@ -160,17 +164,25 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 	}
 
 	@Override
-	public Node[] findShortestPath(int[] allNodeIDs, float[] lon, float[] lat,
-			int startNodeID, int goalNodeID, int[] wayIDs,
-			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
-			boolean[] oneways, int[] highwayTypes, int searchOption) throws PathNotFoundException {
-		HashMap<Integer, AStarBidirectionalNode> Q = new HashMap<Integer, AStarBidirectionalNode>(allNodeIDs.length);
+	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption,
+			int motorwaySpeed, int primarySpeed, int secondarySpeed,
+			int residentialSpeed, int roadSpeed, int livingStreetSpeed)
+			throws PathNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption,
+			int motorwaySpeed, int primarySpeed, int residentialSpeed)
+			throws PathNotFoundException {
+		HashMap<Integer, AStarBidirectionalNode> Q = new HashMap<Integer, AStarBidirectionalNode>(graphData.getAllNodeIDs().length);
 
 		long time = System.currentTimeMillis();
-		generateNodes(Q, allNodeIDs, lon, lat);
+		generateNodes(Q, graphData.getAllNodeIDs(), graphData.getAllNodeLons(), graphData.getAllNodeLats());
 		System.out.println(System.currentTimeMillis() - time + "ms knoten");
 		time = System.currentTimeMillis();
-		generateReferences(Q, edgeStartNodeIDs, edgeEndNodeIDs, oneways, edgeLengths, highwayTypes, searchOption, wayIDs);
+		generateReferences(Q, graphData.getEdgeStartNodeIDs(), graphData.getEdgeEndNodeIDs(), graphData.getOneways(), graphData.getEdgeLengths(), graphData.getHighwayTypes(), routeOption, graphData.getWayIDs());
 		System.out.println(System.currentTimeMillis() - time + "ms kanten");
 
 		
