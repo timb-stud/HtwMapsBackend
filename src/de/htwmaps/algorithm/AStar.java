@@ -11,8 +11,14 @@ import de.htwmaps.util.FibonacciHeap;
  * @author Tim Bartsch
  * 
  */
-public class AStar implements ShortestPathAlgorithm {
+public class AStar extends ShortestPathAlgorithm {
+	HashMap<Integer, AStarNode> allNodes;
 	
+	
+	public AStar(GraphData gd) {
+		super(gd);
+	}
+
 	/**
 	 * Implementation of the A Star algorithm. It uses Nodes connected with
 	 * references.
@@ -20,9 +26,9 @@ public class AStar implements ShortestPathAlgorithm {
 	 * @param allNodes
 	 *            a HashTable containing all Nodes or at least start and goal
 	 *            Node.
-	 * @param startID
+	 * @param startNodeID
 	 *            id of the start node.
-	 * @param goalID
+	 * @param goalNodeID
 	 *            id of the goal node.
 	 * @return ArrayList containing Nodes representing the way found from goal
 	 *         to start.
@@ -30,10 +36,9 @@ public class AStar implements ShortestPathAlgorithm {
 	 *             if no way from start to goal is found. This exception will be
 	 *             thrown.
 	 */
-	private ArrayList<AStarNode> aStar(HashMap<Integer, AStarNode> allNodes,
-			int startID, int goalID) throws PathNotFoundException {
-		AStarNode start = allNodes.get(startID);
-		AStarNode goal = allNodes.get(goalID);
+	private ArrayList<AStarNode> aStar(int startNodeID, int goalNodeID) throws PathNotFoundException {
+		AStarNode start = allNodes.get(startNodeID);
+		AStarNode goal = allNodes.get(goalNodeID);
 		HashMap<Integer, AStarNode> closedSet = new HashMap<Integer, AStarNode>(
 				allNodes.size());
 		FibonacciHeap openSet = new FibonacciHeap();
@@ -87,67 +92,119 @@ public class AStar implements ShortestPathAlgorithm {
 		return path;
 	}
 
+/**
+ * 
+ * @return
+ */
+	private void buildNodes(){
+		int[] allNodeIDs = graphData.getAllNodeIDs();
+		float[] allNodeLats = graphData.getAllNodeLats();
+		float[] allNodeLons = graphData.getAllNodeLons();
+		this.allNodes = new HashMap<Integer, AStarNode>(allNodeIDs.length, 1.0f);
+		for (int i = 0; i < allNodeIDs.length; i++) {
+			allNodes.put(allNodeIDs[i], new AStarNode(allNodeIDs[i], allNodeLons[i], allNodeLats[i]));
+		}
+	}
+	
+
 	/**
-	 * Creates a referenced graph with the given parameters. <br>
-	 * The parameters fromNodeIDs, toNodeIDs, fromToDistances, oneways and
-	 * highwayTypes must have the same order.
 	 * 
-	 * @param allNodesIDs
-	 *            HashMap containing all Nodes.
-	 * @param edgeStartNodeIDs
-	 *            First nodeID that will be connected by the edge.
-	 * @param edgeEndNodeIDs
-	 *            Second nodeID that will be connected by the edge.
-	 * @param edgeLengths
-	 *            Distance between first and second Node.
-	 * @param oneways
-	 *            Is this edge a oneway?
-	 * @param highwayTypes
-	 *            HighwayType of this edge.
-	 * @param edgeIDs 
-	 * @return a HashTable containing all inserted nodes.
+	 * @param motorwaySpeed
+	 * @param primarySpeed
+	 * @param secondarySpeed
+	 * @param residentialSpeed
+	 * @param roadSpeed
+	 * @param livingStreetSpeed
 	 */
-	private void buildEdges(HashMap<Integer, AStarNode> allNodesIDs,
-			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
-			boolean[] oneways, int[] highwayTypes, int[] wayIDs) {
+	private void buildEdges(int motorwaySpeed, 
+							int primarySpeed, 
+							int secondarySpeed, 
+							int residentialSpeed,
+							int roadSpeed,
+							int livingStreetSpeed) {
+		
+		int[] edgeStartNodeIDs = graphData.getEdgeStartNodeIDs();
+		int[] edgeEndNodeIDs = graphData.getEdgeEndNodeIDs();
+		double[] edgeLenghts = graphData.getEdgeLengths();
+		int[] highwayTypes = graphData.getHighwayTypes();
+		int[] wayIDs = graphData.getWayIDs();
+		boolean[] oneways = graphData.getOneways();
 		
 		for (int i = 0; i < edgeStartNodeIDs.length; i++) {
-			AStarNode fromNode = allNodesIDs.get(edgeStartNodeIDs[i]);
-			AStarNode toNode = allNodesIDs.get(edgeEndNodeIDs[i]);
-			fromNode.addEdge(new Edge(toNode, fromNode.getDistanceTo(toNode), highwayTypes[i], wayIDs[i]));
-			if(!oneways[i]){
-				toNode.addEdge(new Edge(fromNode, fromNode.getDistanceTo(toNode), highwayTypes[i], wayIDs[i]));
+			AStarNode fromNode = allNodes.get(edgeStartNodeIDs[i]);
+			AStarNode toNode = allNodes.get(edgeEndNodeIDs[i]);
+			
+			switch (highwayTypes[i]) {
+			case ShortestPathAlgorithm.MOTORWAY:
+				fromNode.addEdge(new Edge(toNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], motorwaySpeed));
+				if(!oneways[i])
+					toNode.addEdge(new Edge(fromNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], motorwaySpeed));
+				break;
+			case ShortestPathAlgorithm.PRIMARY:
+				fromNode.addEdge(new Edge(toNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], primarySpeed));
+				if(!oneways[i])
+					toNode.addEdge(new Edge(fromNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], primarySpeed));
+				break;
+			case ShortestPathAlgorithm.SECONDARY:
+				fromNode.addEdge(new Edge(toNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], secondarySpeed));
+				if(!oneways[i])
+					toNode.addEdge(new Edge(fromNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], secondarySpeed));
+				break;
+			case ShortestPathAlgorithm.RESIDENTIAL:
+				fromNode.addEdge(new Edge(toNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], residentialSpeed));
+				if(!oneways[i])
+					toNode.addEdge(new Edge(fromNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], residentialSpeed));
+				break;
+			case ShortestPathAlgorithm.ROAD:
+				fromNode.addEdge(new Edge(toNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], roadSpeed));
+				if(!oneways[i])
+					toNode.addEdge(new Edge(fromNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], roadSpeed));
+				break;
+			case ShortestPathAlgorithm.LIVING_STREET:
+				fromNode.addEdge(new Edge(toNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], livingStreetSpeed));
+				if(!oneways[i])
+					toNode.addEdge(new Edge(fromNode, edgeLenghts[i], highwayTypes[i], wayIDs[i], livingStreetSpeed));
+				break;
+			default:
+				throw new IllegalArgumentException();
 			}
 		}
 	}
 	
-	private HashMap<Integer, AStarNode> buildNodes(int[] allNodeIDs, float[] lon, float[] lat){
-		HashMap<Integer, AStarNode> allNodes = new HashMap<Integer, AStarNode>(allNodeIDs.length, 1.0f);
-		for (int i = 0; i < allNodeIDs.length; i++) {
-			allNodes.put(allNodeIDs[i], new AStarNode(allNodeIDs[i], lon[i], lat[i]));
-		}
-		return allNodes;
-	}
 
-	//TODO Java Doc
 	/**
 	 * 
 	 */
 	@Override
-	public Node[] findShortestPath(int[] allNodeIDs, float[] lon, float[] lat,
-			int startNodeID, int goalNodeID, int[] wayIDs,
-			int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, double[] edgeLengths,
-			boolean[] oneways, int[] highwayTypes, int searchOption) throws PathNotFoundException {
-		long time = System.currentTimeMillis();
-		HashMap<Integer, AStarNode> allNodes = buildNodes(allNodeIDs, lon, lat);
-		System.out.println("HashMap bauen:" + (System.currentTimeMillis() - time) + "ms");
-		time = System.currentTimeMillis();
-		buildEdges(allNodes, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, wayIDs);
-		System.out.println("Edges bauen: " + (System.currentTimeMillis() - time) + "ms");
-		time = System.currentTimeMillis();
-		Node[] result = aStar(allNodes, startNodeID, goalNodeID).toArray(new Node[0]);
-		System.out.println("Algo: " + (System.currentTimeMillis() - time) + "ms");
-		return result;
+	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption,
+			int motorwaySpeed, int primarySpeed, int secondarySpeed,
+			int residentialSpeed, int roadSpeed, int livingStreetSpeed)
+			throws PathNotFoundException {
+		
+		buildNodes();
+		buildEdges(motorwaySpeed, primarySpeed, secondarySpeed, residentialSpeed, roadSpeed, livingStreetSpeed);
+		return aStar(startNodeID, goalNodeID).toArray(new Node[0]);
 	}
 
+	/**
+	 * 
+	 */
+	@Override
+	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption,
+			int motorwaySpeed, int primarySpeed, int residentialSpeed)
+			throws PathNotFoundException {
+		
+		return findPath(startNodeID,
+					goalNodeID,
+					routeOption,
+					motorwaySpeed,
+					primarySpeed,
+					ShortestPathAlgorithm.SECONDARY_SPEED,
+					residentialSpeed,
+					ShortestPathAlgorithm.ROAD_SPEED,
+					ShortestPathAlgorithm.LIVING_STREET_SPEED);
+	}
+
+	
+	
 }
