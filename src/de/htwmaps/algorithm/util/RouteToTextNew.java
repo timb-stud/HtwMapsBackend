@@ -16,6 +16,10 @@ public class RouteToTextNew {
 	private ArrayList<String> wayID = null;
 	private ArrayList<String> highwayValue = null;
 	private double totallength = 0.0;
+	private double totaltime = 0.0;
+	private double autobahn = 0.0;
+	private double landstrasse = 0.0;
+	private double innerOrts = 0.0;
 	
 	private ArrayList<TextInfos> info = null;
 
@@ -44,13 +48,13 @@ public class RouteToTextNew {
 				    if(e.getSuccessor().equals(route[i-1]) || e.getPredecessor().equals(route[i-1])){
 				      totallength += e.getLenght();
 				      
-				      fillDriveOn(e);
-				      
 				    //Strassennamen + distance dazu ermitteln
 				      streetRS = null;
 				      streetRS = DBAdapterRouteToText.getStreetnameRS(e.getWayID());
 				      streetRS.first();
 				      current = streetRS.getString(1);
+				      
+				      fillDriveOn(e);
 						
 						if (i == route.length-1){
 							preview = current;
@@ -97,38 +101,21 @@ public class RouteToTextNew {
 	}
 	
 	private void fillDriveOn(Edge e) {
-		//motorway 1
-		//motorway_link
-		//trunk 1
+		//Autobahn 1
+		//Landstraße 5 ,7
+		//Innerorts 10,11,13
 		
+//		totallength =+ ;
 		
 		switch (e.getHighwayType()){
 		      case 1:
-		    	  double i =+ e.getLenght();
+		    	  autobahn =+ e.getLenght();
 		    	  break;
-		      case 2:
+		      case 5: case 7:
+		    	  landstrasse =+ e.getLenght();
 		    	  break;
-		      case 3:
-		    	  break;
-		      case 4:
-		    	  break;
-		      case 5:
-		    	  break;
-		      case 6:
-		    	  break;
-		      case 7:
-		    	  break;
-		      case 8:
-		    	  break;
-		      case 9:
-		    	  break;
-		      case 10:
-		    	  break;
-		      case 11:
-		    	  break;
-		      case 12:
-		    	  break;
-		      case 13:
+		      case 10: case 11: case 13:
+		    	  innerOrts =+ e.getLenght();
 		    	  break;
 		      default:
 		    	  break;
