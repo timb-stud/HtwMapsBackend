@@ -12,7 +12,7 @@ public class GraphData {
 	float[] allNodeLats;
 	float[] allNodeLons;
 	//Edges
-	int[] edgeIDs;
+	int[] wayIDs;
 	int[] edgeStartNodeIDs;
 	int[] edgeEndNodeIDs;
 	double[] edgeLengths;
@@ -22,7 +22,7 @@ public class GraphData {
 	public GraphData(	int[] allNodeIDs,
 							float[] allNodeLats,
 							float[] allNodeLons,
-							int[] edgeIDs,
+							int[] wayIDs,
 							int[] edgeStartNodeIDs,
 							int[] edgeEndNodeIDs,
 							double[] edgeLengths,
@@ -32,7 +32,7 @@ public class GraphData {
 		this.allNodeIDs = allNodeIDs;
 		this.allNodeLats = allNodeLats;
 		this.allNodeLons = allNodeLons;
-		this.edgeIDs = edgeIDs;
+		this.wayIDs = wayIDs;
 		this.edgeStartNodeIDs = edgeStartNodeIDs;
 		this.edgeEndNodeIDs = edgeEndNodeIDs;
 		this.edgeLengths = edgeLengths; 
@@ -52,8 +52,8 @@ public class GraphData {
 		return allNodeLons;
 	}
 
-	public int[] getEdgeIDs() {
-		return edgeIDs;
+	public int[] getwayIDs() {
+		return wayIDs;
 	}
 
 	public int[] getEdgeStartNodeIDs() {

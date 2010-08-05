@@ -17,7 +17,7 @@ public class DBAdapterRectangle {
 	private float[] nodeLons; //x
 	private float[] nodeLats; //y
 	//Edges
-	private int[] edgeIDs;
+	private int[] wayIDs;
 	private int[] edgeStartNodeIDs;
 	private int[] edgeEndNodeIDs;
 	private double[] edgeLengths;
@@ -109,7 +109,7 @@ public class DBAdapterRectangle {
 		tableLength = resultSet.getRow();
 		System.out.println("Edges: " + tableLength);
 		resultSet.beforeFirst();
-		edgeIDs = new int[tableLength];
+		wayIDs = new int[tableLength];
 		edgeStartNodeIDs = new int[tableLength];
 		edgeEndNodeIDs = new int[tableLength];
 		edgeLengths = new double[tableLength];
@@ -117,7 +117,7 @@ public class DBAdapterRectangle {
 		highwayTypes = new int[tableLength];
 		
 		for (int i = 0; resultSet.next(); i++){
-			edgeIDs[i] = resultSet.getInt(1);
+			wayIDs[i] = resultSet.getInt(1);
 			edgeStartNodeIDs[i] = resultSet.getInt(2);
 			edgeEndNodeIDs[i] = resultSet.getInt(3);
 			oneways[i] = resultSet.getBoolean(4);
@@ -172,8 +172,8 @@ public class DBAdapterRectangle {
 		return nodeLats;
 	}
 
-	public int[] getEdgeIDs() {
-		return edgeIDs;
+	public int[] getwayIDs() {
+		return wayIDs;
 	}
 
 	public int[] getEdgeStartNodeIDs() {
