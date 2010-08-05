@@ -12,13 +12,11 @@ public abstract class ShortestPathAlgorithm {
 	public static final int RESIDENTIAL = 10;
 	public static final int ROAD = 11;
 	public static final int LIVING_STREET = 13;
-	public static int MOTORWAY_SPEED = 110; //Autobahn
-	public static int PRIMARY_SPEED = 80; //Landstraﬂe
-	public static int SECONDARY_SPEED = 60; //Ortsverbindung
-	public static int RESIDENTIAL_SPEED = 45; //Innerorts
-	public static int ROAD_SPEED = 50; //unclassified
-	public static int LIVING_STREET_SPEED = 5; //Spielstrasse
-	
+	public int PRIMARY_SPEED = 80; //Landstraﬂe
+	public int SECONDARY_SPEED = 60; //Ortsverbindung
+	public int RESIDENTIAL_SPEED = 45; //Innerorts
+	public int ROAD_SPEED = 50; //unclassified
+	public int LIVING_STREET_SPEED = 5; //Spielstrasse
 	
 	public ShortestPathAlgorithm(GraphData gd) {
 		this.graphData = gd;
