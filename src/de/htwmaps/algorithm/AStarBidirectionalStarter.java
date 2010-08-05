@@ -36,9 +36,6 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 				case RESIDENTIAL: edge = new Edge(toNode, edgeLengths[i], RESIDENTIAL, wayIDs[i], RESIDENTIAL_SPEED); break;
 				case LIVING_STREET: edge = new Edge(toNode, edgeLengths[i], LIVING_STREET, wayIDs[i], LIVING_STREET_SPEED); break;
 				}
-				if (edge == null) {
-					throw new RuntimeException("Error in Database. SpeedID inkonsistant");
-				}
 				edge.setPredecessor(fromNode);
 				fromNode.addEdge(edge);
 				toNode.addEdge(edge);
