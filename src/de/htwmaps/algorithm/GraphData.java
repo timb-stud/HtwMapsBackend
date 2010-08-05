@@ -19,7 +19,9 @@ public class GraphData {
 	private boolean[] oneways;
 	private int[] highwayTypes;
 	
-	public GraphData(	int[] allNodeIDs,
+	public GraphData(){ }
+	
+	public void build(int[] allNodeIDs,
 							float[] allNodeLats,
 							float[] allNodeLons,
 							int[] wayIDs,

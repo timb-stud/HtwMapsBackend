@@ -163,15 +163,9 @@ public class DBAdapterRectangle {
 	}
 	
 	public GraphData getGraphData(){
-		return new GraphData(	allNodeIDs,
-								allNodeLats, 
-								allNodeLons, 
-								wayIDs, 
-								edgeStartNodeIDs, 
-								edgeEndNodeIDs, 
-								edgeLengths, 
-								oneways, 
-								highwayTypes);
+		GraphData gd = new GraphData();
+		gd.build(allNodeIDs, allNodeLats, allNodeLons, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes);
+		return gd;
 	}
 
 	public int[] getAllNodeIDs() {
