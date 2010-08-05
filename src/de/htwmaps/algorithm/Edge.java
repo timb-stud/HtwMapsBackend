@@ -11,7 +11,7 @@ public class Edge {
 	private int highwayType;
 	private boolean isOneway;
 	private int wayID;
-	private double speed;
+	private int speed;
 	static final int allowedSpeed = 50; //ersatz für highwayspeed, static final nur zu testzwecken
 
 	/**
@@ -20,7 +20,7 @@ public class Edge {
 	 * @param length laenge der Kante
 	 * @param speed 
 	 */
-	public Edge(Node successor, double length, int highwayType, int wayID, double speed) {
+	public Edge(Node successor, double length, int highwayType, int wayID, int speed) {
 		this.successor = successor;
 		this.lenght = length;
 		this.highwayType = highwayType;
@@ -28,7 +28,7 @@ public class Edge {
 		this.speed = speed;
 	}
 	
-	public double getSpeed() {
+	public int getSpeed() {
 		return speed;
 	}
 	
