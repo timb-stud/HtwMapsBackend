@@ -8,16 +8,16 @@ package de.htwmaps.algorithm;
  */
 public class GraphData {
 	//Nodes
-	int[] allNodeIDs;
-	float[] allNodeLats;
-	float[] allNodeLons;
+	private int[] allNodeIDs;
+	private float[] allNodeLats;
+	private float[] allNodeLons;
 	//Edges
-	int[] wayIDs;
-	int[] edgeStartNodeIDs;
-	int[] edgeEndNodeIDs;
-	double[] edgeLengths;
-	boolean[] oneways;
-	int[] highwayTypes;
+	private int[] wayIDs;
+	private int[] edgeStartNodeIDs;
+	private int[] edgeEndNodeIDs;
+	private double[] edgeLengths;
+	private boolean[] oneways;
+	private int[] highwayTypes;
 	
 	public GraphData(	int[] allNodeIDs,
 							float[] allNodeLats,
