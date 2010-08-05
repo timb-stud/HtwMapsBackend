@@ -48,7 +48,7 @@ public class AStarBidirectionalStarter implements ShortestPathAlgorithm {
 		case SHORTEST_ROUTE:
 			for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
 				AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
-				Edge edge = new Edge(toNode, edgeLengths[i], highwayTypes[i], wayIDs[i], 1.0);
+				Edge edge = new Edge(toNode, edgeLengths[i], highwayTypes[i], wayIDs[i], 1);
 				edge.setPredecessor(fromNode);
 				fromNode.addEdge(edge);
 				toNode.addEdge(edge);
