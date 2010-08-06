@@ -27,9 +27,10 @@ public abstract class ShortestPathAlgorithm {
 		this.graphData = gd;
 	}
 	
-	public abstract Node[] findPath(int startNodeID, 
+	public abstract Node[] findShortestPath(int startNodeID, int goalNodeID) throws PathNotFoundException;
+	
+	public abstract Node[] findFastestPath(int startNodeID, 
 									int goalNodeID, 
-									int routeOption, 
 									int motorwaySpeed, 
 									int primarySpeed,
 									int secondarySpeed,
@@ -38,9 +39,8 @@ public abstract class ShortestPathAlgorithm {
 									int livingStreetSpeed) throws PathNotFoundException;
 	
 	
-	public abstract Node[] findPath(int startNodeID, 
+	public abstract Node[] findFastestPath(int startNodeID, 
 									int goalNodeID, 
-									int routeOption, 
 									int motorwaySpeed, 
 									int primarySpeed,
 									int residentialSpeed) throws PathNotFoundException;
