@@ -76,14 +76,13 @@ public class DijkstraStarterTest {
 		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
 		float a = 0.8f;
 		float h = 0.01f;
-		int searchOption = ShortestPathAlgorithm.ROUTE_OPTION_FASTEST;
 		int motorwaySpeed = as.getMotorwaySpeed(), primarySpeed = as.getPrimarySpeed(), residentialSpeed = as.getResidentialSpeed();
 		DBAdapterParabel dbar;
 		dbar = new DBAdapterParabel(gd);
 		while(true) {
 			dbar.fillGraphData(startNodeID, goalNodeID, a, h);
 			try {
-				Node[] result = as.findPath(startNodeID, goalNodeID, searchOption, motorwaySpeed, primarySpeed, residentialSpeed);
+				Node[] result = as.findFastestPath(startNodeID, goalNodeID, motorwaySpeed, primarySpeed, residentialSpeed);
 				System.out.println(((AStarBidirectionalStarter)as).generateTrack(result));
 				break;
 			} catch (PathNotFoundException e) {
