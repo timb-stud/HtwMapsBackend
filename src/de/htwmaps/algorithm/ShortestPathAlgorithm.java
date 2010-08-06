@@ -4,8 +4,6 @@ package de.htwmaps.algorithm;
 public abstract class ShortestPathAlgorithm {
 	GraphData graphData;
 	
-	public static final int ROUTE_OPTION_SHORTEST = 1337;
-	public static final int ROUTE_OPTION_FASTEST = 4711;
 	public static final int MOTORWAY = 1;
 	public static final int PRIMARY = 5;
 	public static final int SECONDARY = 7;
