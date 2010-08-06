@@ -12,7 +12,7 @@ public abstract class ShortestPathAlgorithm {
 	public static final int RESIDENTIAL = 10;
 	public static final int ROAD = 11;
 	public static final int LIVING_STREET = 13;
-	public int motorwaySpeed = 110; //Autobahn
+	public int motorwaySpeed = 130; //Autobahn
 	public int primarySpeed = 80; //Landstraﬂe
 	public int secondarySpeed = 60; //Ortsverbindung
 	public int residentialSpeed = 45; //Innerorts

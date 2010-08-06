@@ -77,7 +77,7 @@ public class DijkstraStarterTest {
 		float a = 0.8f;
 		float h = 0.01f;
 		int searchOption = ShortestPathAlgorithm.ROUTE_OPTION_FASTEST;
-		int motorwaySpeed = 130, primarySpeed = 70, residentialSpeed = 35;
+		int motorwaySpeed = as.getMotorwaySpeed(), primarySpeed = as.getPrimarySpeed(), residentialSpeed = as.getResidentialSpeed();
 		DBAdapterParabel dbar;
 		dbar = new DBAdapterParabel(gd);
 		while(true) {
