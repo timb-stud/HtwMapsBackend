@@ -39,6 +39,9 @@ public class DBAdapterParabel{
 	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes_opt WHERE ";
 	
 	public DBAdapterParabel(GraphData gd) {
+		if (gd == null) {
+			throw new IllegalArgumentException("Graph data must not be null");
+		}
 		this.gd = gd;
 	}
 	

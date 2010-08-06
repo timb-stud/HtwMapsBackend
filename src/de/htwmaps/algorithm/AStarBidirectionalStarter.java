@@ -95,12 +95,10 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 
 
 	@Override
-	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption,
-			int motorwaySpeed, int primarySpeed, int residentialSpeed)
-			throws PathNotFoundException {
-		this.setMotorwaySpeed(motorwaySpeed);
-		this.setPrimarySpeed(primarySpeed);
-		this.setResidentialSpeed(residentialSpeed);
+	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption, int motorwaySpeed, int primarySpeed, int residentialSpeed) throws PathNotFoundException {
+		setMotorwaySpeed(motorwaySpeed);
+		setPrimarySpeed(primarySpeed);
+		setResidentialSpeed(residentialSpeed);
 		HashMap<Integer, AStarBidirectionalNode> Q = new HashMap<Integer, AStarBidirectionalNode>(graphData.getAllNodeIDs().length);
 
 		generateNodes(Q, graphData.getAllNodeIDs(), graphData.getAllNodeLons(), graphData.getAllNodeLats());
@@ -140,10 +138,10 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 	}
 	
 	@Override
-	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption,
-			int motorwaySpeed, int primarySpeed, int secondarySpeed,
-			int residentialSpeed, int roadSpeed, int livingStreetSpeed)
-	throws PathNotFoundException {
+	public Node[] findPath(int startNodeID, int goalNodeID, int routeOption, int motorwaySpeed, int primarySpeed, int secondarySpeed, int residentialSpeed, int roadSpeed, int livingStreetSpeed) throws PathNotFoundException {
+		setLivingStreetSpeed(livingStreetSpeed);
+		setRoadSpeed(roadSpeed);
+		setSecondarySpeed(secondarySpeed);
 		return findPath(startNodeID, goalNodeID, routeOption, motorwaySpeed, primarySpeed, residentialSpeed);
 	}
 }

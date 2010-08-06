@@ -21,6 +21,9 @@ public abstract class ShortestPathAlgorithm {
 	
 	
 	public ShortestPathAlgorithm(GraphData gd) {
+		if (gd == null) {
+			throw new IllegalArgumentException("Graph data must not be null");
+		}
 		this.graphData = gd;
 	}
 	
