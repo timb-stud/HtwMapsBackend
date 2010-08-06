@@ -59,6 +59,7 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 				}
 			}
 			break;
+		default: throw new IllegalArgumentException();
 		}
 	}
 	
