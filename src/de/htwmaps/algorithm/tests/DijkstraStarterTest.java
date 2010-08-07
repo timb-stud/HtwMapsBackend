@@ -77,8 +77,7 @@ public class DijkstraStarterTest {
 		float a = 0.8f;
 		float h = 0.01f;
 		int motorwaySpeed = as.getMotorwaySpeed(), primarySpeed = as.getPrimarySpeed(), residentialSpeed = as.getResidentialSpeed();
-		DBAdapterParabel dbar;
-		dbar = new DBAdapterParabel(gd);
+		DBAdapterParabel dbar = new DBAdapterParabel(gd);
 		while(true) {
 			dbar.fillGraphData(startNodeID, goalNodeID, a, h);
 			try {
