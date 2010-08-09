@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import de.htwmaps.algorithm.GraphData;
+
 /**
  * 
  * @author Stanislaw Tartakowski
@@ -31,10 +33,19 @@ public class DBAdapterParabel{
 	
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
+	
+	private GraphData gd;
 
 	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes_opt WHERE ";
 	
-	public void prepareGraph(int node1Id, int node2Id, float a, float h) throws SQLException{
+	public DBAdapterParabel(GraphData gd) {
+		if (gd == null) {
+			throw new IllegalArgumentException("Graph data must not be null");
+		}
+		this.gd = gd;
+	}
+	
+	public void fillGraphData(int node1Id, int node2Id, float a, float h) throws SQLException{
 		this.a = a;
 		this.h = h;
 		ResultSet resultSet = DBConnector.getConnection().createStatement().executeQuery(buildCoordSelectStatement(node1Id, node2Id));
@@ -48,6 +59,7 @@ public class DBAdapterParabel{
 		setParabel();
 		initNodes();
 		initEdges();
+		gd.build(nodeIDs, nodeLats, nodeLons, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes);
 	}
 
 	private String buildCoordSelectStatement(int node1Id, int node2Id) {
@@ -139,7 +151,7 @@ public class DBAdapterParabel{
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
 			edgeLengths[i] = resultSet.getDouble(5);
-			wayIDs[i] = resultSet.getInt(6);						//TODO
+			wayIDs[i] = resultSet.getInt(6);						
 		}
 	}
 
@@ -180,42 +192,4 @@ public class DBAdapterParabel{
 				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - ? <= node2lat";
 		}
 	}
-
-	public int[] getNodeIDs() {
-		return nodeIDs;
-	}
-
-	public float[] getNodeLons() {
-		return nodeLons;
-	}
-
-	public float[] getNodeLats() {
-		return nodeLats;
-	}
-
-	public int[] getEdgeStartNodeIDs() {
-		return edgeStartNodeIDs;
-	}
-
-	public int[] getEdgeEndNodeIDs() {
-		return edgeEndNodeIDs;
-	}
-
-	public double[] getEdgeLengths() {
-		return edgeLengths;
-	}
-
-	public boolean[] getOneways() {
-		return oneways;
-	}
-
-	public int[] getHighwayTypes() {
-		return highwayTypes;
-	}
-	
-	public int[] getWayIDs() {
-		return wayIDs;
-	}
-	
-	
 }
