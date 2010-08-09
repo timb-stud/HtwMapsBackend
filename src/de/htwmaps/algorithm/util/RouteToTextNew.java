@@ -113,7 +113,7 @@ public class RouteToTextNew {
 		
 		double length = e.getLenght();
 //		long time = (length / 1000 / e.getAllowedSpeed());
-		long time = (long) (length / e.getAllowedSpeed());
+		long time = (long) (length / e.getSpeed());
 		totaltime += time;
 		
 		switch (e.getHighwayType()){
