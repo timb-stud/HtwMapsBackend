@@ -3,36 +3,39 @@ package de.htwmaps.algorithm.util;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import de.htwmaps.algorithm.Node;
+
 public class TextInfos {
-	private String streetname;
-	private String ref;
+	private String name;
+	private String addition;
 	private String state;
 	private String city;
 	private double distance;
 	private long time;
+	private Node switchNode;
 	
-	public TextInfos(String streetname, String ref, String city, String state, double distance, long time) {
-		this.streetname = streetname;
-		this.ref = ref;
+	public TextInfos(String streetname, String ref, String city, String state, double distance, Node node) {
+		this.name = streetname;
+		this.addition = ref;
 		this.city = city;
 		this.state = state;
 		this.distance = distance;
-		this.time = time;
+		this.switchNode = node;
 	}
 
 	@Override
 	public String toString() {
 		DecimalFormat df = new DecimalFormat("0.00");
-		String text = df.format(distance) + "\t\t" + streetname + "\t" + ref + "\t" + city + "\t" + state + "\t" + time;
+		String text = df.format((distance / 1000)) + " km \t" + name + "\t" + addition + "\t" + city + "\t" + state;
 		return text;
 	}
 	
-	public String getStreetname() {
-		return streetname;
+	public String getName() {
+		return name;
 	}
 
-	public String getRef() {
-		return ref;
+	public String getAddition() {
+		return addition;
 	}
 
 	public String getState() {
@@ -49,6 +52,10 @@ public class TextInfos {
 
 	public long getTime() {
 		return time;
+	}
+
+	public Node getSwitchNode() {
+		return switchNode;
 	}
 
 }
