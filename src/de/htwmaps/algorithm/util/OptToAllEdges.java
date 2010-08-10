@@ -62,6 +62,7 @@ public class OptToAllEdges {
 		}
 		System.out.println("DB-Abfragen " + timesum + "ms");
 		System.out.println("Size All: " + coordList.size());
+	con.close();
 	return coordList;
 	}
 
