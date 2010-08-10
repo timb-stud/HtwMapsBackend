@@ -8,7 +8,6 @@ import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.algorithm.util.OptToAllEdges;
-import de.htwmaps.algorithm.util.RouteToTextNew;
 import de.htwmaps.database.DBAdapterParabel;
 
 
@@ -51,11 +50,11 @@ public class OptToAllEdgesTest {
 				Node[] result = as.findFastestPath(startNodeID, goalNodeID, motorwaySpeed, primarySpeed, residentialSpeed);
 //				System.out.println(((AStarBidirectionalStarter)as).generateTrack(result));
 				
-				System.out.println(System.currentTimeMillis() - time);
+				System.out.println("Algo " 		+ (System.currentTimeMillis() - time) + " ms");
 				System.out.println("Start Opt -> All Edges");
 				time = System.currentTimeMillis();
-				OptToAllEdges otae = new OptToAllEdges(result);
-				System.out.println("Opt->All " + (System.currentTimeMillis() - time) + " ms");
+				new OptToAllEdges(result);
+				System.out.println("Opt->All " 	+ (System.currentTimeMillis() - time) + " ms");
 				//System.out.println(rtt.toString());
 
 				break;

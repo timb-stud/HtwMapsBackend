@@ -21,6 +21,9 @@ public class OptToAllEdges {
 	Coordinate c;
 	
 	int myEdgeID;
+	
+	long time, timesum;
+
 
 	public OptToAllEdges(Node[] route) {
 		try {
@@ -36,7 +39,7 @@ public class OptToAllEdges {
 		coordList 	= new LinkedList<Coordinate>();
 
 		ResultSet rs1 = null;
-		System.out.println("First: " + route[0].getId() + " :: Last: " + route[route.length-1]);
+		System.out.println("Size Opt: " + route.length);
 		for(int i=0; i <= route.length-2; i++){ 
 			for(Edge e : route[i].getEdgeList()){
 			    if((e.getSuccessor()).equals(route[i+1]) || (e.getPredecessor()).equals(route[i+1])){
@@ -44,7 +47,9 @@ public class OptToAllEdges {
 			    }
 			}
 			ps1.setInt(1, myEdgeID);
+			time = System.currentTimeMillis();
 			rs1 = ps1.executeQuery();
+			timesum = timesum + (System.currentTimeMillis() - time);
 			while (rs1.next()) {
 				c = new Coordinate(rs1.getFloat(1), rs1.getFloat(2));
 				coordList.add(c);
@@ -55,10 +60,8 @@ public class OptToAllEdges {
 			}
 			
 		}
-		System.out.println("List gefuellt");
-//		for (Coordinate c : coordList) {
-//			System.out.println(c);
-//		}
+		System.out.println("DB-Abfragen " + timesum + "ms");
+		System.out.println("Size All: " + coordList.size());
 	return coordList;
 	}
 
