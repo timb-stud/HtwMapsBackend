@@ -22,17 +22,17 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 	 * @param highwayTypes 
 	 * @param edgeIDs 
 	 */
-	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, int[] wayIDs) {
+	private void generateReferences(HashMap<Integer, AStarBidirectionalNode> Q, int[] edgeStartNodeIDs, int[] edgeEndNodeIDs, boolean[] oneways, double[] edgeLengths, int[] highwayTypes, int[] wayIDs, int[] edgeIDs) {
 		for (int i = 0 ; i < edgeStartNodeIDs.length; i++) {
 			AStarBidirectionalNode fromNode = Q.get(edgeStartNodeIDs[i]), toNode = Q.get(edgeEndNodeIDs[i]);
 			Edge edge = null;
 			switch (highwayTypes[i]) {
-			case MOTORWAY: edge = new Edge(toNode, edgeLengths[i], MOTORWAY, wayIDs[i], getMotorwaySpeed()); break;
-			case PRIMARY: edge = new Edge(toNode, edgeLengths[i], PRIMARY, wayIDs[i], getPrimarySpeed()); break;
-			case SECONDARY: edge = new Edge(toNode, edgeLengths[i], SECONDARY, wayIDs[i], getSecondarySpeed()); break;
-			case ROAD: edge = new Edge(toNode, edgeLengths[i], ROAD, wayIDs[i], getRoadSpeed()); break;
-			case RESIDENTIAL: edge = new Edge(toNode, edgeLengths[i], RESIDENTIAL, wayIDs[i], getResidentialSpeed()); break;
-			case LIVING_STREET: edge = new Edge(toNode, edgeLengths[i], LIVING_STREET, wayIDs[i], getLivingStreetSpeed()); break;
+			case MOTORWAY: edge = new Edge(toNode, edgeLengths[i], MOTORWAY, wayIDs[i], getMotorwaySpeed(), edgeIDs[i]); break;
+			case PRIMARY: edge = new Edge(toNode, edgeLengths[i], PRIMARY, wayIDs[i], getPrimarySpeed(), edgeIDs[i]); break;
+			case SECONDARY: edge = new Edge(toNode, edgeLengths[i], SECONDARY, wayIDs[i], getSecondarySpeed(), edgeIDs[i]); break;
+			case ROAD: edge = new Edge(toNode, edgeLengths[i], ROAD, wayIDs[i], getRoadSpeed(), edgeIDs[i]); break;
+			case RESIDENTIAL: edge = new Edge(toNode, edgeLengths[i], RESIDENTIAL, wayIDs[i], getResidentialSpeed(), edgeIDs[i]); break;
+			case LIVING_STREET: edge = new Edge(toNode, edgeLengths[i], LIVING_STREET, wayIDs[i], getLivingStreetSpeed(), edgeIDs[i]); break;
 			default: throw new IllegalArgumentException();
 			}
 			edge.setPredecessor(fromNode);
@@ -72,7 +72,7 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		HashMap<Integer, AStarBidirectionalNode> Q = new HashMap<Integer, AStarBidirectionalNode>(graphData.getAllNodeIDs().length);
 
 		generateNodes(Q, graphData.getAllNodeIDs(), graphData.getAllNodeLons(), graphData.getAllNodeLats());
-		generateReferences(Q, graphData.getEdgeStartNodeIDs(), graphData.getEdgeEndNodeIDs(), graphData.getOneways(), graphData.getEdgeLengths(), graphData.getHighwayTypes(), graphData.getWayIDs());
+		generateReferences(Q, graphData.getEdgeStartNodeIDs(), graphData.getEdgeEndNodeIDs(), graphData.getOneways(), graphData.getEdgeLengths(), graphData.getHighwayTypes(), graphData.getWayIDs(), graphData.getEdgeIDs());
 
 		
 		AStarBidirectionalNode start = Q.get(startNodeID); 
@@ -83,6 +83,7 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		
 		d0.setDijkstra(d1);
 		d1.setDijkstra(d0);
+		long time = System.currentTimeMillis();
 		d0.start();
 		d1.start();
 		
@@ -97,6 +98,7 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		}
 		d0.interrupt();
 		d1.interrupt();
+		System.out.println(System.currentTimeMillis() - time);
 		Node[] result = nodeToArray(start, goal);
 		AStarBidirectional.count.set(0);
 		AStarBidirectional.finished = false;

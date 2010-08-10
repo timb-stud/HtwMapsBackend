@@ -30,6 +30,7 @@ public class DBAdapterParabel{
 	private boolean[] oneways;
 	private int[] highwayTypes;
 	private int[] wayIDs;
+	private int[] edgeIDs;
 	
 	private String NODE_SELECT;
 	private String EDGE_SELECT;
@@ -59,7 +60,7 @@ public class DBAdapterParabel{
 		setParabel();
 		initNodes();
 		initEdges();
-		gd.build(nodeIDs, nodeLats, nodeLons, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes);
+		gd.build(nodeIDs, nodeLats, nodeLons, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, edgeIDs);
 	}
 
 	private String buildCoordSelectStatement(int node1Id, int node2Id) {
@@ -144,6 +145,7 @@ public class DBAdapterParabel{
 		oneways = new boolean[tableLength];
 		highwayTypes = new int[tableLength];
 		wayIDs = new int[tableLength];
+		edgeIDs = new int[tableLength];
 		
 		for (int i = 0; resultSet.next(); i++){
 			edgeStartNodeIDs[i] = resultSet.getInt(1);
@@ -151,7 +153,8 @@ public class DBAdapterParabel{
 			oneways[i] = resultSet.getBoolean(3);
 			highwayTypes[i] = resultSet.getInt(4);
 			edgeLengths[i] = resultSet.getDouble(5);
-			wayIDs[i] = resultSet.getInt(6);						
+			wayIDs[i] = resultSet.getInt(6);	
+			edgeIDs[i] = resultSet.getInt(7);
 		}
 	}
 
@@ -164,7 +167,7 @@ public class DBAdapterParabel{
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - ? <= varNodes.lat "
 				+ " and "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat ";
-			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, wayid from edges_opt"
+			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, wayid, id from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
 				+ " and"
@@ -181,7 +184,7 @@ public class DBAdapterParabel{
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + ? >= varNodes.lat "
 				+ " and "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat ";
-			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, wayid from edges_opt"
+			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, wayid, id from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + ? >= node1lat"
 				+ " and"
