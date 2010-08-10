@@ -39,6 +39,8 @@ public class DBAdapterParabel{
 
 	private final static String COORD_SELECT = "SELECT lat, lon FROM nodes_opt WHERE ";
 	
+	private boolean printNodeCoords;
+	
 	public DBAdapterParabel(GraphData gd) {
 		if (gd == null) {
 			throw new IllegalArgumentException("Graph data must not be null");
@@ -46,10 +48,10 @@ public class DBAdapterParabel{
 		this.gd = gd;
 	}
 	
-	public void fillGraphData(int node1Id, int node2Id, float a, float h) throws SQLException{
+	public void fillGraphData(int startID, int goalID, float a, float h) throws SQLException{
 		this.a = a;
 		this.h = h;
-		ResultSet resultSet = DBConnector.getConnection().createStatement().executeQuery(buildCoordSelectStatement(node1Id, node2Id));
+		ResultSet resultSet = DBConnector.getConnection().createStatement().executeQuery(buildCoordSelectStatement(startID, goalID));
 		resultSet.next();
 		startNodeLat = resultSet.getFloat(1);
 		startNodeLon = resultSet.getFloat(2);
@@ -90,9 +92,11 @@ public class DBAdapterParabel{
 		
 		
 		ResultSet resultSet = pStmt.executeQuery();
-//		while (resultSet.next()) {
-//			System.out.println(resultSet.getFloat(3)+"\t"+resultSet.getFloat(2)+"\t"+"title\t"+"descr\t"+"rosa_punkt.png\t"+"8,8\t"+"0,0");
-//		}
+		if (printNodeCoords) {
+			while (resultSet.next()) {
+				System.out.println(resultSet.getFloat(3)+"\t"+resultSet.getFloat(2)+"\t"+"title\t"+"descr\t"+"rosa_punkt.png\t"+"8,8\t"+"0,0");
+			}
+		}
 		resultSet.last();
 		tableLength = resultSet.getRow();
 		resultSet.beforeFirst();
@@ -194,5 +198,9 @@ public class DBAdapterParabel{
 				+ " and"
 				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - ? <= node2lat";
 		}
+	}
+	
+	public void setPrintNodeCoords(boolean printNodeCoords) {
+		this.printNodeCoords = printNodeCoords;
 	}
 }

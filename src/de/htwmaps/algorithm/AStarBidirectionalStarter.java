@@ -59,7 +59,7 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 	 */
 	public Node[] nodeToArray(AStarBidirectionalNode start, AStarBidirectionalNode goal) {
 		AStarBidirectionalNode tmp = start.getPredecessor() != null ? start : goal;
-		ArrayList<AStarBidirectionalNode> nodesContainer = new ArrayList<AStarBidirectionalNode>(150);
+		ArrayList<AStarBidirectionalNode> nodesContainer = new ArrayList<AStarBidirectionalNode>(1000);
 		while (tmp != null) {
 			nodesContainer.add(tmp);
 			tmp = tmp.getPredecessor();
@@ -83,7 +83,6 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		
 		d0.setDijkstra(d1);
 		d1.setDijkstra(d0);
-		long time = System.currentTimeMillis();
 		d0.start();
 		d1.start();
 		
@@ -98,7 +97,6 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		}
 		d0.interrupt();
 		d1.interrupt();
-		System.out.println(System.currentTimeMillis() - time);
 		Node[] result = nodeToArray(start, goal);
 		AStarBidirectional.count.set(0);
 		AStarBidirectional.finished = false;
@@ -111,12 +109,12 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 	@Override
 	public Node[] findShortestPath(int startNodeID, int goalNodeID)
 			throws PathNotFoundException {
-		this.setMotorwaySpeed(1);
-		this.setPrimarySpeed(1);
-		this.setSecondarySpeed(1);
-		this.setResidentialSpeed(1);
-		this.setRoadSpeed(1);
-		this.setLivingStreetSpeed(1);
+		setMotorwaySpeed(1);
+		setPrimarySpeed(1);
+		setSecondarySpeed(1);
+		setResidentialSpeed(1);
+		setRoadSpeed(1);
+		setLivingStreetSpeed(1);
 		return aStar(startNodeID, goalNodeID);
 	}
 
@@ -125,12 +123,12 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 			int motorwaySpeed, int primarySpeed, int secondarySpeed,
 			int residentialSpeed, int roadSpeed, int livingStreetSpeed)
 			throws PathNotFoundException {
-		this.setMotorwaySpeed(motorwaySpeed);
-		this.setPrimarySpeed(primarySpeed);
-		this.setSecondarySpeed(secondarySpeed);
-		this.setResidentialSpeed(residentialSpeed);
-		this.setRoadSpeed(roadSpeed);
-		this.setLivingStreetSpeed(livingStreetSpeed);
+		setMotorwaySpeed(motorwaySpeed);
+		setPrimarySpeed(primarySpeed);
+		setSecondarySpeed(secondarySpeed);
+		setResidentialSpeed(residentialSpeed);
+		setRoadSpeed(roadSpeed);
+		setLivingStreetSpeed(livingStreetSpeed);
 		return aStar(startNodeID, goalNodeID);
 	}
 
@@ -138,9 +136,9 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 	public Node[] findFastestPath(int startNodeID, int goalNodeID,
 			int motorwaySpeed, int primarySpeed, int residentialSpeed)
 			throws PathNotFoundException {
-		this.setMotorwaySpeed(motorwaySpeed);
-		this.setPrimarySpeed(primarySpeed);
-		this.setResidentialSpeed(residentialSpeed);
+		setMotorwaySpeed(motorwaySpeed);
+		setPrimarySpeed(primarySpeed);
+		setResidentialSpeed(residentialSpeed);
 		return aStar(startNodeID, goalNodeID);
 	}
 	

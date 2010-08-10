@@ -74,7 +74,7 @@ public class DijkstraStarterTest {
 		
 		GraphData gd = new GraphData();
 		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
-		float a = 0.8f;
+		float a = 1f;
 		float h = 0.01f;
 		int motorwaySpeed = as.getMotorwaySpeed(), primarySpeed = as.getPrimarySpeed(), residentialSpeed = as.getResidentialSpeed();
 		DBAdapterParabel dbar = new DBAdapterParabel(gd);

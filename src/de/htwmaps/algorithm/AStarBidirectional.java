@@ -12,7 +12,7 @@ import de.htwmaps.util.FibonacciHeap;
  * 
  *         This is a concurrent implementation of an graph search algorithm
  *         based on Dijkstra's. Depart from classic implementations this
- *         algorithm has a goal oriented heuristic similar to A*'s and is
+ *         algorithm has a goal oriented heuristic and is
  *         optimized for maximal speed performance. Though, this algorithm
  *         doesn't guarantee best possible solution, but a relatively good one.
  *         This class can only be reasonably used if the caller of this class
