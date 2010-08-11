@@ -18,7 +18,7 @@ public class DijkstraStarterTest {
 //		int startNodeID = 403500108;
 //		int goalNodeID =  262529904;
 		
-		int startNodeID = 29221535;
+		int startNodeID = 566455382;
 		int goalNodeID = 587836344;
 		
 //		int startNodeID = 270697603;
@@ -74,10 +74,11 @@ public class DijkstraStarterTest {
 		
 		GraphData gd = new GraphData();
 		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
-		float a = 1f;
+		float a = 0.9f;
 		float h = 0.01f;
 		int motorwaySpeed = as.getMotorwaySpeed(), primarySpeed = as.getPrimarySpeed(), residentialSpeed = as.getResidentialSpeed();
 		DBAdapterParabel dbar = new DBAdapterParabel(gd);
+		//dbar.printNodes();
 		while(true) {
 			dbar.fillGraphData(startNodeID, goalNodeID, a, h);
 			try {
@@ -86,9 +87,9 @@ public class DijkstraStarterTest {
 				break;
 			} catch (PathNotFoundException e) {
 				a *= 0.5f;
-				h += 0.001f;
-				System.out.println(a);
-				if (a <= 0.01) {
+				h += 0.01f;
+				System.out.println(a + " " + h);
+				if (a <= 0.01f) {
 					throw new PathNotFoundException("Weg nicht gefunden");
 				}
 			}

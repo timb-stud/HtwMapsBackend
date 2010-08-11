@@ -62,6 +62,7 @@ public class DBAdapterParabel{
 		setParabel();
 		initNodes();
 		initEdges();
+		DBConnector.disconnect();
 		gd.build(nodeIDs, nodeLats, nodeLons, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, edgeIDs);
 	}
 
@@ -200,7 +201,7 @@ public class DBAdapterParabel{
 		}
 	}
 	
-	public void setPrintNodeCoords(boolean printNodeCoords) {
-		this.printNodeCoords = printNodeCoords;
+	public void printNodes() {
+		this.printNodeCoords = true;
 	}
 }
