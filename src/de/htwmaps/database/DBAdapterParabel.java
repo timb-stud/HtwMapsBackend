@@ -62,6 +62,7 @@ public class DBAdapterParabel{
 		setParabel();
 		initNodes();
 		initEdges();
+		DBConnector.getConnection().close();
 		gd.build(nodeIDs, nodeLats, nodeLons, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, edgeLengths, oneways, highwayTypes, edgeIDs);
 	}
 
