@@ -9,6 +9,7 @@ import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.database.DBAdapterParabel;
+import de.htwmaps.database.DBConnector;
 
 public class DijkstraStarterTest {
 
@@ -94,6 +95,7 @@ public class DijkstraStarterTest {
 				}
 			}
 		}
+		DBConnector.disconnect();
 		
 //		Node[] result;
 //		DijkstraStarter as = new DijkstraStarter();
