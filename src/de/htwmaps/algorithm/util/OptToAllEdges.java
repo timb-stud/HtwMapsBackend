@@ -59,16 +59,13 @@ public class OptToAllEdges {
 					inOrder = false;
 				}
 			}
-//			System.out.println("NodeID: " + route[i].getId() + " lat " + route[i].getLat() + " lon " + route[i].getLon() );
 			for(Edge e : route[i].getEdgeList()){
 			    if((e.getSuccessor()).equals(route[i+1]) || (e.getPredecessor()).equals(route[i+1])){
 					myEdgeID = e.getID();
-//					System.out.println("EdgeOpt " + myEdgeID + " x:" + route[i].getLat() + " y:" + route[i].getLon());
 			    }
 			}
 			ps1.setInt(1, myEdgeID);
 			ps2.setInt(1, myEdgeID);
-//			System.out.println(ps1.toString());
 			time = System.currentTimeMillis();
 			if (inOrder) {
 				rs1 = ps1.executeQuery();
@@ -79,32 +76,19 @@ public class OptToAllEdges {
 			rsCounter = 0;
 			while (rs1.next()) {
 				c = new Coordinate(rs1.getFloat(1), rs1.getFloat(2));
-//				System.out.println("EdgeAll " + rs1.getInt(5) + " x:" + rs1.getFloat(1) + " y:" + rs1.getFloat(2));
 				coordList.add(c);
 				if (rs1.isLast() && rsCounter >= 1) {
 					c = new Coordinate(rs1.getFloat(3), rs1.getFloat(4));
-//					System.out.println("EdgeAll - " + rs1.getInt(5) + " x:" + rs1.getFloat(3) + " y:" + rs1.getFloat(4));
 					coordList.add(c);
 				}
 				rsCounter++;
 			}
 			
 		}
-
 		System.out.println("DB-Abfragen " + timesum + "ms");
 		System.out.println("Size All: " + coordList.size());
-		con.close();
-		generateTrack(coordList);
-		return coordList;
-	}
-	
-	public String generateTrack(LinkedList<Coordinate> result) {	
-		StringBuilder str = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<gpx>\n<trk>\n <trkseg>\n");
-		for (Coordinate tmp : result) {
-			str.append("  <trkpt lat=\"").append(tmp.getLat()).append("\" lon=\"").append(tmp.getLon()).append("\">\n").append("  </trkpt>\n");
-		}
-		str.append(" </trkseg>\n</trk>\n</gpx>");
-		System.out.println(str.toString());
-		return str.toString();
+
+	con.close();
+	return coordList;
 	}
 }
