@@ -162,6 +162,26 @@ public class RouteToText {
 		return routeText;
 	}
 	
+	private String getNextDirectionByConditionsNeu(Node fromNode, Node switchNode,Node toNode) {
+		//Kreis in 4 Teile teilen
+		// LinksOben
+		if (fromNode.getLon() > switchNode.getLon() && fromNode.getLon() < switchNode.getLon())
+			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links";
+		// LinksUnten
+		else if (fromNode.getLon() > switchNode.getLon() && fromNode.getLon() > switchNode.getLon())
+			return (switchNode.getLat() > toNode.getLat()) ? "rechts" : "links";
+		//RechtsOben
+		else if (fromNode.getLon() < switchNode.getLon() && fromNode.getLon() < switchNode.getLon())
+			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links";
+		//RechtsUnten
+		else if (fromNode.getLon() < switchNode.getLon() && fromNode.getLon() > switchNode.getLon())
+			return (switchNode.getLat() > toNode.getLat()) ? "rechts" : "links";
+		
+		//Den Fall geradeaus noch implementieren
+		return "geradeaus";
+	}
+	
+	
 	private String getNextDirectionByConditions(Node fromNode, Node switchNode,
 			Node toNode) {
 		// von unten nach oben
