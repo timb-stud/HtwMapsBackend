@@ -26,12 +26,12 @@ public class OptToAllEdgesTest {
 		long time = System.currentTimeMillis();
 		
 		//Schiffweiler - Berlin
-		int startNodeID = 29221535;
-		int goalNodeID = 587836344;
+//		int startNodeID = 29221535;
+//		int goalNodeID = 587836344;
 		
 //		//Riegelsberg - B268 Losheim
-//		int startNodeID = 270165797;
-//		int goalNodeID = 685103967;
+		int startNodeID = 270165797;
+		int goalNodeID = 685103967;
 		
 		//nur ein Strasse
 //		int startNodeID = 270165797;
@@ -60,7 +60,7 @@ public class OptToAllEdgesTest {
 				break;
 			} catch (PathNotFoundException e) {
 				a *= 0.5f;
-				h += 0.001f;
+				h += 0.01f;
 				System.out.println(a);
 				if (a <= 0.01) {
 					throw new PathNotFoundException("Weg nicht gefunden");

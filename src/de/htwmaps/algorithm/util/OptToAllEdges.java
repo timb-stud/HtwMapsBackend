@@ -62,8 +62,18 @@ public class OptToAllEdges {
 		}
 		System.out.println("DB-Abfragen " + timesum + "ms");
 		System.out.println("Size All: " + coordList.size());
-	con.close();
-	return coordList;
+		con.close();
+		generateTrack(coordList);
+		return coordList;
 	}
-
+	
+	public String generateTrack(LinkedList<Coordinate> result) {	
+		StringBuilder str = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<gpx>\n<trk>\n <trkseg>\n");
+		for (Coordinate tmp : result) {
+			str.append("  <trkpt lat=\"").append(tmp.getLat()).append("\" lon=\"").append(tmp.getLon()).append("\">\n").append("  </trkpt>\n");
+		}
+		str.append(" </trkseg>\n</trk>\n</gpx>");
+		System.out.println(str.toString());
+		return str.toString();
+	}
 }

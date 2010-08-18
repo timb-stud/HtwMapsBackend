@@ -83,6 +83,7 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		
 		d0.setDijkstra(d1);
 		d1.setDijkstra(d0);
+		long time = System.currentTimeMillis();
 		d0.start();
 		d1.start();
 		
@@ -97,6 +98,7 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 		}
 		d0.interrupt();
 		d1.interrupt();
+		System.out.println(System.currentTimeMillis() - time + " ms");
 		Node[] result = nodeToArray(start, goal);
 		AStarBidirectional.count.set(0);
 		AStarBidirectional.finished = false;
