@@ -50,7 +50,7 @@ public class DBConnector {
 		if (instance == null) {
 			instance = new DBConnector();
 		}
-		return instance.con;
+		return DBConnector.con;
 	}
 
 	private boolean connect() {

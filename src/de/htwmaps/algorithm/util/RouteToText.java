@@ -162,28 +162,29 @@ public class RouteToText {
 		return routeText;
 	}
 	
-	private String getNextDirectionByConditions(Node fromNode, Node switchNode, Node toNode) {
-		// von unten nach oben
-		if (fromNode.getLon() < switchNode.getLon())
-			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links"; //t
 
-		// von oben nach unten
-		else if (fromNode.getLon() > switchNode.getLon())
+	private String getNextDirectionByConditionsNeu(Node fromNode, Node switchNode,Node toNode) {
+		//Kreis in 4 Teile teilen
+		// LinksOben
+		if (fromNode.getLon() > switchNode.getLon() && fromNode.getLon() < switchNode.getLon())
+			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links";
+		// LinksUnten
+		else if (fromNode.getLon() > switchNode.getLon() && fromNode.getLon() > switchNode.getLon())
 			return (switchNode.getLat() > toNode.getLat()) ? "rechts" : "links";
-
-		// von links nach rechts
-		else if (fromNode.getLat() < switchNode.getLat())
-			return (switchNode.getLon() > toNode.getLon()) ? "rechts" : "links";
-
-		// von rechts nach links
-		else if (fromNode.getLat() > switchNode.getLat())
-			return (switchNode.getLon() < toNode.getLon()) ? "rechts" : "links";
-
+		//RechtsOben
+		else if (fromNode.getLon() < switchNode.getLon() && fromNode.getLon() < switchNode.getLon())
+			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links";
+		//RechtsUnten
+		else if (fromNode.getLon() < switchNode.getLon() && fromNode.getLon() > switchNode.getLon())
+			return (switchNode.getLat() > toNode.getLat()) ? "rechts" : "links";
+		
+		//Den Fall geradeaus noch implementieren
 		return "geradeaus";
 	}
 	
 	
-	private String getNextDirectionByConditions2(Node fromNode, Node switchNode, Node toNode) {
+	private String getNextDirectionByConditions(Node fromNode, Node switchNode,
+			Node toNode) {
 		// von unten nach oben
 		if (fromNode.getLon() < switchNode.getLon())
 			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links"; //t

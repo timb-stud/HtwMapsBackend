@@ -11,7 +11,7 @@ import de.htwmaps.algorithm.GraphData;
  * @author Stanislaw Tartakowski
  * 
  * Diese Klasse stellt dem Suchalgorithmus Knoten aus der Datenbank bereit, 
- * die in einer von 2 Parabeln begrenzter Fl√§che liegen. Die Form aehnelt einer Ellipse, die Implementierung
+ * die in einer von 2 Parabeln begrenzter Fl‰che liegen. Die Form aehnelt einer Ellipse, die Implementierung
  * ist jedoch performanter 
  *
  */
@@ -164,8 +164,8 @@ public class DBAdapterParabel{
 
 	private void setParabel() {
 		if(startNodeLat < endNodeLat){
-			//ps(x) = a (ey - sy) / (ex - sx)¬≤ (x - sx)¬≤ + sy - h
-			//pe(x) = a (sy - ey) / (sx - ex)¬≤ (x - ex)¬≤ + ey + h
+			//ps(x) = a (ey - sy) / (ex - sx)≤ (x - sx)≤ + sy - h
+			//pe(x) = a (sy - ey) / (sx - ex)≤ (x - ex)≤ + ey + h
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from nodes_opt varNodes "
 				+ " where "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - ? <= varNodes.lat "
@@ -181,8 +181,8 @@ public class DBAdapterParabel{
 				+ " and"
 				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + ? >= node2lat";
 		} else {
-			//ps(x) = a (ey - sy) / (ex - sx)¬≤ (x - sx)¬≤ + sy + h
-			//pe(x) = a (sy - ey) / (sx - ex)¬≤ (x - ex)¬≤ + ey - h
+			//ps(x) = a (ey - sy) / (ex - sx)≤ (x - sx)≤ + sy + h
+			//pe(x) = a (sy - ey) / (sx - ex)≤ (x - ex)≤ + ey - h
 			NODE_SELECT = "select varNodes.id, varNodes.lon, varNodes.lat from nodes_opt varNodes "
 				+ " where "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + ? >= varNodes.lat "
