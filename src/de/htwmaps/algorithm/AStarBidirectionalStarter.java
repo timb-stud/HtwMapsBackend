@@ -64,6 +64,16 @@ public class AStarBidirectionalStarter extends ShortestPathAlgorithm {
 			nodesContainer.add(tmp);
 			tmp = tmp.getPredecessor();
 		}
+		if (start.getPredecessor() != null) {
+			Node[] result = nodesContainer.toArray(new Node[0]);
+			int middle = (result.length - 1) / 2;
+			for (int i = 0; i <= middle; i++) {
+				Node tmp2 = result[i];
+				result[i] = result[result.length - 1 - i];
+				result[result.length - 1 - i] = tmp2;
+			}
+			return result;
+		}
 		return nodesContainer.toArray(new Node[0]);
 	}
 	
