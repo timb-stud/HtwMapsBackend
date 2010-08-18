@@ -57,8 +57,7 @@ public class RouteToText {
 					switchNode = route[i];
 					
 					streetRS = null;
-					streetRS = DBAdapterRouteToText.getStreetnameRS(e
-							.getWayID());
+					streetRS = DBAdapterRouteToText.getStreetnameRS(e.getWayID());
 					streetRS.first();
 
 					// Bestimmt ob Straßennamen oder Straßenbezeichnung (L123)
@@ -86,10 +85,7 @@ public class RouteToText {
 					} else {
 //						wayID.add(e.getWayID() + "");
 						direction = getNextDirectionByConditions(route[i+1], switchNode, route[i-1]);
-						
-						// TextInfos name, ref, city, state, dist, switchNode, direction
-						TextInfos ti = new TextInfos(preview, addition, city,
-								state, dist, switchNode, direction);
+						TextInfos ti = new TextInfos(preview, addition, city, state, dist, switchNode, direction);
 						info.add(ti);
 						ti = null;
 						dist = e.getLenght();
@@ -98,10 +94,7 @@ public class RouteToText {
 					// nur bei letzten Durchlauf
 					if (i == 1) {
 //						wayID.add(e.getWayID() + "");
-
-						// TextInfos name, ref, city, state, dist, switchNode, direction
-						TextInfos ti = new TextInfos(preview, addition, city,
-								state, dist, switchNode);
+						TextInfos ti = new TextInfos(preview, addition, city, state, dist, switchNode);
 						info.add(ti);
 						ti = null;
 					}
@@ -150,10 +143,12 @@ public class RouteToText {
 		LinkedList<String> routeText = new LinkedList<String>();
 		String text = null;
 		
-		for (int i = 0; i < info.size() - 1 ; i++){
-			text = "Bei " + info.get(i).getName() + " ";
-//			if (info.get(i).getDirection() != null)
-				text += info.get(i).getDirection();
+		for (int i = 0; i < info.size() -1 ; i++){
+			if (info.get(i).getName() != "")
+				text = "Nach " + info.get(i).getName() + " ";
+			else
+				text = "Dann ";
+			text += info.get(i).getDirection();
 			text += " in " + info.get(i+1).getName() + " abbiegen.\n";
 			routeText.add(text);
 			text = "";
@@ -163,7 +158,7 @@ public class RouteToText {
 	}
 	
 
-	private String getNextDirectionByConditionsNeu(Node fromNode, Node switchNode,Node toNode) {
+	private String getNextDirectionByConditions(Node fromNode, Node switchNode,Node toNode) {
 		//Kreis in 4 Teile teilen
 		// LinksOben
 		if (fromNode.getLon() > switchNode.getLon() && fromNode.getLon() < switchNode.getLon())
@@ -183,8 +178,7 @@ public class RouteToText {
 	}
 	
 	
-	private String getNextDirectionByConditions(Node fromNode, Node switchNode,
-			Node toNode) {
+	private String getNextDirectionByConditionsOld(Node fromNode, Node switchNode,Node toNode) {
 		// von unten nach oben
 		if (fromNode.getLon() < switchNode.getLon())
 			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links"; //t
@@ -219,8 +213,8 @@ public class RouteToText {
 		StringBuilder sb = new StringBuilder();
 //		Iterator<String> wID = wayID.iterator();
 		Iterator<TextInfos> tInfo = info.iterator();
-//		sb.append("WayID: ");
-		sb.append("\t\t Distance: " + "\t Strasse: "
+//		sb.append("WayID: \t\t");
+		sb.append("Distance: " + "\t Strasse: "
 				+ "\t\t Additional: " + "\t\t Ort/Stadt: "
 				+ "\t\t Bundesland: " + "\n");
 		while (tInfo.hasNext()) {
