@@ -8,10 +8,11 @@ import java.util.Arrays;
 import junit.framework.TestCase;
 import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.AStarBidirectionalStarter;
+import de.htwmaps.algorithm.GraphData;
 import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
-import de.htwmaps.algorithm.util.RouteToTextNew;
+import de.htwmaps.algorithm.util.RouteToText;
 import de.htwmaps.database.DBAdapterParabel;
 import de.htwmaps.database.DBAdapterRectangle;
 import de.htwmaps.trash.AlteRouteToText;
@@ -31,11 +32,7 @@ public class RbL_AStarTest{
 		//Schiffweiler - Berlin
 //		int startNodeID = 29221535;
 //		int goalNodeID = 587836344;
-		
-		//Riegelsberg - B268 Losheim ---> geht nicht
-//		int startNodeID = 270697603;
-//		int goalNodeID = 314037031;
-		
+
 		//Riegelsberg - B268 Losheim
 		int startNodeID = 270165797;
 		int goalNodeID = 685103967;
@@ -44,39 +41,31 @@ public class RbL_AStarTest{
 //		int startNodeID = 270165797;
 //		int goalNodeID = 270166141;
 		
-		AStarBidirectionalStarter as = new AStarBidirectionalStarter();
+		GraphData gd = new GraphData();
+		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
 		float a = 0.8f;
 		float h = 0.01f;
-		int searchOption = ShortestPathAlgorithm.SHORTEST_ROUTE;
+		int motorwaySpeed = as.getMotorwaySpeed(), primarySpeed = as.getPrimarySpeed(), residentialSpeed = as.getResidentialSpeed();
 		DBAdapterParabel dbar;
-		dbar = new DBAdapterParabel();
+		dbar = new DBAdapterParabel(gd);
+		
 		while(true) {
-			dbar.prepareGraph(startNodeID, goalNodeID, a, h);
-			int[] allNodeIDs = dbar.getNodeIDs();
-			float[] nodeLons = dbar.getNodeLons(); //x
-			float[] nodeLats = dbar.getNodeLats(); //y
-			
-			int[] edgeStartNodeIDs = dbar.getEdgeStartNodeIDs();
-			int[] edgeEndNodeIDs = dbar.getEdgeEndNodeIDs();
-			double[] lengths = dbar.getEdgeLengths();
-			boolean[] oneways = dbar.getOneways();
-			int[] highwayTypes = dbar.getHighwayTypes();
-			int[] wayIDs = dbar.getWayIDs();
+			dbar.fillGraphData(startNodeID, goalNodeID, a, h);
 			try {
-				Node[] result = as.findShortestPath(allNodeIDs, nodeLons, nodeLats, startNodeID, goalNodeID, wayIDs, edgeStartNodeIDs, edgeEndNodeIDs, lengths, oneways, highwayTypes, searchOption);
-				System.out.println(System.currentTimeMillis() - time);
-//				System.out.println(new AStarBidirectionalStarter().generateTrack(result));
+				Node[] result = as.findFastestPath(startNodeID, goalNodeID, motorwaySpeed, primarySpeed, residentialSpeed);
+//				System.out.println(((AStarBidirectionalStarter)as).generateTrack(result));
 				
 				System.out.println("Start RTT");
 				time = System.currentTimeMillis();
-				RouteToTextNew rtt = new RouteToTextNew(result);
+				RouteToText rtt = new RouteToText(result);
 				System.out.println("RTT " + (System.currentTimeMillis() - time) + " ms");
 				System.out.println(rtt.toString());
+				System.out.println(rtt.buildRouteInfo().toString());
 				
 				break;
 			} catch (PathNotFoundException e) {
 				a *= 0.5f;
-				h += 0.01f;
+				h += 0.001f;
 				System.out.println(a);
 				if (a <= 0.01) {
 					throw new PathNotFoundException("Weg nicht gefunden");

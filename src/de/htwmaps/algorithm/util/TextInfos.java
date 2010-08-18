@@ -13,6 +13,25 @@ public class TextInfos {
 	private double distance;
 	private long time;
 	private Node switchNode;
+	private String direction;
+	
+	public TextInfos(String streetname, String ref, String city, String state, double distance) {
+		this.name = streetname;
+		this.addition = ref;
+		this.city = city;
+		this.state = state;
+		this.distance = distance;
+	}
+	
+	public TextInfos(String streetname, String ref, String city, String state, double distance, Node node, String direction) {
+		this.name = streetname;
+		this.addition = ref;
+		this.city = city;
+		this.state = state;
+		this.distance = distance;
+		this.switchNode = node;
+		this.direction = direction;
+	}
 	
 	public TextInfos(String streetname, String ref, String city, String state, double distance, Node node) {
 		this.name = streetname;
@@ -56,6 +75,10 @@ public class TextInfos {
 
 	public Node getSwitchNode() {
 		return switchNode;
+	}
+
+	public String getDirection() {
+		return direction;
 	}
 
 }

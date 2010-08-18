@@ -26,12 +26,12 @@ public class OptToAllEdgesTest {
 		long time = System.currentTimeMillis();
 		
 		//Schiffweiler - Berlin
-//		int startNodeID = 29221535;
-//		int goalNodeID = 587836344;
+		int startNodeID = 29221535;
+		int goalNodeID = 587836344;
 		
 //		//Riegelsberg - B268 Losheim
-		int startNodeID = 270165797;
-		int goalNodeID = 685103967;
+//		int startNodeID = 270165797;
+//		int goalNodeID = 685103967;
 		
 		//nur ein Strasse
 //		int startNodeID = 270165797;
