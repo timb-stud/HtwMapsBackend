@@ -34,15 +34,25 @@ public class RbL_AStarTest{
 //		int goalNodeID = 587836344;
 
 		//Riegelsberg - B268 Losheim
-		int startNodeID = 270165797;
-		int goalNodeID = 685103967;
+//		int startNodeID = 270165797;
+//		int goalNodeID = 685103967;
+		
+		//Marpingen - Saarbruecken;
+//		int startNodeID = 385944205;
+//		int goalNodeID = 29780642;
+		
+		//Freisen - Saarbrücken
+//		int startNodeID = 358929754;
+//		int goalNodeID = 29780642;
+		int startNodeID = 29780642;
+		int goalNodeID = 358929754;
 		
 		//nur ein Strasse
 //		int startNodeID = 270165797;
 //		int goalNodeID = 270166141;
 		
 		GraphData gd = new GraphData();
-		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
+		ShortestPathAlgorithm as = new AStar(gd);
 		float a = 0.8f;
 		float h = 0.01f;
 		int motorwaySpeed = as.getMotorwaySpeed(), primarySpeed = as.getPrimarySpeed(), residentialSpeed = as.getResidentialSpeed();

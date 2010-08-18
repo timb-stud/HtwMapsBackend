@@ -51,11 +51,11 @@ public class RouteToText {
 
 		for (int i = route.length - 1; i > 0; i--) {
 			for (Edge e : route[i].getEdgeList()) {
-				if ((switchNode = e.getSuccessor()).equals(route[i - 1])
-						|| (switchNode = e.getPredecessor())
-								.equals(route[i - 1])) {
+//				if (e.getSuccessor().equals(route[i - 1]) || e.getPredecessor().equals(route[i - 1])) {
+					if (e.getSuccessor().equals(route[i - 1])) {
 					totallength += e.getLenght();
-
+					switchNode = route[i];
+					
 					streetRS = null;
 					streetRS = DBAdapterRouteToText.getStreetnameRS(e
 							.getWayID());
@@ -150,11 +150,11 @@ public class RouteToText {
 		LinkedList<String> routeText = new LinkedList<String>();
 		String text = null;
 		
-		for (TextInfos ti : info){
-			text = "Bei " + ti.getName() + " ";
-			if (ti.getDirection() != null)
-				text += ti.getDirection();
-			text += " abbiegen.\n";
+		for (int i = 0; i < info.size() - 1 ; i++){
+			text = "Bei " + info.get(i).getName() + " ";
+//			if (info.get(i).getDirection() != null)
+				text += info.get(i).getDirection();
+			text += " in " + info.get(i+1).getName() + " abbiegen.\n";
 			routeText.add(text);
 			text = "";
 		}
@@ -162,11 +162,31 @@ public class RouteToText {
 		return routeText;
 	}
 	
-	private String getNextDirectionByConditions(Node fromNode, Node switchNode,
-			Node toNode) {
+	private String getNextDirectionByConditions(Node fromNode, Node switchNode, Node toNode) {
 		// von unten nach oben
 		if (fromNode.getLon() < switchNode.getLon())
-			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links";
+			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links"; //t
+
+		// von oben nach unten
+		else if (fromNode.getLon() > switchNode.getLon())
+			return (switchNode.getLat() > toNode.getLat()) ? "rechts" : "links";
+
+		// von links nach rechts
+		else if (fromNode.getLat() < switchNode.getLat())
+			return (switchNode.getLon() > toNode.getLon()) ? "rechts" : "links";
+
+		// von rechts nach links
+		else if (fromNode.getLat() > switchNode.getLat())
+			return (switchNode.getLon() < toNode.getLon()) ? "rechts" : "links";
+
+		return "geradeaus";
+	}
+	
+	
+	private String getNextDirectionByConditions2(Node fromNode, Node switchNode, Node toNode) {
+		// von unten nach oben
+		if (fromNode.getLon() < switchNode.getLon())
+			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links"; //t
 
 		// von oben nach unten
 		else if (fromNode.getLon() > switchNode.getLon())
