@@ -85,7 +85,7 @@ public class RouteToText {
 						dist += e.getLenght();
 					} else {
 //						wayID.add(e.getWayID() + "");
-						direction = getNextDirectionByConditions(route[i+1], switchNode, route[i-1]);
+						direction = getNextDirectionByConditionsNeu(route[i+1], switchNode, route[i-1]);
 						
 						// TextInfos name, ref, city, state, dist, switchNode, direction
 						TextInfos ti = new TextInfos(preview, addition, city,
