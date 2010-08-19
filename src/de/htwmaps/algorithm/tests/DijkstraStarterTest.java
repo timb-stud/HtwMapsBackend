@@ -19,8 +19,8 @@ public class DijkstraStarterTest {
 //		int startNodeID = 403500108;
 //		int goalNodeID =  262529904;
 		
-		int startNodeID = 566455382;
-		int goalNodeID = 587836344;
+		int startNodeID = 587836344;
+		int goalNodeID = 21432815;
 		
 //		int startNodeID = 270697603;
 //		int goalNodeID = 314037031;
@@ -28,10 +28,10 @@ public class DijkstraStarterTest {
 //		int startNodeID = 270165797;
 //		int goalNodeID = 685103967;
 		
-//		int startNodeID = 245901690; //köln
+//		int startNodeID = 245901690; //kï¿½ln
 //		int goalNodeID = 587836344;
 		
-//		int startNodeID = 245901690; //köln
+//		int startNodeID = 245901690; //kï¿½ln
 //		int goalNodeID = 269319503; //riegelsberg
 //		
 //		int startNodeID = 248556824; //Kassel

@@ -60,7 +60,7 @@ public class OptToAllEdgesTest {
 				break;
 			} catch (PathNotFoundException e) {
 				a *= 0.5f;
-				h += 0.001f;
+				h += 0.01f;
 				System.out.println(a);
 				if (a <= 0.01) {
 					throw new PathNotFoundException("Weg nicht gefunden");

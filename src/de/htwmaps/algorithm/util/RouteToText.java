@@ -51,16 +51,17 @@ public class RouteToText {
 
 		for (int i = route.length - 1; i > 0; i--) {
 			for (Edge e : route[i].getEdgeList()) {
-				if ((switchNode = e.getSuccessor()).equals(route[i - 1])
-						|| (switchNode = e.getPredecessor())
-								.equals(route[i - 1])) {
+//				if (e.getSuccessor().equals(route[i - 1]) || e.getPredecessor().equals(route[i - 1])) {
+					if (e.getSuccessor().equals(route[i - 1])) {
 					totallength += e.getLenght();
-
+					switchNode = route[i];
+					
 					streetRS = null;
-					streetRS = DBAdapterRouteToText.getStreetnameRS(e
-							.getWayID());
+					streetRS = DBAdapterRouteToText.getStreetnameRS(e.getWayID());
 					streetRS.first();
 
+					System.out.println(streetRS.getString(1) + " " + streetRS.getString(4) + " " + route[i] + "lon/lat " + route[i].getLon() + " , " + route[i].getLat());
+					
 					// Bestimmt ob Straßennamen oder Straßenbezeichnung (L123)
 					if (!streetRS.getString(4).isEmpty()) {
 						current = streetRS.getString(4);
@@ -84,12 +85,13 @@ public class RouteToText {
 					if (preview.equals(current)) {
 						dist += e.getLenght();
 					} else {
-//						wayID.add(e.getWayID() + "");
+
+////						wayID.add(e.getWayID() + "");
+//						System.out.println("fromNode: " + route[i+1] +  " lon/lat " + route[i+1].getLon() + " , " + route[i+1].getLat());
+//						System.out.println("switchNode: " + switchNode + " lon/lat: " + switchNode.getLon() + " , " + switchNode.getLat());
+//						System.out.println("toNode: " + route[i-1] + "lon/lat: " + route[i-1].getLon() + " , " + route[i-1].getLat());
 						direction = getNextDirectionByConditions(route[i+1], switchNode, route[i-1]);
-						
-						// TextInfos name, ref, city, state, dist, switchNode, direction
-						TextInfos ti = new TextInfos(preview, addition, city,
-								state, dist, switchNode, direction);
+						TextInfos ti = new TextInfos(preview, addition, city, state, dist, switchNode, direction);
 						info.add(ti);
 						ti = null;
 						dist = e.getLenght();
@@ -98,10 +100,7 @@ public class RouteToText {
 					// nur bei letzten Durchlauf
 					if (i == 1) {
 //						wayID.add(e.getWayID() + "");
-
-						// TextInfos name, ref, city, state, dist, switchNode, direction
-						TextInfos ti = new TextInfos(preview, addition, city,
-								state, dist, switchNode);
+						TextInfos ti = new TextInfos(preview, addition, city, state, dist, switchNode);
 						info.add(ti);
 						ti = null;
 					}
@@ -150,11 +149,13 @@ public class RouteToText {
 		LinkedList<String> routeText = new LinkedList<String>();
 		String text = null;
 		
-		for (TextInfos ti : info){
-			text = "Bei " + ti.getName() + " ";
-			if (ti.getDirection() != null)
-				text += ti.getDirection();
-			text += " abbiegen.\n";
+		for (int i = 0; i < info.size() -1 ; i++){
+			if (!info.get(i).getName().trim().equals(""))
+				text = "Nach " + info.get(i).getName() + " ";
+			else
+				text = "Dann ";
+			text += info.get(i).getDirection();
+			text += " in " + info.get(i+1).getName() + " abbiegen.\n";
 			routeText.add(text);
 			text = "";
 		}
@@ -162,11 +163,43 @@ public class RouteToText {
 		return routeText;
 	}
 	
-	private String getNextDirectionByConditions(Node fromNode, Node switchNode,
-			Node toNode) {
+
+	private String getNextDirectionByConditions(Node fromNode, Node switchNode,Node toNode) {
+		
+		System.out.println("Y fromNode: " + fromNode.getLon() + " , " + fromNode.getLat());
+		System.out.println("Y switchNode: " + switchNode.getLon() + " , " + switchNode.getLat());
+		System.out.println("Y toNode: " + toNode.getLon() + " , " + toNode.getLat());
+		
+		//Kreis in 4 Teile teilen
+		// LinksOben
+		if ((fromNode.getLon() > switchNode.getLon()) && (fromNode.getLat() < switchNode.getLat()))
+			return (switchNode.getLon() < toNode.getLon()) ? "rechts1" : "links1";
+		// LinksUnten
+		else if (fromNode.getLon() > switchNode.getLon() && fromNode.getLat() > switchNode.getLat())
+			return (switchNode.getLat() < toNode.getLat()) ? "rechts2" : "links2";
+		//RechtsOben
+		else if (fromNode.getLon() < switchNode.getLon() && fromNode.getLat() < switchNode.getLat())
+			return (switchNode.getLon() > toNode.getLon()) ? "rechts3" : "links3";
+		//RechtsUnten
+		else if (fromNode.getLon() < switchNode.getLon() && fromNode.getLat() > switchNode.getLat())
+			return (switchNode.getLat() > toNode.getLat()) ? "rechts4" : "links4";
+		
+		//Den Fall geradeaus noch implementieren
+		return "geradeaus";
+	}
+	
+	
+	private String getNextDirectionByConditionsBest(Node fromNode, Node switchNode,Node toNode) {
+		
+		
+		
+		return "gerade aus";
+	}
+	
+	private String getNextDirectionByConditionsOld(Node fromNode, Node switchNode,Node toNode) {
 		// von unten nach oben
 		if (fromNode.getLon() < switchNode.getLon())
-			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links";
+			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links"; //t
 
 		// von oben nach unten
 		else if (fromNode.getLon() > switchNode.getLon())
@@ -198,8 +231,8 @@ public class RouteToText {
 		StringBuilder sb = new StringBuilder();
 //		Iterator<String> wID = wayID.iterator();
 		Iterator<TextInfos> tInfo = info.iterator();
-//		sb.append("WayID: ");
-		sb.append("\t\t Distance: " + "\t Strasse: "
+//		sb.append("WayID: \t\t");
+		sb.append("Distance: " + "\t Strasse: "
 				+ "\t\t Additional: " + "\t\t Ort/Stadt: "
 				+ "\t\t Bundesland: " + "\n");
 		while (tInfo.hasNext()) {

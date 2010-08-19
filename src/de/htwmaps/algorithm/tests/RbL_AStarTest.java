@@ -5,7 +5,7 @@ package de.htwmaps.algorithm.tests;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+//import junit.framework.TestCase;
 import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.AStarBidirectionalStarter;
 import de.htwmaps.algorithm.GraphData;
@@ -15,7 +15,7 @@ import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.algorithm.util.RouteToText;
 import de.htwmaps.database.DBAdapterParabel;
 import de.htwmaps.database.DBAdapterRectangle;
-import de.htwmaps.trash.AlteRouteToText;
+//import de.htwmaps.trash.AlteRouteToText;
 
 public class RbL_AStarTest{
 
@@ -34,15 +34,25 @@ public class RbL_AStarTest{
 //		int goalNodeID = 587836344;
 
 		//Riegelsberg - B268 Losheim
-		int startNodeID = 270165797;
-		int goalNodeID = 685103967;
+//		int startNodeID = 270165797;
+//		int goalNodeID = 685103967;
+		
+		//Marpingen - Saarbruecken;
+//		int startNodeID = 385944205;
+//		int goalNodeID = 29780642;
+		
+		//Freisen - Saarbrücken
+		int startNodeID = 358929754; //Freisen
+		int goalNodeID = 29780642; //SB
+//		int startNodeID = 29780642;
+//		int goalNodeID = 358929754;
 		
 		//nur ein Strasse
 //		int startNodeID = 270165797;
 //		int goalNodeID = 270166141;
 		
 		GraphData gd = new GraphData();
-		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
+		ShortestPathAlgorithm as = new AStar(gd);
 		float a = 0.8f;
 		float h = 0.01f;
 		int motorwaySpeed = as.getMotorwaySpeed(), primarySpeed = as.getPrimarySpeed(), residentialSpeed = as.getResidentialSpeed();
