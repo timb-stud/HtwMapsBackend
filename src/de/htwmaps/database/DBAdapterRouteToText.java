@@ -15,7 +15,7 @@ public class DBAdapterRouteToText {
 		PreparedStatement pStmt;
 		ResultSet resultSet = null;
 		
-		String streetQuery = "SELECT nameValue, cityname, is_in, highwayValue, ref FROM ways WHERE ID = ? ;";
+		String streetQuery = "SELECT nameValue, cityname, is_in, ref FROM ways WHERE ID = ? ;";
 		
 		try {
 			pStmt = DBConnector.getConnection().prepareStatement(streetQuery);
