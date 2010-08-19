@@ -42,10 +42,10 @@ public class RbL_AStarTest{
 //		int goalNodeID = 29780642;
 		
 		//Freisen - Saarbrücken
-//		int startNodeID = 358929754;
-//		int goalNodeID = 29780642;
-		int startNodeID = 29780642;
-		int goalNodeID = 358929754;
+		int startNodeID = 358929754; //Freisen
+		int goalNodeID = 29780642; //SB
+//		int startNodeID = 29780642;
+//		int goalNodeID = 358929754;
 		
 		//nur ein Strasse
 //		int startNodeID = 270165797;
