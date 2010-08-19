@@ -5,7 +5,7 @@ package de.htwmaps.algorithm.tests;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+//import junit.framework.TestCase;
 import de.htwmaps.algorithm.AStar;
 import de.htwmaps.algorithm.AStarBidirectionalStarter;
 import de.htwmaps.algorithm.GraphData;
@@ -15,7 +15,7 @@ import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.algorithm.util.RouteToText;
 import de.htwmaps.database.DBAdapterParabel;
 import de.htwmaps.database.DBAdapterRectangle;
-import de.htwmaps.trash.AlteRouteToText;
+//import de.htwmaps.trash.AlteRouteToText;
 
 public class RbL_AStarTest{
 

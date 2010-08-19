@@ -16,7 +16,7 @@ public class DataImport {
 		print("Preparing finished!");
 
 		print("Parse OSM-File...");
-		new ParseOSM(READ_PATH);
+		//new ParseOSM(READ_PATH);
 		print("Parse OSM-File finished!");
 
 		

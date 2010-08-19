@@ -85,6 +85,7 @@ public class RouteToText {
 					if (preview.equals(current)) {
 						dist += e.getLenght();
 					} else {
+
 ////						wayID.add(e.getWayID() + "");
 //						System.out.println("fromNode: " + route[i+1] +  " lon/lat " + route[i+1].getLon() + " , " + route[i+1].getLat());
 //						System.out.println("switchNode: " + switchNode + " lon/lat: " + switchNode.getLon() + " , " + switchNode.getLat());
