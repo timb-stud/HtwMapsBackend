@@ -164,7 +164,7 @@ public class RouteToText {
 	}
 	
 
-	private String getNextDirectionByConditions(Node fromNode, Node switchNode,Node toNode) {
+	private String getNextDirectionByConditionsYassir(Node fromNode, Node switchNode,Node toNode) {
 		
 		System.out.println("Y fromNode: " + fromNode.getLon() + " , " + fromNode.getLat());
 		System.out.println("Y switchNode: " + switchNode.getLon() + " , " + switchNode.getLat());
@@ -189,9 +189,44 @@ public class RouteToText {
 	}
 	
 	
-	private String getNextDirectionByConditionsBest(Node fromNode, Node switchNode,Node toNode) {
+	private String getNextDirectionByConditions(Node fromNode, Node switchNode, Node toNode) {
+		boolean r = fromNode.getLat() < switchNode.getLat()
+				&& switchNode.getLon() < toNode.getLon()
+				|| fromNode.getLat() > switchNode.getLat()
+				&& switchNode.getLon() > toNode.getLon();
+		String precision = "";
+		double d0 = Math.abs(fromNode.getLat() - switchNode.getLat())
+				/ Math.abs(fromNode.getLon() - switchNode.getLon());
+		double d1 = Math.abs(switchNode.getLat() - toNode.getLat())
+				/ Math.abs(switchNode.getLon() - toNode.getLon());
+		if (Math.atan(d0 * d1) * (360 / (2 * Math.PI)) >= 45) {
+			precision = "scharf nach ";
+		} else {
+			if (Math.atan(d0 * d1) * (360 / (2 * Math.PI)) <= 30) {
+				precision = "leicht nach ";
+			}
+		}
+		if (r) {
+			return precision + "rechts";
+		}
+		return precision + "links";
+	}
+	
+	
+	private String getNextDirectionByConditionsVektor(Node fromNode, Node switchNode,Node toNode) {
+		double aX = switchNode.getLon() - fromNode.getLon();
+		double aY = switchNode.getLat() - fromNode.getLat();
+		double bX = toNode.getLon() - switchNode.getLon();
+		double bY = toNode.getLat() - switchNode.getLat();
 		
-		
+		if (aX > 0)
+			return (bY > 0) ? "rechts" : "links";
+		if (aX < 0)
+			return (bY < 0) ? "rechts" : "links";
+		if (aY > 0)
+			return (bX < 0) ? "rechts" : "links";
+		if (aY < 0)
+			return (bX > 0) ? "rechts" : "links";
 		
 		return "gerade aus";
 	}
