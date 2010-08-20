@@ -170,7 +170,7 @@ public class DBAdapterParabel{
 				+ " where "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  - ? <= varNodes.lat "
 				+ " and "
-				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat ";
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? + ? >= varNodes.lat or speedID < 6";
 			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, wayid, id from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  - ? <= node1lat"
@@ -179,7 +179,7 @@ public class DBAdapterParabel{
 				+ " and"
 				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  - ? <= node2lat"
 				+ " and"
-				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + ? >= node2lat";
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? + ? >= node2lat or speedID < 6";
 		} else {
 			//ps(x) = a (ey - sy) / (ex - sx)² (x - sx)² + sy + h
 			//pe(x) = a (sy - ey) / (sx - ex)² (x - ex)² + ey - h
@@ -187,7 +187,7 @@ public class DBAdapterParabel{
 				+ " where "
 				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ?  + ? >= varNodes.lat "
 				+ " and "
-				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat ";
+				+ " ? *(?/POW((?),2))*POW((varNodes.lon - ?),2) + ? - ? <= varNodes.lat or speedID < 6";
 			EDGE_SELECT = "select node1ID, node2ID, isoneway, speedID, length, wayid, id from edges_opt"
 				+ " where" 
 				+ " ?*((?)/POW((?),2))*POW((node1lon - ?),2) + ?  + ? >= node1lat"
@@ -196,7 +196,7 @@ public class DBAdapterParabel{
 				+ " and"
 				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ?  + ? >= node2lat"
 				+ " and"
-				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - ? <= node2lat";
+				+ " ?*((?)/POW((?),2))*POW((node2lon - ?),2) + ? - ? <= node2lat or speedID < 6";
 		}
 	}
 	

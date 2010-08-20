@@ -1,5 +1,7 @@
 package de.htwmaps.algorithm.util;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -7,6 +9,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Vector;
 
 import de.htwmaps.algorithm.Edge;
 import de.htwmaps.algorithm.Node;
@@ -165,27 +168,31 @@ public class RouteToText {
 	
 
 	private String getNextDirectionByConditionsYassir(Node fromNode, Node switchNode,Node toNode) {
+		//Christian die Methode funktioniert leider immernoch nicht ganz richtig
+		//nach der 5. oder 6. abbiegung macht der einen fehler :(
+		Vector v = new Vector();
 		
-		System.out.println("Y fromNode: " + fromNode.getLon() + " , " + fromNode.getLat());
-		System.out.println("Y switchNode: " + switchNode.getLon() + " , " + switchNode.getLat());
-		System.out.println("Y toNode: " + toNode.getLon() + " , " + toNode.getLat());
+		System.out.println("from: " + fromNode.getId());
+		System.out.println("switch: " + switchNode.getId());
+		System.out.println("to: " + toNode.getId());
+//		System.out.println("Y fromNode: " + fromNode.getLon() + " , " + fromNode.getLat());
+//		System.out.println("Y switchNode: " + switchNode.getLon() + " , " + switchNode.getLat());
+//		System.out.println("Y toNode: " + toNode.getLon() + " , " + toNode.getLat());
+
+		Point2D.Double f = new Point2D.Double(fromNode.getLon(), fromNode.getLat());
+		Point2D.Double s = new Point2D.Double(switchNode.getLon(), switchNode.getLat());
+		Point2D.Double t = new Point2D.Double(toNode.getLon(), toNode.getLat());
+
+		Line2D.Double l = new Line2D.Double(f, s);
 		
-		//Kreis in 4 Teile teilen
-		// LinksOben
-		if ((fromNode.getLon() > switchNode.getLon()) && (fromNode.getLat() < switchNode.getLat()))
-			return (switchNode.getLon() < toNode.getLon()) ? "rechts1" : "links1";
-		// LinksUnten
-		else if (fromNode.getLon() > switchNode.getLon() && fromNode.getLat() > switchNode.getLat())
-			return (switchNode.getLat() < toNode.getLat()) ? "rechts2" : "links2";
-		//RechtsOben
-		else if (fromNode.getLon() < switchNode.getLon() && fromNode.getLat() < switchNode.getLat())
-			return (switchNode.getLon() > toNode.getLon()) ? "rechts3" : "links3";
-		//RechtsUnten
-		else if (fromNode.getLon() < switchNode.getLon() && fromNode.getLat() > switchNode.getLat())
-			return (switchNode.getLat() > toNode.getLat()) ? "rechts4" : "links4";
-		
-		//Den Fall geradeaus noch implementieren
-		return "geradeaus";
+		switch (l.relativeCCW(t)) {
+			case 1:
+				return "rechts";
+			case-1:
+				return "links";
+			default:
+				return "geradeaus";
+		}
 	}
 	
 	
