@@ -167,17 +167,10 @@ public class RouteToText {
 	}
 	
 
-	private String getNextDirectionByConditions(Node fromNode, Node switchNode, Node toNode) {
-		//Christian die Methode funktioniert leider immernoch nicht ganz richtig
-		//nach der 5. oder 6. abbiegung macht der einen fehler :(
-		Vector v = new Vector();
-		
+	private String getNextDirectionByConditions(Node fromNode, Node switchNode,Node toNode) {
 		System.out.println("from: " + fromNode.getId());
 		System.out.println("switch: " + switchNode.getId());
 		System.out.println("to: " + toNode.getId());
-//		System.out.println("Y fromNode: " + fromNode.getLon() + " , " + fromNode.getLat());
-//		System.out.println("Y switchNode: " + switchNode.getLon() + " , " + switchNode.getLat());
-//		System.out.println("Y toNode: " + toNode.getLon() + " , " + toNode.getLat());
 
 		Point2D.Double f = new Point2D.Double(fromNode.getLon(), fromNode.getLat());
 		Point2D.Double s = new Point2D.Double(switchNode.getLon(), switchNode.getLat());
@@ -191,14 +184,25 @@ public class RouteToText {
 			case-1:
 				return "links";
 			default:
+				//Epsilon umgebung einbauen
 				return "geradeaus";
 		}
 	}
-	
-	
-	private String getNextDirectionByConditionsBest(Node fromNode, Node switchNode,Node toNode) {
+
+	private String getNextDirectionByConditionsVektor(Node fromNode, Node switchNode,Node toNode) {
+		double aX = switchNode.getLon() - fromNode.getLon();
+		double aY = switchNode.getLat() - fromNode.getLat();
+		double bX = toNode.getLon() - switchNode.getLon();
+		double bY = toNode.getLat() - switchNode.getLat();
 		
-		
+		if (aX > 0)
+			return (bY > 0) ? "rechts" : "links";
+		if (aX < 0)
+			return (bY < 0) ? "rechts" : "links";
+		if (aY > 0)
+			return (bX < 0) ? "rechts" : "links";
+		if (aY < 0)
+			return (bX > 0) ? "rechts" : "links";
 		
 		return "gerade aus";
 	}
