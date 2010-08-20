@@ -167,17 +167,10 @@ public class RouteToText {
 	}
 	
 
-	private String getNextDirectionByConditionsYassir(Node fromNode, Node switchNode,Node toNode) {
-		//Christian die Methode funktioniert leider immernoch nicht ganz richtig
-		//nach der 5. oder 6. abbiegung macht der einen fehler :(
-		Vector v = new Vector();
-		
+	private String getNextDirectionByConditions(Node fromNode, Node switchNode,Node toNode) {
 		System.out.println("from: " + fromNode.getId());
 		System.out.println("switch: " + switchNode.getId());
 		System.out.println("to: " + toNode.getId());
-//		System.out.println("Y fromNode: " + fromNode.getLon() + " , " + fromNode.getLat());
-//		System.out.println("Y switchNode: " + switchNode.getLon() + " , " + switchNode.getLat());
-//		System.out.println("Y toNode: " + toNode.getLon() + " , " + toNode.getLat());
 
 		Point2D.Double f = new Point2D.Double(fromNode.getLon(), fromNode.getLat());
 		Point2D.Double s = new Point2D.Double(switchNode.getLon(), switchNode.getLat());
@@ -191,35 +184,11 @@ public class RouteToText {
 			case-1:
 				return "links";
 			default:
+				//Epsilon umgebung einbauen
 				return "geradeaus";
 		}
 	}
-	
-	
-	private String getNextDirectionByConditions(Node fromNode, Node switchNode, Node toNode) {
-		boolean r = fromNode.getLat() < switchNode.getLat()
-				&& switchNode.getLon() < toNode.getLon()
-				|| fromNode.getLat() > switchNode.getLat()
-				&& switchNode.getLon() > toNode.getLon();
-		String precision = "";
-		double d0 = Math.abs(fromNode.getLat() - switchNode.getLat())
-				/ Math.abs(fromNode.getLon() - switchNode.getLon());
-		double d1 = Math.abs(switchNode.getLat() - toNode.getLat())
-				/ Math.abs(switchNode.getLon() - toNode.getLon());
-		if (Math.atan(d0 * d1) * (360 / (2 * Math.PI)) >= 45) {
-			precision = "scharf nach ";
-		} else {
-			if (Math.atan(d0 * d1) * (360 / (2 * Math.PI)) <= 30) {
-				precision = "leicht nach ";
-			}
-		}
-		if (r) {
-			return precision + "rechts";
-		}
-		return precision + "links";
-	}
-	
-	
+
 	private String getNextDirectionByConditionsVektor(Node fromNode, Node switchNode,Node toNode) {
 		double aX = switchNode.getLon() - fromNode.getLon();
 		double aY = switchNode.getLat() - fromNode.getLat();
