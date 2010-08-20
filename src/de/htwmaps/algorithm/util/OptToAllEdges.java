@@ -25,7 +25,7 @@ public class OptToAllEdges {
 	int myEdgeID;
 	int rsCounter = 0;
 	
-	long time, timesum;
+	long time, timesum, timesum2;
 	// Variable die speichert ob Strasse vorwaerts oder rueckewaerts durchfahren wird
 	boolean inOrder = true;
 
@@ -51,7 +51,9 @@ public class OptToAllEdges {
 		for(int i=0; i <= route.length-2; i++){ 
 			ps3.setInt(1, route[i].getId());
 			ps3.setInt(2, route[i+1].getId());
+			time = System.currentTimeMillis();
 			rs2 = ps3.executeQuery();
+			timesum2 = timesum2 + (System.currentTimeMillis() - time);
 			while (rs2.next()) {
 				if (rs2.getInt(1) == 1) {
 					inOrder = true;
@@ -85,7 +87,8 @@ public class OptToAllEdges {
 			}
 			
 		}
-		System.out.println("DB-Abfragen " + timesum + "ms");
+		System.out.println("DB-Abfragen1 " + timesum2 + "ms");
+		System.out.println("DB-Abfragen2 " + timesum + "ms");
 		System.out.println("Size All: " + coordList.size());
 
 	con.close();

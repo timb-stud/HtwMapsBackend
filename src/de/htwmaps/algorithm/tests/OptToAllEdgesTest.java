@@ -30,12 +30,12 @@ public class OptToAllEdgesTest {
 		int goalNodeID = 587836344;
 		
 //		//Riegelsberg - B268 Losheim
-//		int startNodeID = 270165797;
-//		int goalNodeID = 685103967;
+//		int startNodeID = 685103967;
+//		int goalNodeID = 270165797;
 		
 		//nur ein Strasse
 //		int startNodeID = 270165797;
-//		int goalNodeID = 270166141;
+//		int goalNodeID = 269358642;
 		
 		GraphData gd = new GraphData();
 		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
