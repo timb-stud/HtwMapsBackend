@@ -9,6 +9,7 @@ import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.algorithm.util.OptToAllEdges;
 import de.htwmaps.database.DBAdapterParabel;
+import de.htwmaps.database.DBConnector;
 
 
 public class OptToAllEdgesTest {
@@ -29,6 +30,10 @@ public class OptToAllEdgesTest {
 		int startNodeID = 29221535;
 		int goalNodeID = 587836344;
 		
+		//Schiffweiler - Kšln
+//		int startNodeID = 245901690;
+//		int goalNodeID = 587836344;
+		
 //		//Riegelsberg - B268 Losheim
 //		int startNodeID = 685103967;
 //		int goalNodeID = 270165797;
@@ -39,34 +44,34 @@ public class OptToAllEdgesTest {
 		
 		GraphData gd = new GraphData();
 		ShortestPathAlgorithm as = new AStarBidirectionalStarter(gd);
-		float a = 0.8f;
+		float a = 0.9f;
 		float h = 0.01f;
 		int motorwaySpeed = as.getMotorwaySpeed(), primarySpeed = as.getPrimarySpeed(), residentialSpeed = as.getResidentialSpeed();
-		DBAdapterParabel dbar;
-		dbar = new DBAdapterParabel(gd);
+		DBAdapterParabel dbar = new DBAdapterParabel(gd);
+		//dbar.printNodes();
 		while(true) {
+			time = System.currentTimeMillis();
 			dbar.fillGraphData(startNodeID, goalNodeID, a, h);
+			System.out.println("dbar.fillGraphData " 	+ (System.currentTimeMillis() - time) + " ms");
 			try {
+				time = System.currentTimeMillis();
 				Node[] result = as.findFastestPath(startNodeID, goalNodeID, motorwaySpeed, primarySpeed, residentialSpeed);
-//				System.out.println(((AStarBidirectionalStarter)as).generateTrack(result));
-				
-				System.out.println("Algo " 		+ (System.currentTimeMillis() - time) + " ms");
+				System.out.println("findFastestPath " 	+ (System.currentTimeMillis() - time) + " ms");
 				System.out.println("Start Opt -> All Edges");
 				time = System.currentTimeMillis();
 				new OptToAllEdges(result);
 				System.out.println("Opt->All " 	+ (System.currentTimeMillis() - time) + " ms");
-				//System.out.println(rtt.toString());
-
 				break;
 			} catch (PathNotFoundException e) {
 				a *= 0.5f;
 				h += 0.01f;
-				System.out.println(a);
-				if (a <= 0.01) {
+				System.out.println(a + " " + h);
+				if (a <= 0.01f) {
 					throw new PathNotFoundException("Weg nicht gefunden");
 				}
 			}
 		}
+		DBConnector.disconnect();
 	}
 		
 
