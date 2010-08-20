@@ -137,23 +137,22 @@ public class RouteToTextNew {
 
 	
 	private String getNextDirectionByConditions(Node fromNode, Node switchNode, Node toNode) {
-		 //von unten nach oben
-		if (fromNode.getLon() < switchNode.getLon())
-			return (switchNode.getLat() < toNode.getLat())?"rechts":"links";
-		
-		//von oben nach unten
-		else if (fromNode.getLon() > switchNode.getLon())
-			return (switchNode.getLat() > toNode.getLat())?"rechts":"links";
-		
-		//von links nach rechts
-		else if (fromNode.getLat() < switchNode.getLat())
-			return (switchNode.getLon() > toNode.getLon())?"rechts":"links";
-		
-		//von rechts nach links
-		else if (fromNode.getLat() > switchNode.getLat())
-			return (switchNode.getLon() < toNode.getLon())?"rechts":"links";
-		
-		return "geradeaus";
+		boolean r = fromNode.getLat() < switchNode.getLat() && switchNode.getLon() < toNode.getLon() || 
+					fromNode.getLat() > switchNode.getLat() && switchNode.getLon() > toNode.getLon();
+		String precision = "";
+		double d0 = Math.abs(fromNode.getLat() - switchNode.getLat()) / Math.abs(fromNode.getLon() - switchNode.getLon());
+		double d1 = Math.abs(switchNode.getLat() - toNode.getLat()) / Math.abs(switchNode.getLon() - toNode.getLon());
+		if (Math.atan(d0*d1)*(360/(2*Math.PI)) >= 45) {
+			precision = "scharf nach ";
+		} else {
+			if (Math.atan(d0*d1)*(360/(2*Math.PI)) <= 30) {
+				precision = "leicht nach ";
+			}
+		}
+		if (r) {
+			return precision + "rechts";
+		}
+		return precision + "links";
 	}
 	
 	private String longToTime(long lTime){
