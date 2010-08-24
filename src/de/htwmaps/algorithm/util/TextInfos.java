@@ -2,6 +2,7 @@ package de.htwmaps.algorithm.util;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import de.htwmaps.algorithm.Edge;
 import de.htwmaps.algorithm.Node;
@@ -12,58 +13,20 @@ public class TextInfos {
 	private String state;
 	private String city;
 	private double distance;
-	private long time;
-	private Node switchNode;
 	private String direction;
-	private int highwayType;
-	private Edge[] edge;
+	private LinkedList<Edge> edgeList;
 	
-	public TextInfos(String streetname, String ref, String city, String state, double distance) {
+	public TextInfos(String streetname, String ref, String city, String state, double distance, LinkedList<Edge> edgeList, String direction) {
 		this.name = streetname;
 		this.addition = ref;
 		this.city = city;
 		this.state = state;
 		this.distance = distance;
-	}
-	
-	public TextInfos(String streetname, String ref, String city, String state, double distance, Node node, String direction) {
-		this.name = streetname;
-		this.addition = ref;
-		this.city = city;
-		this.state = state;
-		this.distance = distance;
-		this.switchNode = node;
+		this.edgeList = new LinkedList<Edge>();
+		this.edgeList.addAll(edgeList);
 		this.direction = direction;
 	}
 	
-	public TextInfos(String streetname, String ref, String city, String state, double distance, Node node, String direction, int highwayType) {
-		this.name = streetname;
-		this.addition = ref;
-		this.city = city;
-		this.state = state;
-		this.distance = distance;
-		this.switchNode = node;
-		this.direction = direction;
-		this.highwayType = highwayType;
-	}
-	
-	public TextInfos(String streetname, String ref, String city, String state, Edge[] edge) {
-		this.name = streetname;
-		this.addition = ref;
-		this.city = city;
-		this.state = state;
-		this.edge = edge;
-	}
-	
-	public TextInfos(String streetname, String ref, String city, String state, double distance, Node node) {
-		this.name = streetname;
-		this.addition = ref;
-		this.city = city;
-		this.state = state;
-		this.distance = distance;
-		this.switchNode = node;
-	}
-
 	@Override
 	public String toString() {
 		DecimalFormat df = new DecimalFormat("0.00");
@@ -91,20 +54,11 @@ public class TextInfos {
 		return distance;
 	}
 
-	public long getTime() {
-		return time;
-	}
-
-	public Node getSwitchNode() {
-		return switchNode;
+	public LinkedList<Edge> getEdgeList() {
+		return this.edgeList;
 	}
 
 	public String getDirection() {
 		return direction;
 	}
-
-	public int getHighwayType() {
-		return highwayType;
-	}
-
 }

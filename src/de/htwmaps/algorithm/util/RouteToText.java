@@ -17,7 +17,6 @@ import de.htwmaps.database.DBAdapterRouteToText;
 
 public class RouteToText {
 
-	private ArrayList<String> wayID = null;
 	private double totallength = 0.0;
 
 	private double autobahn = 0.0;
@@ -43,12 +42,12 @@ public class RouteToText {
 	}
 
 	private void createInfo(Node[] route) throws SQLException {
+		LinkedList<Edge> edgeList = new LinkedList<Edge>();
 		double dist = 0;
 		Node switchNode;
 		ResultSet streetRS = null;
 		String preview = null, current = null;
 		String city = null, state = null, addition = null, selectedAdditon, direction = null;
-		wayID = new ArrayList<String>();
 
 		info = new ArrayList<TextInfos>();
 
@@ -63,8 +62,6 @@ public class RouteToText {
 					streetRS = DBAdapterRouteToText.getStreetnameRS(e.getWayID());
 					streetRS.first();
 
-//					System.out.println(streetRS.getString(1) + " " + streetRS.getString(4) + " " + route[i] + "lon/lat " + route[i].getLon() + " , " + route[i].getLat());
-					
 					// Bestimmt ob Straßennamen oder Straßenbezeichnung (L123)
 					if (!(i == 1) && (!streetRS.getString(4).isEmpty())) {
 						current = streetRS.getString(4);
@@ -79,34 +76,32 @@ public class RouteToText {
 					// nur beim ersten Durchlauf
 					if (i == route.length - 1) {
 						preview = current;
-//						wayID.add(e.getWayID() + "");
 						addition = selectedAdditon;
 						city = streetRS.getString(2);
 						state = streetRS.getString(3);
 					}
 
 					if (preview.equals(current)) {
+						edgeList.add(e);
 						dist += e.getLenght();
 					} else {
-
-////						wayID.add(e.getWayID() + "");
-//						System.out.println("fromNode: " + route[i+1] +  " lon/lat " + route[i+1].getLon() + " , " + route[i+1].getLat());
-//						System.out.println("switchNode: " + switchNode + " lon/lat: " + switchNode.getLon() + " , " + switchNode.getLat());
-//						System.out.println("toNode: " + route[i-1] + "lon/lat: " + route[i-1].getLon() + " , " + route[i-1].getLat());
 						direction = getNextDirectionByConditions(route[i+1], switchNode, route[i-1]);
-						TextInfos ti = new TextInfos(preview, addition, city, state, dist, switchNode, direction, e.getHighwayType());
+						TextInfos ti = new TextInfos(preview, addition, city, state, dist, edgeList, direction);
 						info.add(ti);
 						ti = null;
+						edgeList.clear();
+						edgeList.add(e);
 						dist = e.getLenght();
 					}
 
 					// nur bei letzten Durchlauf
 					if (i == 1) {
-//						wayID.add(e.getWayID() + "");
-						TextInfos ti = new TextInfos(current, addition, city, state, dist, switchNode, direction,e.getHighwayType());
-						info.add(ti);
+						edgeList.add(e);
+						TextInfos ti = new TextInfos(current, addition, city, state, dist, edgeList, direction);
 						System.out.println("Ziel: " + ti);
+						info.add(ti);
 						ti = null;
+						edgeList.clear();
 					}
 
 					preview = current;
@@ -153,21 +148,23 @@ public class RouteToText {
 		LinkedList<String> routeText = new LinkedList<String>();
 		StringBuffer sb = new StringBuffer();
 		
-		routeText.add("Sie starten bei " + info.get(0).getName());
-		
+		routeText.add("Sie starten in folgdender Straße: " + info.get(0).getName());
 		for (int i = 0; i < info.size() -1 ; i++){
-//			if (info.get(i).getHighwayType() == 1)
-//				sb.append("Fahren Sie nach ").append(info.get(i).getName()).append("")
-			if (!info.get(i).getName().trim().equals(""))
-				sb.append("Nach ").append(info.get(i).getName()).append(" ");
-			else
-				sb.append("Dann ");
-			sb.append(info.get(i).getDirection());
-			if (!info.get(i+1).getName().trim().equals(""))
-				sb.append(" in " + info.get(i+1).getName());
-			else
-				sb.append(" in die nächste Straße");
-			sb.append(" abbiegen.");
+			if (info.get(i).getEdgeList().getLast().getHighwayType() != 1 && info.get(i+1).getEdgeList().getLast().getHighwayType() == 1){
+				sb.append("Fahren Sie nach ").append(info.get(i).getName()).append(" ").append(info.get(i).getDirection());
+				sb.append(" auf die Autobahn ").append(info.get(i+1).getName());
+			} else {
+				if (!info.get(i).getName().trim().equals(""))
+					sb.append("Nach ").append(info.get(i).getName()).append(" ");
+				else
+					sb.append("Dann ");
+				sb.append(info.get(i).getDirection());
+				if (!info.get(i+1).getName().trim().equals(""))
+					sb.append(" in " + info.get(i+1).getName());
+				else
+					sb.append(" in die nächste Straße");
+				sb.append(" abbiegen.");
+			}
 			routeText.add(sb.toString());
 			sb.setLength(0);
 		}
@@ -179,10 +176,6 @@ public class RouteToText {
 	
 
 	private String getNextDirectionByConditions(Node fromNode, Node switchNode,Node toNode) {
-//		System.out.println("from: " + fromNode.getId());
-//		System.out.println("switch: " + switchNode.getId());
-//		System.out.println("to: " + toNode.getId());
-
 		Point2D.Double f = new Point2D.Double(fromNode.getLon(), fromNode.getLat());
 		Point2D.Double s = new Point2D.Double(switchNode.getLon(), switchNode.getLat());
 		Point2D.Double t = new Point2D.Double(toNode.getLon(), toNode.getLat());
@@ -214,14 +207,11 @@ public class RouteToText {
 		int i = 0;
 
 		StringBuilder sb = new StringBuilder();
-//		Iterator<String> wID = wayID.iterator();
 		Iterator<TextInfos> tInfo = info.iterator();
-//		sb.append("WayID: \t\t");
 		sb.append("Distance: " + "\t Strasse: "
 				+ "\t\t Additional: " + "\t\t Ort/Stadt: "
 				+ "\t\t Bundesland: " + "\n");
 		while (tInfo.hasNext()) {
-//			sb.append(wID.next() + "\t");
 			sb.append(tInfo.next().toString() + "\n");
 			i++;
 		}

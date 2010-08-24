@@ -39,12 +39,12 @@ public class RbL_AStarTest{
 //		int goalNodeID = 685103967;
 		
 		//Marpingen - Saarbruecken;
-		int startNodeID = 385944205;
-		int goalNodeID = 29780642;
+//		int startNodeID = 385944205;
+//		int goalNodeID = 29780642;
 		
 		//Freisen - Saarbrücken
-//		int startNodeID = 358929754; //Freisen
-//		int goalNodeID = 29780642; //SB
+		int startNodeID = 358929754; //Freisen
+		int goalNodeID = 29780642; //SB
 //		int startNodeID = 29780642;
 //		int goalNodeID = 358929754;
 		
