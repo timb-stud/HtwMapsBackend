@@ -63,10 +63,10 @@ public class RouteToText {
 					streetRS = DBAdapterRouteToText.getStreetnameRS(e.getWayID());
 					streetRS.first();
 
-					System.out.println(streetRS.getString(1) + " " + streetRS.getString(4) + " " + route[i] + "lon/lat " + route[i].getLon() + " , " + route[i].getLat());
+//					System.out.println(streetRS.getString(1) + " " + streetRS.getString(4) + " " + route[i] + "lon/lat " + route[i].getLon() + " , " + route[i].getLat());
 					
 					// Bestimmt ob Straßennamen oder Straßenbezeichnung (L123)
-					if (!streetRS.getString(4).isEmpty()) {
+					if (!(i == 1) && (!streetRS.getString(4).isEmpty())) {
 						current = streetRS.getString(4);
 						selectedAdditon = streetRS.getString(1);
 					} else {
@@ -94,7 +94,7 @@ public class RouteToText {
 //						System.out.println("switchNode: " + switchNode + " lon/lat: " + switchNode.getLon() + " , " + switchNode.getLat());
 //						System.out.println("toNode: " + route[i-1] + "lon/lat: " + route[i-1].getLon() + " , " + route[i-1].getLat());
 						direction = getNextDirectionByConditions(route[i+1], switchNode, route[i-1]);
-						TextInfos ti = new TextInfos(preview, addition, city, state, dist, switchNode, direction);
+						TextInfos ti = new TextInfos(preview, addition, city, state, dist, switchNode, direction, e.getHighwayType());
 						info.add(ti);
 						ti = null;
 						dist = e.getLenght();
@@ -103,8 +103,9 @@ public class RouteToText {
 					// nur bei letzten Durchlauf
 					if (i == 1) {
 //						wayID.add(e.getWayID() + "");
-						TextInfos ti = new TextInfos(preview, addition, city, state, dist, switchNode);
+						TextInfos ti = new TextInfos(current, addition, city, state, dist, switchNode, direction,e.getHighwayType());
 						info.add(ti);
+						System.out.println("Ziel: " + ti);
 						ti = null;
 					}
 
@@ -150,27 +151,37 @@ public class RouteToText {
 	
 	public LinkedList<String> buildRouteInfo() {
 		LinkedList<String> routeText = new LinkedList<String>();
-		String text = null;
+		StringBuffer sb = new StringBuffer();
+		
+		routeText.add("Sie starten bei " + info.get(0).getName());
 		
 		for (int i = 0; i < info.size() -1 ; i++){
+//			if (info.get(i).getHighwayType() == 1)
+//				sb.append("Fahren Sie nach ").append(info.get(i).getName()).append("")
 			if (!info.get(i).getName().trim().equals(""))
-				text = "Nach " + info.get(i).getName() + " ";
+				sb.append("Nach ").append(info.get(i).getName()).append(" ");
 			else
-				text = "Dann ";
-			text += info.get(i).getDirection();
-			text += " in " + info.get(i+1).getName() + " abbiegen.\n";
-			routeText.add(text);
-			text = "";
+				sb.append("Dann ");
+			sb.append(info.get(i).getDirection());
+			if (!info.get(i+1).getName().trim().equals(""))
+				sb.append(" in " + info.get(i+1).getName());
+			else
+				sb.append(" in die nächste Straße");
+			sb.append(" abbiegen.");
+			routeText.add(sb.toString());
+			sb.setLength(0);
 		}
+		
+		routeText.add("Sie haben Ihr Ziel erreicht");
 		
 		return routeText;
 	}
 	
 
 	private String getNextDirectionByConditions(Node fromNode, Node switchNode,Node toNode) {
-		System.out.println("from: " + fromNode.getId());
-		System.out.println("switch: " + switchNode.getId());
-		System.out.println("to: " + toNode.getId());
+//		System.out.println("from: " + fromNode.getId());
+//		System.out.println("switch: " + switchNode.getId());
+//		System.out.println("to: " + toNode.getId());
 
 		Point2D.Double f = new Point2D.Double(fromNode.getLon(), fromNode.getLat());
 		Point2D.Double s = new Point2D.Double(switchNode.getLon(), switchNode.getLat());
@@ -188,44 +199,7 @@ public class RouteToText {
 				return "geradeaus";
 		}
 	}
-
-	private String getNextDirectionByConditionsVektor(Node fromNode, Node switchNode,Node toNode) {
-		double aX = switchNode.getLon() - fromNode.getLon();
-		double aY = switchNode.getLat() - fromNode.getLat();
-		double bX = toNode.getLon() - switchNode.getLon();
-		double bY = toNode.getLat() - switchNode.getLat();
-		
-		if (aX > 0)
-			return (bY > 0) ? "rechts" : "links";
-		if (aX < 0)
-			return (bY < 0) ? "rechts" : "links";
-		if (aY > 0)
-			return (bX < 0) ? "rechts" : "links";
-		if (aY < 0)
-			return (bX > 0) ? "rechts" : "links";
-		
-		return "gerade aus";
-	}
 	
-	private String getNextDirectionByConditionsOld(Node fromNode, Node switchNode,Node toNode) {
-		// von unten nach oben
-		if (fromNode.getLon() < switchNode.getLon())
-			return (switchNode.getLat() < toNode.getLat()) ? "rechts" : "links"; //t
-
-		// von oben nach unten
-		else if (fromNode.getLon() > switchNode.getLon())
-			return (switchNode.getLat() > toNode.getLat()) ? "rechts" : "links";
-
-		// von links nach rechts
-		else if (fromNode.getLat() < switchNode.getLat())
-			return (switchNode.getLon() > toNode.getLon()) ? "rechts" : "links";
-
-		// von rechts nach links
-		else if (fromNode.getLat() > switchNode.getLat())
-			return (switchNode.getLon() < toNode.getLon()) ? "rechts" : "links";
-
-		return "geradeaus";
-	}
 
 	private String genarateTime(double lTime) {
 		DecimalFormat df = new DecimalFormat("00");

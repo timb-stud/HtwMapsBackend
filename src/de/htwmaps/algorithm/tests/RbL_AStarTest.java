@@ -13,6 +13,7 @@ import de.htwmaps.algorithm.Node;
 import de.htwmaps.algorithm.PathNotFoundException;
 import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.algorithm.util.RouteToText;
+import de.htwmaps.algorithm.util.TextInfos;
 import de.htwmaps.database.DBAdapterParabel;
 import de.htwmaps.database.DBAdapterRectangle;
 //import de.htwmaps.trash.AlteRouteToText;
@@ -38,12 +39,12 @@ public class RbL_AStarTest{
 //		int goalNodeID = 685103967;
 		
 		//Marpingen - Saarbruecken;
-//		int startNodeID = 385944205;
-//		int goalNodeID = 29780642;
+		int startNodeID = 385944205;
+		int goalNodeID = 29780642;
 		
 		//Freisen - Saarbrücken
-		int startNodeID = 358929754; //Freisen
-		int goalNodeID = 29780642; //SB
+//		int startNodeID = 358929754; //Freisen
+//		int goalNodeID = 29780642; //SB
 //		int startNodeID = 29780642;
 //		int goalNodeID = 358929754;
 		
@@ -69,8 +70,14 @@ public class RbL_AStarTest{
 				time = System.currentTimeMillis();
 				RouteToText rtt = new RouteToText(result);
 				System.out.println("RTT " + (System.currentTimeMillis() - time) + " ms");
-				System.out.println(rtt.toString());
-				System.out.println(rtt.buildRouteInfo().toString());
+//				System.out.println(rtt.toString());
+				for (String s : rtt.buildRouteInfo())
+					System.out.println(s);
+				
+				System.out.println("\nAutobahn: " + rtt.getAutobahnString() + " Dauer: " + rtt.getAutobahnTime());
+				System.out.println("Landstraße: " + rtt.getLandstrasseString() + " Dauer: " + rtt.getLandstrasseTime());
+				System.out.println("Innerorts: " + rtt.getInnerOrtsString() + " Dauer: " + rtt.getInnerOrtstime());
+				System.out.println("\nGesamtstrecke: " + rtt.getTotallengthString() + " Gesamtdauer: " + rtt.getTotaltime());
 				
 				break;
 			} catch (PathNotFoundException e) {

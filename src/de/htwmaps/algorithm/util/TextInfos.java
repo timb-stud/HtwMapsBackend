@@ -3,6 +3,7 @@ package de.htwmaps.algorithm.util;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import de.htwmaps.algorithm.Edge;
 import de.htwmaps.algorithm.Node;
 
 public class TextInfos {
@@ -14,6 +15,8 @@ public class TextInfos {
 	private long time;
 	private Node switchNode;
 	private String direction;
+	private int highwayType;
+	private Edge[] edge;
 	
 	public TextInfos(String streetname, String ref, String city, String state, double distance) {
 		this.name = streetname;
@@ -31,6 +34,25 @@ public class TextInfos {
 		this.distance = distance;
 		this.switchNode = node;
 		this.direction = direction;
+	}
+	
+	public TextInfos(String streetname, String ref, String city, String state, double distance, Node node, String direction, int highwayType) {
+		this.name = streetname;
+		this.addition = ref;
+		this.city = city;
+		this.state = state;
+		this.distance = distance;
+		this.switchNode = node;
+		this.direction = direction;
+		this.highwayType = highwayType;
+	}
+	
+	public TextInfos(String streetname, String ref, String city, String state, Edge[] edge) {
+		this.name = streetname;
+		this.addition = ref;
+		this.city = city;
+		this.state = state;
+		this.edge = edge;
 	}
 	
 	public TextInfos(String streetname, String ref, String city, String state, double distance, Node node) {
@@ -79,6 +101,10 @@ public class TextInfos {
 
 	public String getDirection() {
 		return direction;
+	}
+
+	public int getHighwayType() {
+		return highwayType;
 	}
 
 }
