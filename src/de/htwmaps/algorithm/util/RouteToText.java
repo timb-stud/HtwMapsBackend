@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import de.htwmaps.algorithm.Edge;
 import de.htwmaps.algorithm.Node;
+import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.database.DBAdapterRouteToText;
 
 public class RouteToText {
@@ -51,7 +52,9 @@ public class RouteToText {
 
 		info = new ArrayList<TextInfos>();
 
+//		Edges[] edgeArray =  ShortestPathAlgorithm.getEdges
 		for (int i = route.length - 1; i > 0; i--) {
+//			e = edgeArray[i];
 			for (Edge e : route[i].getEdgeList()) {
 //				if (e.getSuccessor().equals(route[i - 1]) || e.getPredecessor().equals(route[i - 1])) {
 					if (e.getSuccessor().equals(route[i - 1])) {
@@ -97,7 +100,7 @@ public class RouteToText {
 					// nur bei letzten Durchlauf
 					if (i == 1) {
 						edgeList.add(e);
-						TextInfos ti = new TextInfos(current, addition, city, state, dist, edgeList, direction);
+						TextInfos ti = new TextInfos(current, selectedAdditon, city, state, dist, edgeList, direction);
 						System.out.println("Ziel: " + ti);
 						info.add(ti);
 						ti = null;
