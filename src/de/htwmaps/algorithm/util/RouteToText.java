@@ -165,7 +165,6 @@ public class RouteToText {
 		
 		return routeText;
 	}
-	
 
 	private String getNextDirectionByConditions(Node fromNode, Node switchNode,Node toNode) {
 		System.out.println("from: " + fromNode.getId());
@@ -175,18 +174,29 @@ public class RouteToText {
 		Point2D.Double f = new Point2D.Double(fromNode.getLon(), fromNode.getLat());
 		Point2D.Double s = new Point2D.Double(switchNode.getLon(), switchNode.getLat());
 		Point2D.Double t = new Point2D.Double(toNode.getLon(), toNode.getLat());
-
-		Line2D.Double l = new Line2D.Double(f, s);
 		
-		switch (l.relativeCCW(t)) {
-			case 1:
-				return "rechts";
-			case-1:
-				return "links";
-			default:
-				//Epsilon umgebung einbauen
-				return "geradeaus";
+		double steigungFS = Math.abs(getSlope(f, s));
+		double steigungST = Math.abs(getSlope(s, t));
+		
+		if (Math.abs(steigungFS - steigungST) < (0.25)) {
+			return "geradeaus";
+		} else {
+			Line2D.Double l = new Line2D.Double(f, s);
+			switch (l.relativeCCW(t)) {
+				case 1:
+					return "rechts";
+				case-1:
+					return "links";
+				default: return " ";
+			}
 		}
+	}
+
+	/*
+	 * Gibt die Steigung zwischen 2 punkten zurueck
+	 */
+	public double getSlope(Point2D startPunkt, Point2D endPunkt) {
+		return (endPunkt.getY() - startPunkt.getY()) / (endPunkt.getX() - startPunkt.getX());
 	}
 
 	private String getNextDirectionByConditionsVektor(Node fromNode, Node switchNode,Node toNode) {
@@ -204,7 +214,7 @@ public class RouteToText {
 		if (aY < 0)
 			return (bX > 0) ? "rechts" : "links";
 		
-		return "gerade aus";
+		return "geradeaus";
 	}
 	
 	private String getNextDirectionByConditionsOld(Node fromNode, Node switchNode,Node toNode) {
