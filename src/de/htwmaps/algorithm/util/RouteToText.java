@@ -33,16 +33,16 @@ public class RouteToText {
 
 	private ArrayList<TextInfos> info = null;
 
-	public RouteToText(Node[] route) {
+	public RouteToText(Node[] route, Edge[] edges) {
 		try {
-			createInfo(route);
+			createInfo(route, edges);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private void createInfo(Node[] route) throws SQLException {
+	private void createInfo(Node[] route, Edge[] edge) throws SQLException {
 		LinkedList<Edge> edgeList = new LinkedList<Edge>();
 		double dist = 0;
 		Node switchNode;
@@ -52,17 +52,12 @@ public class RouteToText {
 
 		info = new ArrayList<TextInfos>();
 
-//		Edges[] edgeArray =  ShortestPathAlgorithm.getEdges
 		for (int i = route.length - 1; i > 0; i--) {
-//			e = edgeArray[i];
-			for (Edge e : route[i].getEdgeList()) {
-//				if (e.getSuccessor().equals(route[i - 1]) || e.getPredecessor().equals(route[i - 1])) {
-					if (e.getSuccessor().equals(route[i - 1])) {
-					totallength += e.getLenght();
+					totallength += edge[i].getLenght();
 					switchNode = route[i];
 					
 					streetRS = null;
-					streetRS = DBAdapterRouteToText.getStreetnameRS(e.getWayID());
+					streetRS = DBAdapterRouteToText.getStreetnameRS(edge[i].getWayID());
 					streetRS.first();
 
 					// Bestimmt ob Straßennamen oder Straßenbezeichnung (L123)
@@ -72,9 +67,10 @@ public class RouteToText {
 					} else {
 						current = streetRS.getString(1);
 						selectedAdditon = streetRS.getString(4);
+						System.out.println(current);
 					}
 
-					fillDriveOn(e);
+					fillDriveOn(edge[i]);
 
 					// nur beim ersten Durchlauf
 					if (i == route.length - 1) {
@@ -85,21 +81,21 @@ public class RouteToText {
 					}
 
 					if (preview.equals(current)) {
-						edgeList.add(e);
-						dist += e.getLenght();
+						edgeList.add(edge[i]);
+						dist += edge[i].getLenght();
 					} else {
 						direction = getNextDirectionByConditions(route[i+1], switchNode, route[i-1]);
 						TextInfos ti = new TextInfos(preview, addition, city, state, dist, edgeList, direction);
 						info.add(ti);
 						ti = null;
 						edgeList.clear();
-						edgeList.add(e);
-						dist = e.getLenght();
+						edgeList.add(edge[i]);
+						dist = edge[i].getLenght();
 					}
 
 					// nur bei letzten Durchlauf
 					if (i == 1) {
-						edgeList.add(e);
+						edgeList.add(edge[i]);
 						TextInfos ti = new TextInfos(current, selectedAdditon, city, state, dist, edgeList, direction);
 						System.out.println("Ziel: " + ti);
 						info.add(ti);
@@ -111,8 +107,6 @@ public class RouteToText {
 					addition = selectedAdditon;
 					city = streetRS.getString(2);
 					state = streetRS.getString(3);
-				}
-			}
 		}
 	}
 
@@ -150,11 +144,11 @@ public class RouteToText {
 	public LinkedList<String> buildRouteInfo() {
 		LinkedList<String> routeText = new LinkedList<String>();
 		StringBuffer sb = new StringBuffer();
-		
+
 		routeText.add("Sie starten in folgdender Straße: " + info.get(0).getName());
 		for (int i = 0; i < info.size() -1 ; i++){
 			if (info.get(i).getEdgeList().getLast().getHighwayType() != 1 && info.get(i+1).getEdgeList().getLast().getHighwayType() == 1){
-				sb.append("Fahren Sie nach ").append(info.get(i).getName()).append(" ").append(info.get(i).getDirection());
+				sb.append("Fahren Sie nach ").append(info.get(i).getName()).append("");
 				sb.append(" auf die Autobahn ").append(info.get(i+1).getName());
 			} else {
 				if (!info.get(i).getName().trim().equals(""))
