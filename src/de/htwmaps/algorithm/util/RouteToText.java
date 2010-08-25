@@ -1,30 +1,34 @@
+/**
+ * Erstellt die schriftliche Ausgabe zu einer Route, 
+ * sowie eine Statistik zur gefahrenen Strecke
+ * 
+ * @author Christian Rech, Yassir Klos
+ */
+
 package de.htwmaps.algorithm.util;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Vector;
 
 import de.htwmaps.algorithm.Edge;
 import de.htwmaps.algorithm.Node;
-import de.htwmaps.algorithm.ShortestPathAlgorithm;
 import de.htwmaps.database.DBAdapterRouteToText;
 
 public class RouteToText {
 
 	private double totallength = 0.0;
-
+	private double totaltime = 0;
+	
 	private double autobahn = 0.0;
 	private double landstrasse = 0.0;
 	private double innerOrts = 0.0;
 
-	private double totaltime = 0;
 	private double autobahnTime = 0;
 	private double landstrasseTime = 0;
 	private double innerOrtstime = 0;
@@ -33,28 +37,35 @@ public class RouteToText {
 
 	private ArrayList<TextInfos> info = null;
 
+	/**
+	 * Konstruktor: ruft Methode auf welche Text erstellt
+	 * @param route	Array mit Knoten welche besucht werden
+	 * @param edges Array mit Kanten welche besucht werden
+	 */
 	public RouteToText(Node[] route, Edge[] edges) {
 		try {
 			createInfo(route, edges);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Methode gruppiert alle befahrenen Straßen
+	 * @param route route	Array mit Knoten welche besucht werden
+	 * @param edges Array mit Kanten welche besucht werden
+	 * @throws SQLException Moegliche Fehler beim beschaffen der Daten (Strassennamen etc.)
+	 */
 	private void createInfo(Node[] route, Edge[] edge) throws SQLException {
 		LinkedList<Edge> edgeList = new LinkedList<Edge>();
+		info = new ArrayList<TextInfos>();
 		double dist = 0;
-		Node switchNode;
 		ResultSet streetRS = null;
 		String preview = null, current = null;
 		String city = null, state = null, addition = null, selectedAdditon, direction = null;
 
-		info = new ArrayList<TextInfos>();
-
 		for (int i = route.length - 1; i > 0; i--) {
 					totallength += edge[i].getLenght();
-					switchNode = route[i];
 					
 					streetRS = null;
 					streetRS = DBAdapterRouteToText.getStreetnameRS(edge[i].getWayID());
@@ -70,6 +81,7 @@ public class RouteToText {
 						System.out.println(current);
 					}
 
+					//erstellt Statistik
 					fillDriveOn(edge[i]);
 
 					// nur beim ersten Durchlauf
@@ -80,11 +92,12 @@ public class RouteToText {
 						state = streetRS.getString(3);
 					}
 
+					//prueft ob aktuelle Strasse noch selbe Strasse ist wie Durchlauf vorher
 					if (preview.equals(current)) {
 						edgeList.add(edge[i]);
 						dist += edge[i].getLenght();
 					} else {
-						direction = getNextDirectionByConditions(route[i+1], switchNode, route[i-1]);
+						direction = getNextDirectionByConditions(route[i+1], route[i], route[i-1]);
 						TextInfos ti = new TextInfos(preview, addition, city, state, dist, edgeList, direction);
 						info.add(ti);
 						ti = null;
@@ -110,6 +123,10 @@ public class RouteToText {
 		}
 	}
 
+	/**
+	 * Erstellt die Statistik der befahrenen Straßen
+	 * @param e Kante welche befahren wird.
+	 */
 	private void fillDriveOn(Edge e) {
 		// Autobahn 1
 		// Landstraße 5 ,7
@@ -140,7 +157,10 @@ public class RouteToText {
 		}
 	}
 
-	
+	/**
+	 * Erstellt aus gebildeter Gruppierung einen Text
+	 * @return Liste mit Anweisungen wir gefahren wird
+	 */
 	public LinkedList<String> buildRouteInfo() {
 		LinkedList<String> routeText = new LinkedList<String>();
 		StringBuffer sb = new StringBuffer();
@@ -171,6 +191,14 @@ public class RouteToText {
 		return routeText;
 	}
 
+	
+	/**
+	 * Stellt fest in welche Richtung abgebogen werden muss
+	 * @param fromNode Knoten von wo man kommt
+	 * @param switchNode Knoten an welchem abgebogen wird
+	 * @param toNode Knoten welcher als naechstes besucht wird
+	 * @return
+	 */
 	private String getNextDirectionByConditions(Node fromNode, Node switchNode,Node toNode) {
 		Point2D.Double f = new Point2D.Double(fromNode.getLon(), fromNode.getLat());
 		Point2D.Double s = new Point2D.Double(switchNode.getLon(), switchNode.getLat());
@@ -193,13 +221,18 @@ public class RouteToText {
 		}
 	}
 
-	/*
+	/**
 	 * Gibt die Steigung zwischen 2 punkten zurueck
 	 */
 	public double getSlope(Point2D startPunkt, Point2D endPunkt) {
 		return (endPunkt.getY() - startPunkt.getY()) / (endPunkt.getX() - startPunkt.getX());
 	}
 
+	/**
+	 * Formatiert Millisekunden in Stunden, Minuten, Sekunden
+	 * @param lTime
+	 * @return
+	 */
 	private String genarateTime(double lTime) {
 		DecimalFormat df = new DecimalFormat("00");
 		int hours = (int) (lTime / (60 * 60));
@@ -208,6 +241,9 @@ public class RouteToText {
 		return (df.format(hours) + ":" + df.format(minutes) + ":" + df.format(seconds));
 	}
 
+	/**
+	 * toString Methode: nur fuer interne Tests
+	 */
 	@Override
 	public String toString() {
 		int i = 0;
@@ -230,6 +266,9 @@ public class RouteToText {
 		return sb.toString();
 	}
 
+	
+	//------[ Getter & Setter ]----->
+	
 	public double getTotallength() {
 		return totallength;
 	}
